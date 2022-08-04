@@ -19,12 +19,13 @@ repositories {
 dependencies {
     ...
     modImplementation "com.github.quiqueck:WunderLib:${project.wunderlib_version}"
+    include "com.github.quiqueck:WunderLib:${project.wunderlib_version}"
 }
 ```
 
-You should also add a dependency to `fabirc.mod.json`. WunderLib uses Semantic versioning, so adding the dependcy as
-follows
-should respect that and ensure that your mod is not loaded with an incompatible version of BCLib:
+The `include` line will bundle the lib with your mod, so users will not have to download it separately.
+You should also add a dependency to `fabirc.mod.json`. WunderLib uses Semantic versioning, so adding the dependency as
+follows should respect that and ensure that your mod is not loaded with an incompatible version of WunderLib:
 
 ```
 "depends": {
