@@ -80,12 +80,8 @@ public class Rectangle {
     @Override
     public String toString() {
         return "rectangle{" +
-                left +
-                "x" + top +
-                ", " + right() +
-                "x" + bottom() +
-                " [" + width +
-                "x" + height +
-                "]}";
+                left + "x" + top + " -> " +
+                right() + "x" + bottom() +
+                " [size: " + width + "x" + height + "]}";
     }
 }
