@@ -55,18 +55,23 @@ public class Image extends CustomRenderComponent {
         return this;
     }
 
+    public Image setResourceSize(Size sz) {
+        resourceSize = sz;
+        return this;
+    }
+
     public Size getResourceSize() {
         return resourceSize;
     }
 
     @Override
     public int getContentWidth() {
-        return resourceSize.width();
+        return uvRect.width;
     }
 
     @Override
     public int getContentHeight() {
-        return resourceSize.height();
+        return uvRect.height;
     }
 
 
@@ -79,7 +84,7 @@ public class Image extends CustomRenderComponent {
             Rectangle bounds,
             Rectangle clipRect
     ) {
-        RenderHelper.renderImage(stack, bounds.width, bounds.height, location, uvRect, resourceSize, alpha);
+        RenderHelper.renderImage(stack, 0, 0, bounds.width, bounds.height, location, resourceSize, uvRect, alpha);
     }
 
     @Override

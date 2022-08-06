@@ -87,10 +87,21 @@ public class RenderHelper {
 
     public static void renderImage(
             PoseStack stack,
+            int left, int top,
+            ResourceLocation location,
+            Size resourceSize, Rectangle uvRect,
+            float alpha
+    ) {
+        renderImage(stack, left, top, uvRect.width, uvRect.height, location, resourceSize, uvRect, alpha);
+    }
+
+
+    public static void renderImage(
+            PoseStack stack,
+            int left, int top,
             int width, int height,
             ResourceLocation location,
-            Rectangle uvRect,
-            Size resourceSize,
+            Size resourceSize, Rectangle uvRect,
             float alpha
     ) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -103,11 +114,8 @@ public class RenderHelper {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
         GuiComponent.blit(
                 stack,
-                0, 0, width, height,
-                uvRect.left,
-                uvRect.top,
-                uvRect.width,
-                uvRect.height,
+                left, top, width, height,
+                uvRect.left, uvRect.top, uvRect.width, uvRect.height,
                 resourceSize.width(),
                 resourceSize.height()
         );
