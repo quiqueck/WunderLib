@@ -41,6 +41,11 @@ public class Image extends CustomRenderComponent {
     }
 
 
+    public Image setUvRect(Rectangle rect) {
+        uvRect = rect;
+        return this;
+    }
+
     public Image setUvRect(int left, int top, int width, int height) {
         uvRect = new Rectangle(left, top, width, height);
         return this;
