@@ -24,13 +24,15 @@ public class Item extends CustomRenderComponent {
     protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
         final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         itemRenderer.renderAndDecorateItem(Minecraft.getInstance().player, itemStack, bounds.left, bounds.top, 0);
-        itemRenderer.renderGuiItemDecorations(
-                Minecraft.getInstance().font,
-                itemStack,
-                bounds.left,
-                bounds.top,
-                "" + itemStack.getCount()
-        );
+        if (itemStack.getCount() > 1) {
+            itemRenderer.renderGuiItemDecorations(
+                    Minecraft.getInstance().font,
+                    itemStack,
+                    bounds.left,
+                    bounds.top,
+                    "" + itemStack.getCount()
+            );
+        }
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.jetbrains.annotations.ApiStatus;
 public abstract class SDF {
     protected SDF(int inputCount) {
         inputSlots = new SDF[inputCount];
+        parentSlotIndex = -1;
     }
 
     //---------------------- INPUT SLOTS ----------------------
@@ -37,13 +38,21 @@ public abstract class SDF {
         return inputSlots[idx];
     }
 
+    public boolean hasInputs() {
+        for (SDF inputSlot : inputSlots) {
+            if (inputSlot != null && !(inputSlot instanceof Empty)) return true;
+        }
+        return false;
+    }
+
     void setSlotSilent(int idx, SDF sdf) {
         if (inputSlots[idx] != sdf && inputSlots[idx] != null) {
             inputSlots[idx].setParent(null);
+            inputSlots[idx].setParentSlotIndex(-1);
         }
         inputSlots[idx] = sdf == null ? Empty.INSTANCE : sdf;
         inputSlots[idx].setParent(this);
-
+        inputSlots[idx].setParentSlotIndex(idx);
     }
 
     public void setSlot(int idx, SDF sdf) {
@@ -58,6 +67,7 @@ public abstract class SDF {
 
     private final Set<OnChange> changeEvent = new HashSet<>();
     private SDF parent;
+    private int parentSlotIndex;
 
     protected void emitChangeEvent() {
         if (changeEvent != null) changeEvent.forEach(e -> e.didChange(this));
@@ -74,6 +84,10 @@ public abstract class SDF {
 
     void setParent(SDF parent) {
         this.parent = parent;
+    }
+
+    void setParentSlotIndex(int idx) {
+        this.parentSlotIndex = idx;
     }
 
     //---------------------- ABSTRACT METHODS ----------------------

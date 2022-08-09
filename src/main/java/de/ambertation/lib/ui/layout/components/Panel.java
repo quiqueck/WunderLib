@@ -27,7 +27,11 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     }
 
     public Panel(int left, int top, int width, int height) {
-        bounds = new Rectangle(left, top, width, height);
+        this(new Rectangle(left, top, width, height));
+    }
+
+    public Panel(Rectangle bounds) {
+        this.bounds = bounds;
     }
 
     public void setChild(LayoutComponent<?, ?> c) {
