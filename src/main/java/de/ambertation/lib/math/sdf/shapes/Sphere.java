@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.SDF;
 
@@ -10,8 +11,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Sphere extends BaseShape {
     public static final Codec<Sphere> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Float3.CODEC.fieldOf("center").forGetter(b -> b.getCenter()),
-                    Codec.FLOAT.fieldOf("radius").forGetter(b -> (float) b.radius)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
             )
             .apply(instance, Sphere::new)
     );
@@ -25,25 +25,21 @@ public class Sphere extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
-
-    private double radius;
+    public Sphere(Bounds b) {
+        super(b);
+    }
 
     public Sphere(Float3 center, double radius) {
-        super(center);
-        this.radius = radius;
+        super(Bounds.ofSphere(center, radius));
     }
+
 
     @Override
     public double dist(Float3 pos) {
-        return pos.sub(getCenter()).length() - radius;
+        return pos.sub(getCenter()).length() - getRadius();
     }
 
     public double getRadius() {
-        return radius;
-    }
-
-    public void setRadius(double radius) {
-        this.radius = radius;
-        this.emitChangeEvent();
+        return bounds.minExtension() / 2 + 0.5;
     }
 }

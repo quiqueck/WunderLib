@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.SDF;
 
@@ -7,11 +8,10 @@ import com.mojang.serialization.Codec;
 import net.minecraft.util.KeyDispatchDataCodec;
 
 public class Empty extends SDF {
-    public static final Empty INSTANCE = new Empty();
-    public static final Codec<Empty> DIRECT_CODEC = Codec.unit(() -> INSTANCE);
+    public static final Codec<Empty> DIRECT_CODEC = Codec.unit(Empty::new);
     public static final KeyDispatchDataCodec<Empty> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC);
 
-    protected Empty() {
+    public Empty() {
         super(0);
     }
 
@@ -30,5 +30,11 @@ public class Empty extends SDF {
     @Override
     public String toString() {
         return "Empty";
+    }
+
+
+    @Override
+    public Bounds getBoundingBox() {
+        return Bounds.EMPTY;
     }
 }

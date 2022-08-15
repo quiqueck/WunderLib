@@ -3,6 +3,7 @@ package de.ambertation.lib.math;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Objects;
 
@@ -125,6 +126,22 @@ public class Float2 {
     @Override
     public int hashCode() {
         return Objects.hash(x, y);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
+
+    public void serializeToNetwork(FriendlyByteBuf buf) {
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+    }
+
+    public static Float2 deserializeFromNetwork(FriendlyByteBuf buf) {
+        double x = buf.readDouble();
+        double y = buf.readDouble();
+        return Float2.of(x, y);
     }
 
     //-------------------------------------------- SWIVELS (@formatter:off) --------------------------------------------

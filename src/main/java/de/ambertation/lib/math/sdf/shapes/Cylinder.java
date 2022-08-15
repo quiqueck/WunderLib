@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float2;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.SDF;
@@ -12,9 +13,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Cylinder extends BaseShape {
     public static final Codec<Cylinder> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Float3.CODEC.fieldOf("center").forGetter(b -> b.getCenter()),
-                    Codec.DOUBLE.fieldOf("height").forGetter(b -> b.getHeight()),
-                    Codec.DOUBLE.fieldOf("radius").forGetter(b -> b.getRadius())
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
             )
             .apply(instance, Cylinder::new)
     );
@@ -28,35 +27,28 @@ public class Cylinder extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
-    private Float2 size;
+    public Cylinder(Bounds b) {
+        super(b);
+    }
+
 
     public Cylinder(Float3 center, double height, double radius) {
-        super(center);
-        size = Float2.of(height, radius);
+        super(Bounds.ofCylinder(center, height, radius));
     }
 
     public double getHeight() {
-        return size.x;
+        return bounds.getHalfSize().y;
     }
 
-    public void setHeight(double h) {
-        size = Float2.of(h, size.y);
-        this.emitChangeEvent();
-    }
 
     public double getRadius() {
-        return size.y;
+        return bounds.getHalfSize().x;
     }
 
-    public void setRadius(double r) {
-        size = Float2.of(size.x, r);
-        this.emitChangeEvent();
-    }
 
     @Override
     public double dist(Float3 p) {
-        Float2 d = Float2.of(p.xz().length(), p.y).abs().sub(size);
+        Float2 d = Float2.of(p.xz().length(), p.y).abs().sub(bounds.getHalfSize().zx());
         return Math.min(d.maxComp(), 0.0) + d.max(0.0).length();
     }
-
 }

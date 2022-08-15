@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.SDF;
 
@@ -11,8 +12,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Ellipsoid extends BaseShape {
     public static final Codec<Ellipsoid> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Float3.CODEC.fieldOf("center").forGetter(b -> b.getCenter()),
-                    Float3.CODEC.fieldOf("size").forGetter(b -> b.size)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
             )
             .apply(instance, Ellipsoid::new)
     );
@@ -26,15 +26,17 @@ public class Ellipsoid extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
-    private Float3 size;
+    public Ellipsoid(Bounds b) {
+        super(b);
+    }
 
     public Ellipsoid(Float3 center, Float3 size) {
-        super(center);
-        this.size = size;
+        super(Bounds.ofBox(center, size));
     }
 
     @Override
     public double dist(Float3 pos) {
+        Float3 size = bounds.getSize();
         pos = pos.sub(getCenter());
         double k1 = pos.div(size).length();
         double k2 = pos.div(size.square()).length();
@@ -43,12 +45,8 @@ public class Ellipsoid extends BaseShape {
     }
 
     public Float3 getSize() {
-        return size;
+        return bounds.getSize();
     }
 
-    public void setSize(Float3 size) {
-        this.size = size;
-        this.emitChangeEvent();
-    }
 }
 

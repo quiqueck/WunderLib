@@ -1,6 +1,7 @@
 package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.WunderLib;
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.shapes.*;
 
@@ -25,6 +26,7 @@ public abstract class SDF {
 
     //---------------------- INPUT SLOTS ----------------------
     protected final SDF[] inputSlots;
+    protected int graphIndex = 0;
 
     public int getInputSlotCount() {
         return inputSlots.length;
@@ -50,14 +52,73 @@ public abstract class SDF {
             inputSlots[idx].setParent(null);
             inputSlots[idx].setParentSlotIndex(-1);
         }
-        inputSlots[idx] = sdf == null ? Empty.INSTANCE : sdf;
+
+
+        inputSlots[idx] = sdf == null ? new Empty() : sdf;
         inputSlots[idx].setParent(this);
         inputSlots[idx].setParentSlotIndex(idx);
+        if (idx == 0) {
+            inputSlots[idx].setGraphIndexRecursive(graphIndex + 1);
+        } else {
+            inputSlots[idx].setGraphIndexRecursive(inputSlots[idx - 1].maxGraphIndex() + 1);
+        }
     }
 
     public void setSlot(int idx, SDF sdf) {
         setSlotSilent(idx, sdf);
         this.emitChangeEvent();
+    }
+
+    public int inputSlotIndex(SDF sdf) {
+        for (int i = 0; i < inputSlots.length; i++) {
+            if (inputSlots[i] == sdf) return i;
+        }
+        return -1;
+    }
+
+    private int setGraphIndexRecursive(int startIndex) {
+        this.graphIndex = startIndex;
+        for (int i = 0; i < inputSlots.length; i++) {
+            startIndex = inputSlots[i].setGraphIndexRecursive(startIndex + 1);
+        }
+        return startIndex;
+    }
+
+    private int maxGraphIndex() {
+        int idx = this.graphIndex;
+        for (int i = 0; i < inputSlots.length; i++) {
+            idx = Math.max(idx, inputSlots[i].maxGraphIndex());
+        }
+        return idx;
+    }
+
+    public int getGraphIndex() {
+        return graphIndex;
+    }
+
+    public SDF getRoot() {
+        if (parent == null) return this;
+        return parent.getRoot();
+    }
+
+    public SDF getChildWithGraphIndex(int gIdx) {
+        if (gIdx == graphIndex) return this;
+
+        for (int i = 0; i < inputSlots.length; i++) {
+            SDF s = inputSlots[i].getChildWithGraphIndex(gIdx);
+            if (s != null) return s;
+        }
+
+        return null;
+    }
+
+    //---------------------- BOUNDING BOX ----------------------
+    public Bounds getBoundingBox() {
+        Bounds b = Bounds.EMPTY;
+        for (SDF sdf : inputSlots) {
+            b = b.encapsulate(sdf.getBoundingBox());
+        }
+        return b;
     }
 
     //---------------------- CHANGE EVENTS ----------------------
@@ -66,8 +127,6 @@ public abstract class SDF {
     }
 
     private final Set<OnChange> changeEvent = new HashSet<>();
-    private SDF parent;
-    private int parentSlotIndex;
 
     protected void emitChangeEvent() {
         if (changeEvent != null) changeEvent.forEach(e -> e.didChange(this));
@@ -82,13 +141,23 @@ public abstract class SDF {
         changeEvent.remove(listener);
     }
 
+
+    //---------------------- PARENT HANDLING ----------------------
+    private SDF parent;
+    private int parentSlotIndex;
+
     void setParent(SDF parent) {
         this.parent = parent;
+    }
+
+    public SDF getParent() {
+        return parent;
     }
 
     void setParentSlotIndex(int idx) {
         this.parentSlotIndex = idx;
     }
+
 
     //---------------------- ABSTRACT METHODS ----------------------
 
@@ -110,6 +179,7 @@ public abstract class SDF {
         register(registry, "intersect", SDFIntersection.CODEC);
         register(registry, "dif", SDFDifference.CODEC);
         register(registry, "invert", SDFInvert.CODEC);
+        register(registry, "move", SDFMove.CODEC);
 
         register(registry, "empty", Empty.CODEC);
         register(registry, "sphere", Sphere.CODEC);

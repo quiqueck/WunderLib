@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float2;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.SDF;
@@ -12,9 +13,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Prism extends BaseShape {
     public static final Codec<Prism> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Float3.CODEC.fieldOf("center").forGetter(b -> b.getCenter()),
-                    Codec.DOUBLE.fieldOf("sx").forGetter(b -> b.size.x),
-                    Codec.DOUBLE.fieldOf("sy").forGetter(b -> b.size.y)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
             )
             .apply(instance, Prism::new)
     );
@@ -28,25 +27,23 @@ public class Prism extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
-    private Float2 size;
+    public Prism(Bounds b) {
+        super(b);
+    }
 
     public Prism(Float3 center, double sx, double sy) {
-        super(center);
-        this.size = Float2.of(sx, sy);
+        super(Bounds.ofBox(center, new Float3(sx, sy, sx)));
     }
 
     @Override
     public double dist(Float3 p) {
+        Float3 size = bounds.getSize();
         Float3 q = p.sub(getCenter()).abs();
         return Math.max(q.z - size.y, Math.max(q.x * 0.866025 + p.y * 0.5, -p.y) - size.x * 0.5);
     }
 
     public Float2 getSize() {
-        return size;
+        return bounds.getSize().xy();
     }
 
-    public void setSize(Float2 size) {
-        this.size = size;
-        this.emitChangeEvent();
-    }
 }

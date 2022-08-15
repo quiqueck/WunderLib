@@ -3,12 +3,14 @@ package de.ambertation.lib.math;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 
 public class Float3 {
+    public static final Float3 ZERO = Float3.of(0);
     public static final Codec<Float3> CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("x").forGetter(o -> (float) o.x),
@@ -52,6 +54,10 @@ public class Float3 {
     }
 
     public static Float3 blockAligned(double x, double y, double z) {
+        return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
+    }
+
+    public Float3 blockAligned() {
         return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
     }
 
@@ -173,6 +179,24 @@ public class Float3 {
                 (int) Math.round(y + 0.5) - 1,
                 (int) Math.round(z + 0.5) - 1
         );
+    }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
+    public void serializeToNetwork(FriendlyByteBuf buf) {
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
+    }
+
+    public static Float3 deserializeFromNetwork(FriendlyByteBuf buf) {
+        double x = buf.readDouble();
+        double y = buf.readDouble();
+        double z = buf.readDouble();
+        return Float3.of(x, y, z);
     }
 
     //-------------------------------------------- SWIVELS (@formatter:off) --------------------------------------------

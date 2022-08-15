@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
 
 import com.mojang.serialization.Codec;
@@ -35,5 +36,10 @@ public class SDFInvert extends SDFOperation {
     @Override
     public String toString() {
         return "!" + getFirst();
+    }
+
+    @Override
+    public Bounds getBoundingBox() {
+        return getFirst().getBoundingBox();
     }
 }

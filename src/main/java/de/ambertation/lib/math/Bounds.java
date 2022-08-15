@@ -4,11 +4,23 @@ import de.ambertation.lib.math.sdf.shapes.Box;
 import de.ambertation.lib.math.sdf.shapes.Ellipsoid;
 import de.ambertation.lib.math.sdf.shapes.Sphere;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
 public class Bounds {
+    public static final Codec<Bounds> CODEC = RecordCodecBuilder.create(instance -> instance
+            .group(
+                    Float3.CODEC.fieldOf("min").forGetter(o -> o.min),
+                    Float3.CODEC.fieldOf("max").forGetter(o -> o.max)
+            )
+            .apply(instance, Bounds::of)
+    );
+    public static final Bounds EMPTY = new Bounds(0, 0, 0, 0, 0, 0);
+
     public static class Interpolate {
         public static final Interpolate MIN_MIN_MIN = new Interpolate((byte) 0, 0, 0, 0);
         public static final Interpolate MIN_MIN_MAX = new Interpolate((byte) 1, 0, 0, 1);
@@ -86,25 +98,47 @@ public class Bounds {
     public final Float3 min;
     public final Float3 max;
 
-    public Bounds(BoundingBox box) {
-        this(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
-    }
-
-    public Bounds(BlockPos pos) {
-        this(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
-    }
-
-    public Bounds(Float3 min, Float3 max) {
-        this(min.x, min.y, min.z, max.x, max.y, max.z);
-    }
-
-    public Bounds(double lx, double ly, double lz, double hx, double hy, double hz) {
+    private Bounds(double lx, double ly, double lz, double hx, double hy, double hz) {
         this.min = Float3.of(Math.min(lx, hx), Math.min(ly, hy), Math.min(lz, hz));
         this.max = Float3.of(Math.max(lx, hx), Math.max(ly, hy), Math.max(lz, hz));
     }
 
+    public static Bounds of(BoundingBox box) {
+        return new Bounds(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
+    }
+
+    public static Bounds of(BlockPos pos) {
+        return new Bounds(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static Bounds of(Float3 min, Float3 max) {
+        return new Bounds(min.x, min.y, min.z, max.x, max.y, max.z);
+    }
+
+    public static Bounds of(double lx, double ly, double lz, double hx, double hy, double hz) {
+        return new Bounds(lx, ly, lz, hx, hy, hz);
+    }
+
+    public static Bounds ofSphere(Float3 center, double radius) {
+        return Bounds.ofBox(center, Float3.of(radius));
+    }
+
+    public static Bounds ofCylinder(Float3 center, double height, double radius) {
+        Float3 size = Float3.of(radius, height, radius);
+        return Bounds.of(center.sub(size), center.add(size));
+    }
+
+    public static Bounds ofBox(Float3 center, Float3 size) {
+        Float3 min = center.sub(size.sub(1).div(2)).blockAligned();
+        return Bounds.of(min, min.add(size));
+    }
+
     public Float3 getSize() {
         return Float3.of(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
+    }
+
+    public Float3 getHalfSize() {
+        return Float3.of((max.x - min.x + 1) / 2, (max.y - min.y + 1) / 2, (max.z - min.z + 1) / 2);
     }
 
     public boolean isInside(Float3 p) {
@@ -156,13 +190,22 @@ public class Bounds {
         return p.blockAlignedLerp(min, max);
     }
 
+    public Bounds blockAligned() {
+        return Bounds.of(min.blockAligned(), min.add(getSize()).blockAligned());
+    }
+
     public Float3 getCenter() {
         return get(Interpolate.CENTER);
     }
 
     public Bounds moveToCenter(Float3 newCenter) {
-        newCenter = newCenter.sub(getCenter());
-        return new Bounds(min.add(newCenter), max.add(newCenter));
+        newCenter = newCenter.blockAligned().sub(getCenter().blockAligned());
+        return Bounds.of(min.add(newCenter), max.add(newCenter));
+    }
+
+    public Bounds move(Float3 offset) {
+        if (offset == null) return this;
+        return Bounds.of(min.add(offset), max.add(offset));
     }
 
     public Interpolate isCorner(Float3 p) {
@@ -244,5 +287,22 @@ public class Bounds {
         }
 
         return new Bounds(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    @Override
+    public String toString() {
+        return min.toString() + " -> " + max.toString() + " (c: " + getCenter().toString() + ", s:" + getSize() + ")";
+    }
+
+
+    public void serializeToNetwork(FriendlyByteBuf buf) {
+        min.serializeToNetwork(buf);
+        max.serializeToNetwork(buf);
+    }
+
+    public static Bounds deserializeFromNetwork(FriendlyByteBuf buf) {
+        Float3 min = Float3.deserializeFromNetwork(buf);
+        Float3 max = Float3.deserializeFromNetwork(buf);
+        return Bounds.of(min, max);
     }
 }

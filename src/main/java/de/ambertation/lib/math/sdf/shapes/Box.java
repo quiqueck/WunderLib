@@ -1,5 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
+import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.sdf.SDF;
 
@@ -11,8 +12,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Box extends BaseShape {
     public static final Codec<Box> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Float3.CODEC.fieldOf("center").forGetter(b -> b.getCenter()),
-                    Float3.CODEC.fieldOf("size").forGetter(b -> b.size)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
             )
             .apply(instance, Box::new)
     );
@@ -26,25 +26,21 @@ public class Box extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
-    private Float3 size;
+    public Box(Bounds b) {
+        super(b);
+    }
 
     public Box(Float3 center, Float3 size) {
-        super(center);
-        this.size = size;
+        super(Bounds.ofBox(center, size));
     }
 
     @Override
     public double dist(Float3 pos) {
-        Float3 q = pos.sub(getCenter()).abs().sub(size);
+        Float3 q = pos.sub(getCenter()).abs().sub(bounds.getHalfSize());
         return q.max(0.0).length() + Math.min(Math.max(q.x, Math.max(q.y, q.z)), 0.0);
     }
 
     public Float3 getSize() {
-        return size;
-    }
-
-    public void setSize(Float3 size) {
-        this.size = size;
-        this.emitChangeEvent();
+        return bounds.getSize();
     }
 }
