@@ -14,11 +14,55 @@ import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class SDF {
+    public static final class EvaluationData {
+        double dist;
+        SDF source;
+
+        public EvaluationData() {
+            this(Double.MAX_VALUE, new Empty());
+        }
+
+        public EvaluationData(double dist, SDF source) {
+            this.dist = dist;
+            this.source = source;
+        }
+
+        public double dist() {
+            return dist;
+        }
+
+        public SDF source() {
+            return source;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == this) return true;
+            if (obj == null || obj.getClass() != this.getClass()) return false;
+            var that = (EvaluationData) obj;
+            return Double.doubleToLongBits(this.dist) == Double.doubleToLongBits(that.dist) &&
+                    Objects.equals(this.source, that.source);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(dist, source);
+        }
+
+        @Override
+        public String toString() {
+            return "EvaluationData[" +
+                    "dist=" + dist + ", " +
+                    "source=" + source + ']';
+        }
+    }
+
     protected SDF(int inputCount) {
         inputSlots = new SDF[inputCount];
         parentSlotIndex = -1;
@@ -156,6 +200,12 @@ public abstract class SDF {
 
     void setParentSlotIndex(int idx) {
         this.parentSlotIndex = idx;
+    }
+
+    //---------------------- EVAlUATION ----------------------
+    public void dist(EvaluationData d, Float3 pos) {
+        d.dist = dist(pos);
+        d.source = this;
     }
 
 

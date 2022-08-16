@@ -47,6 +47,11 @@ public class SDFMove extends SDFOperation {
     }
 
     @Override
+    public void dist(EvaluationData d, Float3 pos) {
+        getFirst().dist(d, pos.sub(offset));
+    }
+
+    @Override
     public Bounds getBoundingBox() {
         return getFirst().getBoundingBox().move(offset);
     }

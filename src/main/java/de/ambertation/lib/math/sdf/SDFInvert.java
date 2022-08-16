@@ -34,6 +34,12 @@ public class SDFInvert extends SDFOperation {
     }
 
     @Override
+    public void dist(EvaluationData d, Float3 pos) {
+        getFirst().dist(d, pos);
+        d.dist *= -1;
+    }
+
+    @Override
     public String toString() {
         return "!" + getFirst();
     }

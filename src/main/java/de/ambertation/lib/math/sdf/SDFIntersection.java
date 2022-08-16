@@ -33,6 +33,22 @@ public class SDFIntersection extends SDFBinaryOperation {
         return Math.max(getFirst().dist(pos), getSecond().dist(pos));
     }
 
+
+    @Override
+    public void dist(EvaluationData d, Float3 pos) {
+        getFirst().dist(d, pos);
+        final double d0 = d.dist;
+        final SDF s0 = d.source();
+
+        getSecond().dist(d, pos);
+        if (d0 > d.dist) {
+            d.dist = d0;
+            d.source = s0;
+        } else {
+            d.source = getSecond();
+        }
+    }
+
     @Override
     public String toString() {
         return "(" + getFirst() + " & " + getSecond() + ")";
