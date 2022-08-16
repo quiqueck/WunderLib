@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 
 public class Item extends CustomRenderComponent {
     private ItemStack itemStack;
+    private String decoration;
 
     public Item(Value width, Value height) {
         super(width, height);
@@ -20,11 +21,24 @@ public class Item extends CustomRenderComponent {
         return this;
     }
 
+    public Item setDecoration(String decoration) {
+        this.decoration = decoration;
+        return this;
+    }
+
     @Override
     protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
         final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         itemRenderer.renderAndDecorateItem(Minecraft.getInstance().player, itemStack, bounds.left, bounds.top, 0);
-        if (itemStack.getCount() > 1) {
+        if (decoration != null) {
+            itemRenderer.renderGuiItemDecorations(
+                    Minecraft.getInstance().font,
+                    itemStack,
+                    bounds.left,
+                    bounds.top,
+                    decoration
+            );
+        } else if (itemStack.getCount() > 1) {
             itemRenderer.renderGuiItemDecorations(
                     Minecraft.getInstance().font,
                     itemStack,
