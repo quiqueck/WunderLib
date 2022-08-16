@@ -20,6 +20,16 @@ import java.util.function.Function;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class SDF {
+    @FunctionalInterface
+    public interface PlaceBlock {
+        void place(Float3 pos, EvaluationData ed);
+    }
+
+    @FunctionalInterface
+    public interface VisitBlock {
+        void visit(Float3 pos, EvaluationData ed, boolean didPlace);
+    }
+
     public static final class EvaluationData {
         double dist;
         SDF source;
@@ -206,6 +216,29 @@ public abstract class SDF {
     public void dist(EvaluationData d, Float3 pos) {
         d.dist = dist(pos);
         d.source = this;
+    }
+
+    public void evaluate(PlaceBlock callback, VisitBlock visitor) {
+        evaluate(getBoundingBox(), callback, visitor);
+    }
+
+    public void evaluate(Bounds box, PlaceBlock callback, VisitBlock visitor) {
+        SDF.EvaluationData ed = new SDF.EvaluationData();
+        double dist;
+        for (double xx = box.min.x; xx <= box.max.x; xx++) {
+            for (double xy = box.min.y; xy <= box.max.y; xy++) {
+                for (double xz = box.min.z; xz <= box.max.z; xz++) {
+                    final Float3 p = Float3.of(xx, xy, xz);
+                    this.dist(ed, p);
+                    dist = ed.dist();
+
+                    if (dist < 0 && dist > -1) {
+                        callback.place(p, ed);
+                        if (visitor != null) visitor.visit(p, ed, true);
+                    } else if (visitor != null) visitor.visit(p, ed, false);
+                }
+            }
+        }
     }
 
 

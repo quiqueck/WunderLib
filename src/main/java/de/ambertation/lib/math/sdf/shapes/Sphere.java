@@ -11,7 +11,8 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Sphere extends BaseShape {
     public static final Codec<Sphere> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox),
+                    Codec.INT.fieldOf("material").orElse(0).forGetter(BaseShape::getMaterialIndex)
             )
             .apply(instance, Sphere::new)
     );
@@ -25,12 +26,16 @@ public class Sphere extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
+    public Sphere(Bounds b, int matIndex) {
+        super(b, matIndex);
+    }
+
     public Sphere(Bounds b) {
-        super(b);
+        this(b, 0);
     }
 
     public Sphere(Float3 center, double radius) {
-        super(Bounds.ofSphere(center, radius));
+        super(Bounds.ofSphere(center, radius), 0);
     }
 
 

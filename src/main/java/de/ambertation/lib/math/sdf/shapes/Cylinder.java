@@ -13,7 +13,8 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Cylinder extends BaseShape {
     public static final Codec<Cylinder> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox),
+                    Codec.INT.fieldOf("material").orElse(0).forGetter(BaseShape::getMaterialIndex)
             )
             .apply(instance, Cylinder::new)
     );
@@ -27,13 +28,17 @@ public class Cylinder extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
+    public Cylinder(Bounds b, int matIndex) {
+        super(b, matIndex);
+    }
+
     public Cylinder(Bounds b) {
-        super(b);
+        this(b, 0);
     }
 
 
     public Cylinder(Float3 center, double height, double radius) {
-        super(Bounds.ofCylinder(center, height, radius));
+        super(Bounds.ofCylinder(center, height, radius), 0);
     }
 
     public double getHeight() {

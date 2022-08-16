@@ -12,7 +12,8 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Ellipsoid extends BaseShape {
     public static final Codec<Ellipsoid> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox),
+                    Codec.INT.fieldOf("material").orElse(0).forGetter(BaseShape::getMaterialIndex)
             )
             .apply(instance, Ellipsoid::new)
     );
@@ -26,12 +27,16 @@ public class Ellipsoid extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
+    public Ellipsoid(Bounds b, int matIndex) {
+        super(b, matIndex);
+    }
+
     public Ellipsoid(Bounds b) {
-        super(b);
+        this(b, 0);
     }
 
     public Ellipsoid(Float3 center, Float3 size) {
-        super(Bounds.ofBox(center, size));
+        super(Bounds.ofBox(center, size), 0);
     }
 
     @Override

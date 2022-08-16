@@ -13,7 +13,8 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class Prism extends BaseShape {
     public static final Codec<Prism> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox)
+                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox),
+                    Codec.INT.fieldOf("material").orElse(0).forGetter(BaseShape::getMaterialIndex)
             )
             .apply(instance, Prism::new)
     );
@@ -27,12 +28,16 @@ public class Prism extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
+    public Prism(Bounds b, int matIndex) {
+        super(b, matIndex);
+    }
+
     public Prism(Bounds b) {
-        super(b);
+        this(b, 0);
     }
 
     public Prism(Float3 center, double sx, double sy) {
-        super(Bounds.ofBox(center, new Float3(sx, sy, sx)));
+        super(Bounds.ofBox(center, new Float3(sx, sy, sx)), 0);
     }
 
     @Override
