@@ -43,8 +43,6 @@ public class SDFUnion extends SDFBinaryOperation {
         if (d0 < d.dist) {
             d.dist = d0;
             d.source = s0;
-        } else {
-            d.source = getSecond();
         }
     }
 

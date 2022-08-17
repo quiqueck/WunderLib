@@ -20,6 +20,7 @@ import java.util.function.Function;
 import org.jetbrains.annotations.ApiStatus;
 
 public abstract class SDF {
+
     @FunctionalInterface
     public interface PlaceBlock {
         void place(Float3 pos, EvaluationData ed);
@@ -75,7 +76,6 @@ public abstract class SDF {
 
     protected SDF(int inputCount) {
         inputSlots = new SDF[inputCount];
-        parentSlotIndex = -1;
     }
 
     //---------------------- INPUT SLOTS ----------------------
@@ -104,13 +104,12 @@ public abstract class SDF {
     void setSlotSilent(int idx, SDF sdf) {
         if (inputSlots[idx] != sdf && inputSlots[idx] != null) {
             inputSlots[idx].setParent(null);
-            inputSlots[idx].setParentSlotIndex(-1);
+            inputSlots[idx].setGraphIndexRecursive(0);
         }
 
 
         inputSlots[idx] = sdf == null ? new Empty() : sdf;
         inputSlots[idx].setParent(this);
-        inputSlots[idx].setParentSlotIndex(idx);
         if (idx == 0) {
             inputSlots[idx].setGraphIndexRecursive(graphIndex + 1);
         } else {
@@ -128,6 +127,17 @@ public abstract class SDF {
             if (inputSlots[i] == sdf) return i;
         }
         return -1;
+    }
+
+    public boolean replaceInputSlot(SDF currentSDF, SDF newSDF) {
+        for (int i = 0; i < inputSlots.length; i++) {
+            if (inputSlots[i] == currentSDF) {
+                setSlot(i, newSDF);
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private int setGraphIndexRecursive(int startIndex) {
@@ -166,6 +176,11 @@ public abstract class SDF {
         return null;
     }
 
+
+    public boolean isEmpty() {
+        return false;
+    }
+
     //---------------------- BOUNDING BOX ----------------------
     public Bounds getBoundingBox() {
         Bounds b = Bounds.EMPTY;
@@ -198,7 +213,6 @@ public abstract class SDF {
 
     //---------------------- PARENT HANDLING ----------------------
     private SDF parent;
-    private int parentSlotIndex;
 
     void setParent(SDF parent) {
         this.parent = parent;
@@ -206,10 +220,6 @@ public abstract class SDF {
 
     public SDF getParent() {
         return parent;
-    }
-
-    void setParentSlotIndex(int idx) {
-        this.parentSlotIndex = idx;
     }
 
     //---------------------- EVAlUATION ----------------------

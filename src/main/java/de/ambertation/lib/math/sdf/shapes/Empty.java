@@ -37,4 +37,9 @@ public class Empty extends SDF {
     public Bounds getBoundingBox() {
         return Bounds.EMPTY;
     }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
 }
