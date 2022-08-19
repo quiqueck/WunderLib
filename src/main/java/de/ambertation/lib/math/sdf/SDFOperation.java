@@ -12,7 +12,7 @@ public abstract class SDFOperation extends SDF {
 
     @Override
     public String toString() {
-        return "(" + getFirst() + ")";
+        return "(" + getFirst() + ")" + " [" + graphIndex + "]";
     }
 
     public SDF getFirst() {

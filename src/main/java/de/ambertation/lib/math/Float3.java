@@ -134,9 +134,26 @@ public class Float3 {
         return toBlockPos(x, y, z);
     }
 
+    public Float3 ceil() {
+        return of(Math.ceil(x), Math.ceil(y), Math.ceil(z));
+    }
+
+    public Float3 floor() {
+        return of(Math.floor(x), Math.floor(y), Math.floor(z));
+    }
+
+    public Float3 round() {
+        return of(Math.round(x), Math.round(y), Math.round(z));
+    }
+
+    public Float3 conservative() {
+        return of(conservative(x), conservative(y), conservative(z));
+    }
+
     public Vec3 toVec3() {
         return new Vec3(x, y, z);
     }
+
 
     public double distSquare(Float3 b) {
         return Math.pow(x - b.x, 2) +
@@ -150,23 +167,37 @@ public class Float3 {
                 Math.pow(z - b.getZ(), 2);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Float3 pos = (Float3) o;
-        return Double.compare(pos.x, x) == 0
-                && Double.compare(pos.y, y) == 0
-                && Double.compare(pos.z, z) == 0;
+    public Float3 rotateX(double a) {
+        return Float3.of(
+                x * Math.cos(a) - y * Math.sin(a),
+                x * Math.sin(a) + y * Math.cos(a),
+                z
+        );
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y, z);
+    public Float3 rotateY(double a) {
+        return Float3.of(
+                x * Math.cos(a) + z * Math.sin(a),
+                y,
+                -x * Math.sin(a) + z * Math.cos(a)
+        );
     }
+
+    public Float3 rotateZ(double a) {
+        return Float3.of(
+                x,
+                y * Math.cos(a) - z * Math.sin(a),
+                y * Math.sin(a) + z * Math.cos(a)
+        );
+    }
+
+    public static double conservative(double x) {
+        return x < 0 ? Math.floor(x) : Math.ceil(x);
+    }
+
 
     public static double toBlockPos(double d) {
-        return (int) Math.round(d + 0.5) - 1;
+        return (int) conservative(d); //Math.round(d + 0.5) - 1;
     }
 
     public static BlockPos toBlockPos(Vec3 vec) {
@@ -185,6 +216,23 @@ public class Float3 {
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ")";
     }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Float3 pos = (Float3) o;
+        return Double.compare(pos.x, x) == 0
+                && Double.compare(pos.y, y) == 0
+                && Double.compare(pos.z, z) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z);
+    }
+
 
     public void serializeToNetwork(FriendlyByteBuf buf) {
         buf.writeDouble(x);

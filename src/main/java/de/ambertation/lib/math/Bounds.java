@@ -129,7 +129,8 @@ public class Bounds {
     }
 
     public static Bounds ofBox(Float3 center, Float3 size) {
-        Float3 min = center.sub(size.sub(1).div(2)).blockAligned();
+        size = size.sub(1);
+        Float3 min = center.sub(size.div(2)).conservative();
         return Bounds.of(min, min.add(size));
     }
 

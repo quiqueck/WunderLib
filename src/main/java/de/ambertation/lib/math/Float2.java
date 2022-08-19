@@ -114,6 +114,26 @@ public class Float2 {
                 Math.pow(y - b.getY(), 2);
     }
 
+
+    public Float2 rotate(double a) {
+        return Float2.of(
+                x * Math.cos(a) - y * Math.sin(a),
+                x * Math.sin(a) + y * Math.cos(a)
+        );
+    }
+
+    public Float2 ceil() {
+        return of(Math.ceil(x), Math.ceil(y));
+    }
+
+    public Float2 floor() {
+        return of(Math.floor(x), Math.floor(y));
+    }
+
+    public Float2 round() {
+        return of(Math.round(x), Math.round(y));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

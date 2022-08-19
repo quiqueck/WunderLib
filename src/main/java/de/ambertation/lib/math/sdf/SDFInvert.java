@@ -41,7 +41,7 @@ public class SDFInvert extends SDFOperation {
 
     @Override
     public String toString() {
-        return "!" + getFirst();
+        return "!" + getFirst() + " [" + graphIndex + "]";
     }
 
     @Override

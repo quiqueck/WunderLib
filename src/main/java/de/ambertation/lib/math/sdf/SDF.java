@@ -235,14 +235,14 @@ public abstract class SDF {
     public void evaluate(Bounds box, PlaceBlock callback, VisitBlock visitor) {
         SDF.EvaluationData ed = new SDF.EvaluationData();
         double dist;
-        for (double xx = box.min.x; xx <= box.max.x; xx++) {
-            for (double xy = box.min.y; xy <= box.max.y; xy++) {
-                for (double xz = box.min.z; xz <= box.max.z; xz++) {
+        for (double xx = box.min.x; xx < box.max.x; xx++) {
+            for (double xy = box.min.y; xy < box.max.y; xy++) {
+                for (double xz = box.min.z; xz < box.max.z; xz++) {
                     final Float3 p = Float3.of(xx, xy, xz);
                     this.dist(ed, p);
                     dist = ed.dist();
 
-                    if (dist < 0 && dist > -1) {
+                    if (dist < 0.5 && dist >= -0.5) {
                         callback.place(p, ed);
                         if (visitor != null) visitor.visit(p, ed, true);
                     } else if (visitor != null) visitor.visit(p, ed, false);

@@ -45,6 +45,6 @@ public class Sphere extends BaseShape {
     }
 
     public double getRadius() {
-        return bounds.minExtension() / 2 + 0.5;
+        return bounds.minExtension() / 2;
     }
 }

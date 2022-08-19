@@ -48,4 +48,15 @@ public class Box extends BaseShape {
     public Float3 getSize() {
         return bounds.getSize();
     }
+
+    @Override
+    public Bounds getBoundingBox() {
+//        Bounds local = super.getBoundingBox().moveToCenter(Float3.ZERO);
+//        Bounds fresh = Bounds.of(Float3.ZERO, Float3.ZERO);
+//        for (Bounds.Interpolate i : Bounds.Interpolate.CORNERS) {
+//            fresh = fresh.encapsulate(local.get(i).rotateY(Math.PI / 4).conservative());
+//        }
+//        return fresh.moveToCenter(super.getBoundingBox().getCenter());
+        return super.getBoundingBox();
+    }
 }

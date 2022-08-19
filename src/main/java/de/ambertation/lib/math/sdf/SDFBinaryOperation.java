@@ -8,7 +8,7 @@ public abstract class SDFBinaryOperation extends SDFOperation {
 
     @Override
     public String toString() {
-        return "(" + getFirst() + ", " + getSecond() + ")";
+        return "(" + getFirst() + ", " + getSecond() + ")" + " [" + graphIndex + "]";
     }
 
     public SDF getSecond() {

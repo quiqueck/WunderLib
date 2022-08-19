@@ -18,7 +18,7 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Bounded
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName();
+        return this.getClass().getSimpleName() + " [" + graphIndex + "]";
     }
 
     public Float3 getCenter() {
@@ -30,7 +30,7 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Bounded
     }
 
     @Override
-    public final Bounds getBoundingBox() {
+    public Bounds getBoundingBox() {
         return bounds;
     }
 

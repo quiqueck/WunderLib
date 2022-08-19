@@ -49,6 +49,6 @@ public class SDFIntersection extends SDFBinaryOperation {
 
     @Override
     public String toString() {
-        return "(" + getFirst() + " & " + getSecond() + ")";
+        return "(" + getFirst() + " & " + getSecond() + ")" + " [" + graphIndex + "]";
     }
 }

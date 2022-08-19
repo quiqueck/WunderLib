@@ -29,7 +29,7 @@ public class Empty extends SDF {
 
     @Override
     public String toString() {
-        return "Empty";
+        return "Empty" + " [" + graphIndex + "]";
     }
 
 
