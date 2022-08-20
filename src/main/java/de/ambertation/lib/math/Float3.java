@@ -10,7 +10,12 @@ import net.minecraft.world.phys.Vec3;
 import java.util.Objects;
 
 public class Float3 {
+    public static final double EPSILON = 1.e-10;
     public static final Float3 ZERO = Float3.of(0);
+    public static final Float3 X_AXIS = Float3.of(1, 0, 0);
+    public static final Float3 Y_AXIS = Float3.of(0, 1, 0);
+    public static final Float3 Z_AXIS = Float3.of(0, 0, 1);
+
     public static final Codec<Float3> CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("x").forGetter(o -> (float) o.x),
@@ -67,6 +72,14 @@ public class Float3 {
 
     public Float3 mul(Float3 p) {
         return new Float3(x * p.x, y * p.y, z * p.z);
+    }
+
+    public double dot(Float3 p) {
+        return x * p.x + y * p.y + z * p.z;
+    }
+
+    public Float3 cross(Float3 p) {
+        return Float3.of(y * p.z - z * p.y, z * p.x - x * p.z, x * p.y - y * p.x);
     }
 
     public Float3 square() {
@@ -167,6 +180,10 @@ public class Float3 {
                 Math.pow(z - b.getZ(), 2);
     }
 
+    public Float3 rotate(Quaternion rot) {
+        return rot.rotate(this);
+    }
+
     public Float3 rotateX(double a) {
         return Float3.of(
                 x * Math.cos(a) - y * Math.sin(a),
@@ -223,9 +240,9 @@ public class Float3 {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Float3 pos = (Float3) o;
-        return Double.compare(pos.x, x) == 0
-                && Double.compare(pos.y, y) == 0
-                && Double.compare(pos.z, z) == 0;
+        return Math.abs(pos.x - x) < EPSILON
+                && Math.abs(pos.y - y) < EPSILON
+                && Math.abs(pos.z - z) < EPSILON;
     }
 
     @Override

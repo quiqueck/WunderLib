@@ -139,8 +139,8 @@ public class Float2 {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Float2 pos = (Float2) o;
-        return Double.compare(pos.x, x) == 0
-                && Double.compare(pos.y, y) == 0;
+        return Math.abs(pos.x - x) < Float3.EPSILON
+                && Math.abs(pos.y - y) < Float3.EPSILON;
     }
 
     @Override

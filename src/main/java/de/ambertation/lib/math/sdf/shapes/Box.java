@@ -2,6 +2,7 @@ package de.ambertation.lib.math.sdf.shapes;
 
 import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Quaternion;
 import de.ambertation.lib.math.sdf.SDF;
 
 import com.mojang.serialization.Codec;
@@ -39,9 +40,12 @@ public class Box extends BaseShape {
         super(Bounds.ofBox(center, size), 0);
     }
 
+    public static double angle = 0;
+
     @Override
     public double dist(Float3 pos) {
-        Float3 q = pos.sub(getCenter()).abs().sub(bounds.getHalfSize());
+        Quaternion rot = Quaternion.ofAxisAngle(Float3.Y_AXIS, angle);
+        Float3 q = pos.sub(getCenter()).rotate(rot).abs().sub(bounds.getHalfSize());
         return q.max(0.0).length() + Math.min(Math.max(q.x, Math.max(q.y, q.z)), 0.0);
     }
 
@@ -51,12 +55,13 @@ public class Box extends BaseShape {
 
     @Override
     public Bounds getBoundingBox() {
-//        Bounds local = super.getBoundingBox().moveToCenter(Float3.ZERO);
-//        Bounds fresh = Bounds.of(Float3.ZERO, Float3.ZERO);
-//        for (Bounds.Interpolate i : Bounds.Interpolate.CORNERS) {
-//            fresh = fresh.encapsulate(local.get(i).rotateY(Math.PI / 4).conservative());
-//        }
-//        return fresh.moveToCenter(super.getBoundingBox().getCenter());
-        return super.getBoundingBox();
+        Quaternion rot = Quaternion.ofAxisAngle(Float3.Y_AXIS, angle);
+        Bounds local = super.getBoundingBox().moveToCenter(Float3.ZERO);
+        Bounds fresh = Bounds.of(Float3.ZERO, Float3.ZERO);
+        for (Bounds.Interpolate i : Bounds.Interpolate.CORNERS) {
+            fresh = fresh.encapsulate(local.get(i).rotate(rot).conservative());
+        }
+        return fresh.moveToCenter(super.getBoundingBox().getCenter());
+        //return super.getBoundingBox();
     }
 }
