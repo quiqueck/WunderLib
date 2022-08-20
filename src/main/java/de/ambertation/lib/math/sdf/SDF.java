@@ -242,10 +242,21 @@ public abstract class SDF {
                     this.dist(ed, p);
                     dist = Math.round(ed.dist() * 4) / 4;
 
-                    if (dist < 0.5 - Float3.EPSILON && dist >= -0.5) {
-                        callback.place(p, ed);
-                        if (visitor != null) visitor.visit(p, ed, true);
-                    } else if (visitor != null) visitor.visit(p, ed, false);
+                    boolean didPlace = false;
+                    if (dist <= 0.5 - Float3.EPSILON && dist >= -0.5) {
+                        byte sign = 0;
+
+                        for (Float3 offset : Float3.BLOCK_CORNER_OFFSETS) {
+                            double dd = this.dist(p.add(offset));
+                            if (sign == 0) sign = dd < 0 ? (byte) -1 : (byte) 1;
+                            if ((dd < 0 ? (byte) -1 : (byte) 1) != sign) {
+                                didPlace = true;
+                                callback.place(p, ed);
+                                if (visitor != null) visitor.visit(p, ed, true);
+                            }
+                        }
+                    }
+                    if (!didPlace && visitor != null) visitor.visit(p, ed, false);
                 }
             }
         }

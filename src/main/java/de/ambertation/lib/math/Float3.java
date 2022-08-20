@@ -16,6 +16,17 @@ public class Float3 {
     public static final Float3 Y_AXIS = Float3.of(0, 1, 0);
     public static final Float3 Z_AXIS = Float3.of(0, 0, 1);
 
+    public static final Float3[] BLOCK_CORNER_OFFSETS = {
+            Float3.of(0.5, 0.5, 0.5),
+            Float3.of(0.5, -0.5, 0.5),
+            Float3.of(-0.5, -0.5, 0.5),
+            Float3.of(-0.5, 0.5, 0.5),
+            Float3.of(0.5, 0.5, -0.5),
+            Float3.of(0.5, -0.5, -0.5),
+            Float3.of(-0.5, -0.5, -0.5),
+            Float3.of(-0.5, 0.5, -0.5)
+    };
+
     public static final Codec<Float3> CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("x").forGetter(o -> (float) o.x),
