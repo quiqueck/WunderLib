@@ -154,7 +154,7 @@ public class Float2 {
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ")";
+        return "(" + Float3.toString(x) + ", " + Float3.toString(y) + ")";
     }
 
     public void serializeToNetwork(FriendlyByteBuf buf) {

@@ -129,17 +129,16 @@ public class Bounds {
     }
 
     public static Bounds ofBox(Float3 center, Float3 size) {
-        size = size.sub(1);
         Float3 min = center.sub(size.div(2)).blockAligned();
         return Bounds.of(min, min.add(size));
     }
 
     public Float3 getSize() {
-        return Float3.of(max.x - min.x + 1, max.y - min.y + 1, max.z - min.z + 1);
+        return Float3.of(max.x - min.x, max.y - min.y, max.z - min.z);
     }
 
     public Float3 getHalfSize() {
-        return Float3.of((max.x - min.x + 1) / 2, (max.y - min.y + 1) / 2, (max.z - min.z + 1) / 2);
+        return Float3.of((max.x - min.x) / 2, (max.y - min.y) / 2, (max.z - min.z) / 2);
     }
 
     public boolean isInside(Float3 p) {
@@ -290,9 +289,18 @@ public class Bounds {
         return new Bounds(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
+    public Bounds rotate(Quaternion rot) {
+        Bounds local = moveToCenter(Float3.ZERO);
+        Bounds fresh = Bounds.of(Float3.ZERO, Float3.ZERO);
+        for (Bounds.Interpolate i : Bounds.Interpolate.CORNERS) {
+            fresh = fresh.encapsulate(local.get(i).rotate(rot));
+        }
+        return fresh.moveToCenter(getCenter());
+    }
+
     @Override
     public String toString() {
-        return min.toString() + " -> " + max.toString() + " (c: " + getCenter().toString() + ", s:" + getSize() + ")";
+        return min + " -> " + max + " (c: " + getCenter() + ", s:" + getSize() + ")";
     }
 
 

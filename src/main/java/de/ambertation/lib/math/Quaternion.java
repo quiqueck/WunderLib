@@ -111,6 +111,10 @@ public final class Quaternion {
         return this.mul(p).mul(this.inverted()).v;
     }
 
+    public Float3 unRotate(Float3 p) {
+        return this.inverted().mul(p).mul(this).v;
+    }
+
     public boolean isUnit() {
         return Math.abs(length() - 1) > Float3.EPSILON;
     }
@@ -139,7 +143,8 @@ public final class Quaternion {
 
     @Override
     public String toString() {
-        return "(" + w + " + " + v.x + "i + " + v.y + "j + " + v.z + "k)";
+        return "(" + Float3.toString(w) + " + "
+                + Float3.toString(v.x) + "i + " + Float3.toString(v.y) + "j + " + Float3.toString(v.z) + "k)";
     }
 
     public void serializeToNetwork(FriendlyByteBuf buf) {

@@ -12,6 +12,7 @@ import java.util.Objects;
 public class Float3 {
     public static final double EPSILON = 1.e-10;
     public static final Float3 ZERO = Float3.of(0);
+    public static final Float3 IDENTITY = Float3.of(1);
     public static final Float3 X_AXIS = Float3.of(1, 0, 0);
     public static final Float3 Y_AXIS = Float3.of(0, 1, 0);
     public static final Float3 Z_AXIS = Float3.of(0, 0, 1);
@@ -101,6 +102,10 @@ public class Float3 {
         return new Float3(x + p.x, y + p.y, z + p.z);
     }
 
+    public Float3 add(Vec3 p) {
+        return new Float3(x + p.x, y + p.y, z + p.z);
+    }
+
     public Float3 add(double d) {
         return new Float3(x + d, y + d, z + d);
     }
@@ -122,6 +127,10 @@ public class Float3 {
     }
 
     public Float3 sub(Float3 p) {
+        return new Float3(x - p.x, y - p.y, z - p.z);
+    }
+
+    public Float3 sub(Vec3 p) {
         return new Float3(x - p.x, y - p.y, z - p.z);
     }
 
@@ -195,6 +204,10 @@ public class Float3 {
         return rot.rotate(this);
     }
 
+    public Float3 unRotate(Quaternion rot) {
+        return rot.unRotate(this);
+    }
+
     public Float3 rotateX(double a) {
         return Float3.of(
                 x * Math.cos(a) - y * Math.sin(a),
@@ -241,7 +254,11 @@ public class Float3 {
 
     @Override
     public String toString() {
-        return "(" + x + ", " + y + ", " + z + ")";
+        return "(" + toString(x) + ", " + toString(y) + ", " + toString(z) + ")";
+    }
+
+    public static String toString(double d) {
+        return "" + Math.round(d * 100) / 100.0;
     }
 
 
