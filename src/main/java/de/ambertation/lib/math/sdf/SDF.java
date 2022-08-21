@@ -259,13 +259,13 @@ public abstract class SDF {
                             if ((dd < 0 ? (byte) -1 : (byte) 1) != sign) {
                                 didPlace = true;
                                 callback.place(p, ed);
-                                //if (visitor != null) visitor.visit(p, ed, true);
+                                if (visitor != null) visitor.visit(p, ed, true);
                                 break;
                             }
                             //if (visitor != null) visitor.visit(p.add(offset), new EvaluationData(dd, ed.source), false);
                         }
                     }
-                    //if (!didPlace && visitor != null) visitor.visit(p, ed, false);
+                    if (!didPlace && visitor != null) visitor.visit(p, ed, false);
                 }
             }
         }
