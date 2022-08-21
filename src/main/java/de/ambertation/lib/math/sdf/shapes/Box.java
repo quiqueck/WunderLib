@@ -59,7 +59,7 @@ public class Box extends BaseShape {
         Bounds local = super.getBoundingBox().moveToCenter(Float3.ZERO);
         Bounds fresh = Bounds.of(Float3.ZERO, Float3.ZERO);
         for (Bounds.Interpolate i : Bounds.Interpolate.CORNERS) {
-            fresh = fresh.encapsulate(local.get(i).rotate(rot).conservative());
+            fresh = fresh.encapsulate(local.get(i).rotate(rot));
         }
         return fresh.moveToCenter(super.getBoundingBox().getCenter());
         //return super.getBoundingBox();

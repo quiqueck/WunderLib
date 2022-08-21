@@ -37,7 +37,6 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Bounded
     @Override
     public void setFromBoundingBox(Bounds b) {
         bounds = b;
-        this.emitChangeEvent();
     }
 
     @Override

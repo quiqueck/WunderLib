@@ -13,9 +13,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Function;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -119,7 +117,6 @@ public abstract class SDF {
 
     public void setSlot(int idx, SDF sdf) {
         setSlotSilent(idx, sdf);
-        this.emitChangeEvent();
     }
 
     public int inputSlotIndex(SDF sdf) {
@@ -188,26 +185,6 @@ public abstract class SDF {
             b = b.encapsulate(sdf.getBoundingBox());
         }
         return b;
-    }
-
-    //---------------------- CHANGE EVENTS ----------------------
-    public interface OnChange {
-        void didChange(SDF sdf);
-    }
-
-    private final Set<OnChange> changeEvent = new HashSet<>();
-
-    protected void emitChangeEvent() {
-        if (changeEvent != null) changeEvent.forEach(e -> e.didChange(this));
-        if (parent != null) parent.emitChangeEvent();
-    }
-
-    public void addChangeListener(OnChange listener) {
-        changeEvent.add(listener);
-    }
-
-    public void removeChangeListener(OnChange listener) {
-        changeEvent.remove(listener);
     }
 
 

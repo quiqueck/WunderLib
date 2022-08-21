@@ -134,6 +134,10 @@ public class Float2 {
         return of(Math.round(x), Math.round(y));
     }
 
+    public Float2 conservative() {
+        return of(Float3.conservative(x), Float3.conservative(y));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -223,9 +223,8 @@ public class Float3 {
         return x < 0 ? Math.floor(x) : Math.ceil(x);
     }
 
-
     public static double toBlockPos(double d) {
-        return (int) conservative(d); //Math.round(d + 0.5) - 1;
+        return (int) Math.round(d + 0.5) - 1;
     }
 
     public static BlockPos toBlockPos(Vec3 vec) {

@@ -38,7 +38,6 @@ public class SDFMove extends SDFOperation {
 
     public void setOffset(Float3 c) {
         this.offset = c;
-        this.emitChangeEvent();
     }
 
     @Override
