@@ -240,23 +240,32 @@ public abstract class SDF {
                 for (double xz = box.min.z - 2; xz < box.max.z + 2; xz++) {
                     final Float3 p = Float3.of(xx, xy, xz);
                     this.dist(ed, p);
-                    dist = Math.round(ed.dist() * 4) / 4;
+                    dist = Math.round(ed.dist() * 80) / 80.0;
 
                     boolean didPlace = false;
-                    if (dist <= 0.5 - Float3.EPSILON && dist >= -0.5) {
-                        byte sign = 0;
+                    if (dist <= 0.5 + Float3.EPSILON && dist >= -0.5 - Float3.EPSILON) {
+//                        if (Math.abs(dist) < Float3.EPSILON) {
+//                            callback.place(p, ed);
+//                            if (visitor != null) visitor.visit(p, ed, true);
+//                            continue;
+//                        }
 
+                        byte sign = 0;
                         for (Float3 offset : Float3.BLOCK_CORNER_OFFSETS) {
                             double dd = this.dist(p.add(offset));
+
+                            dd = Math.round(dd * 80) / 80.0;
                             if (sign == 0) sign = dd < 0 ? (byte) -1 : (byte) 1;
                             if ((dd < 0 ? (byte) -1 : (byte) 1) != sign) {
                                 didPlace = true;
                                 callback.place(p, ed);
-                                if (visitor != null) visitor.visit(p, ed, true);
+                                //if (visitor != null) visitor.visit(p, ed, true);
+                                break;
                             }
+                            //if (visitor != null) visitor.visit(p.add(offset), new EvaluationData(dd, ed.source), false);
                         }
                     }
-                    if (!didPlace && visitor != null) visitor.visit(p, ed, false);
+                    //if (!didPlace && visitor != null) visitor.visit(p, ed, false);
                 }
             }
         }

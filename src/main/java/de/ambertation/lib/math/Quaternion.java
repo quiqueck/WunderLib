@@ -3,7 +3,6 @@ package de.ambertation.lib.math;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.Mth;
 
 import java.util.Objects;
 
@@ -96,7 +95,7 @@ public final class Quaternion {
         final double len = lengthSquare();
         if (len < Float3.EPSILON) return ZERO;
 
-        return this.mul(Mth.fastInvSqrt(len));
+        return this.div(Math.sqrt(len));
     }
 
     public Quaternion inverted() {
