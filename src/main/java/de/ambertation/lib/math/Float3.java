@@ -70,6 +70,14 @@ public class Float3 {
         return new Float3(pos.x(), pos.y(), pos.z());
     }
 
+    public static Float3 ofDiscrete(Vec3 pos) {
+        return new Float3(discrete(pos.x()), discrete(pos.y()), discrete(pos.z()));
+    }
+
+    private static double discrete(double d) {
+        return Math.round(d * 10) / 10.0;
+    }
+
     public static Float3 blockAligned(double x, double y, double z) {
         return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
     }

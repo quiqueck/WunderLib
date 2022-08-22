@@ -114,4 +114,11 @@ public class ColorHelper {
         return color;
     }
 
+    public static int blendColors(float t, int c1, int c2) {
+        int r = (int) (t * FastColor.ARGB32.red(c2) + (1 - t) * FastColor.ARGB32.red(c1));
+        int g = (int) (t * FastColor.ARGB32.green(c2) + (1 - t) * FastColor.ARGB32.green(c1));
+        int b = (int) (t * FastColor.ARGB32.blue(c2) + (1 - t) * FastColor.ARGB32.blue(c1));
+        int a = (int) (t * FastColor.ARGB32.alpha(c2) + (1 - t) * FastColor.ARGB32.alpha(c1));
+        return FastColor.ARGB32.color(a, r, g, b);
+    }
 }
