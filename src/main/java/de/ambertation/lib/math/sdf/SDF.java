@@ -217,8 +217,8 @@ public abstract class SDF {
             for (double xy = box.min.y - 2; xy < box.max.y + 2; xy++) {
                 for (double xz = box.min.z - 2; xz < box.max.z + 2; xz++) {
                     final Float3 p = Float3.of(xx, xy, xz);
-                    final Float3 pMid = p;
-                    this.dist(ed, pMid);
+                    final Float3 pMid = p.sub(0.5).blockAligned();
+                    this.dist(ed, p);
                     dist = Math.round(ed.dist() * 80) / 80.0;
 
                     boolean didPlace = false;
@@ -239,15 +239,15 @@ public abstract class SDF {
                             if (sign == 0) sign = dd < 0 ? (byte) -1 : (byte) 1;
                             else if ((dd < 0 ? (byte) -1 : (byte) 1) != sign) {
                                 didPlace = true;
-                                callback.place(pMid.sub(0.5), ed);
-                                if (visitor != null) visitor.visit(pMid, ed, true);
+                                callback.place(pMid, ed);
+                                if (visitor != null) visitor.visit(p, ed, true);
                                 break;
                             }
 //                            if (visitor != null)
 //                                visitor.visit(pd, new EvaluationData(dd, ed.source), false);
                         }
                     }
-                    if (!didPlace && visitor != null) visitor.visit(pMid, ed, false);
+                    if (!didPlace && visitor != null) visitor.visit(p, ed, false);
                 }
             }
         }

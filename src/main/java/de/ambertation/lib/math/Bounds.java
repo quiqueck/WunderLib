@@ -191,7 +191,8 @@ public class Bounds {
     }
 
     public Bounds blockAligned() {
-        return Bounds.of(min.blockAligned(), min.add(getSize()).blockAligned());
+        Float3 m = min.add(0.5).blockAligned();
+        return Bounds.of(m, m.add(getSize().sub(1)).blockAligned());
     }
 
     public Float3 getCenter() {

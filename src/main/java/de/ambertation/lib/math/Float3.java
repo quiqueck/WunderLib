@@ -63,7 +63,7 @@ public class Float3 {
     }
 
     public static Float3 of(BlockPos pos) {
-        return new Float3(pos.getX(), pos.getY(), pos.getZ());
+        return new Float3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5);
     }
 
     public static Float3 of(Vec3 pos) {
@@ -237,7 +237,7 @@ public class Float3 {
     }
 
     public static double toBlockPos(double d) {
-        return (int) Math.round(d + 0.5) - 1;
+        return (int) Math.round(d + 0.5) - 0.5;
     }
 
     public static BlockPos toBlockPos(Vec3 vec) {
@@ -246,9 +246,9 @@ public class Float3 {
 
     public static BlockPos toBlockPos(double x, double y, double z) {
         return new BlockPos(
-                (int) Math.round(x + 0.5) - 1,
-                (int) Math.round(y + 0.5) - 1,
-                (int) Math.round(z + 0.5) - 1
+                toBlockPos(x),
+                toBlockPos(y),
+                toBlockPos(z)
         );
     }
 
