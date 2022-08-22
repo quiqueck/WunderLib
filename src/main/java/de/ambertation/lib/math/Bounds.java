@@ -40,7 +40,7 @@ public class Bounds {
                 MAX_MAX_MAX, MAX_MAX_MIN, MAX_MIN_MAX, MAX_MIN_MIN, CENTER
         };
 
-        private final Float3 t;
+        public final Float3 t;
         public final Byte idx;
 
         private Interpolate(byte idx, float tx, float ty, float tz) {
@@ -129,7 +129,7 @@ public class Bounds {
     }
 
     public static Bounds ofBox(Float3 center, Float3 size) {
-        Float3 min = center.sub(size.div(2)).blockAligned();
+        Float3 min = center.sub(size.div(2));
         return Bounds.of(min, min.add(size));
     }
 

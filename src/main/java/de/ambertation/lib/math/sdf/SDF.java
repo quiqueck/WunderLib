@@ -212,15 +212,17 @@ public abstract class SDF {
     public void evaluate(Bounds box, PlaceBlock callback, VisitBlock visitor) {
         SDF.EvaluationData ed = new SDF.EvaluationData();
         double dist;
+        //System.out.println(box);
         for (double xx = box.min.x - 2; xx < box.max.x + 2; xx++) {
             for (double xy = box.min.y - 2; xy < box.max.y + 2; xy++) {
                 for (double xz = box.min.z - 2; xz < box.max.z + 2; xz++) {
                     final Float3 p = Float3.of(xx, xy, xz);
-                    this.dist(ed, p);
+                    final Float3 pMid = p;
+                    this.dist(ed, pMid);
                     dist = Math.round(ed.dist() * 80) / 80.0;
 
                     boolean didPlace = false;
-                    if (dist <= 0.5 + Float3.EPSILON && dist >= -0.5 - Float3.EPSILON) {
+                    if (dist <= 0.5 && dist >= -0.5) {
 //                        if (Math.abs(dist) < Float3.EPSILON) {
 //                            callback.place(p, ed);
 //                            if (visitor != null) visitor.visit(p, ed, true);
@@ -228,21 +230,24 @@ public abstract class SDF {
 //                        }
 
                         byte sign = 0;
-                        for (Float3 offset : Float3.BLOCK_CORNER_OFFSETS) {
-                            double dd = this.dist(p.add(offset));
+                        for (Bounds.Interpolate offset : Bounds.Interpolate.CORNERS) {
+                            Float3 pd = p.add(offset.t.sub(0.5));
+                            double dd = this.dist(pd);
 
                             dd = Math.round(dd * 80) / 80.0;
+                            // if (Math.abs(dd) < Float3.EPSILON) continue;
                             if (sign == 0) sign = dd < 0 ? (byte) -1 : (byte) 1;
-                            if ((dd < 0 ? (byte) -1 : (byte) 1) != sign) {
+                            else if ((dd < 0 ? (byte) -1 : (byte) 1) != sign) {
                                 didPlace = true;
-                                callback.place(p, ed);
-                                if (visitor != null) visitor.visit(p, ed, true);
+                                callback.place(pMid.sub(0.5), ed);
+                                if (visitor != null) visitor.visit(pMid, ed, true);
                                 break;
                             }
-                            //if (visitor != null) visitor.visit(p.add(offset), new EvaluationData(dd, ed.source), false);
+//                            if (visitor != null)
+//                                visitor.visit(pd, new EvaluationData(dd, ed.source), false);
                         }
                     }
-                    if (!didPlace && visitor != null) visitor.visit(p, ed, false);
+                    if (!didPlace && visitor != null) visitor.visit(pMid, ed, false);
                 }
             }
         }

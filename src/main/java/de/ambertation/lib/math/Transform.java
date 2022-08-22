@@ -108,9 +108,9 @@ public class Transform {
     @Override
     public String toString() {
         return "Transform{" +
-                "center=" + center +
-                ", size=" + size +
-                ", rotation=" + rotation +
+                "c=" + center +
+                ", s=" + size +
+                ", r=" + rotation +
                 '}';
     }
 }

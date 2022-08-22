@@ -53,7 +53,7 @@ public class Box extends BaseShape {
 
     @Override
     public double dist(Float3 pos) {
-        Float3 q = pos.sub(getCenter()).abs().sub(getSize().div(2));
+        Float3 q = pos.sub(getCenter()).abs().sub(getSize().sub(1).div(2));
         return q.max(0.0).length() + Math.min(Math.max(q.x, Math.max(q.y, q.z)), 0.0);
     }
 
@@ -64,7 +64,7 @@ public class Box extends BaseShape {
 
     @Override
     public Float3 getCenter() {
-        return transform.center;
+        return transform.center.blockAligned();
     }
 
     @Override
