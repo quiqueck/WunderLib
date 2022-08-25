@@ -22,14 +22,54 @@ public class Bounds {
     public static final Bounds EMPTY = new Bounds(0, 0, 0, 0, 0, 0);
 
     public static class Interpolate {
-        public static final Interpolate MIN_MIN_MIN = new Interpolate((byte) 0, 0, 0, 0);
-        public static final Interpolate MIN_MIN_MAX = new Interpolate((byte) 1, 0, 0, 1);
-        public static final Interpolate MIN_MAX_MIN = new Interpolate((byte) 2, 0, 1, 0);
-        public static final Interpolate MIN_MAX_MAX = new Interpolate((byte) 3, 0, 1, 1);
-        public static final Interpolate MAX_MAX_MAX = new Interpolate((byte) 4, 1, 1, 1);
-        public static final Interpolate MAX_MAX_MIN = new Interpolate((byte) 5, 1, 1, 0);
-        public static final Interpolate MAX_MIN_MAX = new Interpolate((byte) 6, 1, 0, 1);
-        public static final Interpolate MAX_MIN_MIN = new Interpolate((byte) 7, 1, 0, 0);
+        public static final Interpolate MIN_MIN_MIN = new Interpolate(
+                (byte) 0,
+                0,
+                0,
+                0
+        );//, (byte) 7, (byte) 2, (byte) 1);
+        public static final Interpolate MIN_MIN_MAX = new Interpolate(
+                (byte) 1,
+                0,
+                0,
+                1
+        );//, (byte) 6, (byte) 3, (byte) 0);
+        public static final Interpolate MIN_MAX_MIN = new Interpolate(
+                (byte) 2,
+                0,
+                1,
+                0
+        );//, (byte) 5, (byte) 0, (byte) 3);
+        public static final Interpolate MIN_MAX_MAX = new Interpolate(
+                (byte) 3,
+                0,
+                1,
+                1
+        );//, (byte) 4, (byte) 1, (byte) 2);
+        public static final Interpolate MAX_MAX_MAX = new Interpolate(
+                (byte) 4,
+                1,
+                1,
+                1
+        );//, (byte) 3, (byte) 6, (byte) 5);
+        public static final Interpolate MAX_MAX_MIN = new Interpolate(
+                (byte) 5,
+                1,
+                1,
+                0
+        );//, (byte) 2, (byte) 7, (byte) 4);
+        public static final Interpolate MAX_MIN_MAX = new Interpolate(
+                (byte) 6,
+                1,
+                0,
+                1
+        );//, (byte) 1, (byte) 4, (byte) 7);
+        public static final Interpolate MAX_MIN_MIN = new Interpolate(
+                (byte) 7,
+                1,
+                0,
+                0
+        );//, (byte) 0, (byte) 5, (byte) 6);
         public static final Interpolate[] CORNERS = {
                 MIN_MIN_MIN, MIN_MIN_MAX, MIN_MAX_MIN, MIN_MAX_MAX,
                 MAX_MAX_MAX, MAX_MAX_MIN, MAX_MIN_MAX, MAX_MIN_MIN
@@ -42,10 +82,20 @@ public class Bounds {
 
         public final Float3 t;
         public final Byte idx;
+//        private final Byte ox;
+//        private final Byte oy;
+//        private final Byte oz;
 
-        private Interpolate(byte idx, float tx, float ty, float tz) {
+        private Interpolate(byte idx, float tx, float ty, float tz, byte ox, byte oy, byte oz) {
             t = Float3.of(tx, ty, tz);
             this.idx = idx;
+//            this.ox = ox;
+//            this.oy = oy;
+//            this.oz = oz;
+        }
+
+        private Interpolate(byte idx, float tx, float ty, float tz) {
+            this(idx, tx, ty, tz, idx, idx, idx);
         }
 
         public Interpolate(float tx, float ty, float tz) {
@@ -56,6 +106,27 @@ public class Bounds {
             if (idx >= 0 && idx < CORNERS.length) return CORNERS[(idx + 4) % CORNERS.length];
             if (idx == CENTER.idx) return CENTER;
             return new Interpolate((byte) -1, (float) (1 - t.x), (float) (1 - t.y), (float) (1 - t.z));
+        }
+
+        public Interpolate oppositeX() {
+            if (idx == CENTER.idx) return CENTER;
+            int cx = (CORNERS.length - idx) - 1;
+            //if (cx != ox) System.out.println("X:" + idx + " - " + ox + " vs. " + cx);
+            return CORNERS_AND_CENTER[cx];
+        }
+
+        public Interpolate oppositeY() {
+            if (idx == CENTER.idx) return CENTER;
+            int cy = (1 - ((idx % 4) / 2)) * 2 + (idx % 2) + 4 * (idx / 4);
+            //if (cy != oy) System.out.println("Y:" + idx + " - " + oy + " vs. " + cy);
+            return CORNERS_AND_CENTER[cy];
+        }
+
+        public Interpolate oppositeZ() {
+            if (idx == CENTER.idx) return CENTER;
+            int cz = idx - 2 * Math.abs(idx % 2) + 1;
+            //if (cz != oz) System.out.println("Z:" + idx + " - " + oz + " vs. " + cz);
+            return CORNERS_AND_CENTER[cz];
         }
 
         public Float3 lerp(Float3 min, Float3 max) {

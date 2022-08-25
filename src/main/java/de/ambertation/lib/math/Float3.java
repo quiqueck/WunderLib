@@ -70,14 +70,6 @@ public class Float3 {
         return new Float3(pos.x(), pos.y(), pos.z());
     }
 
-    public static Float3 ofDiscrete(Vec3 pos) {
-        return new Float3(discrete(pos.x()), discrete(pos.y()), discrete(pos.z()));
-    }
-
-    private static double discrete(double d) {
-        return Math.round(d * 10) / 10.0;
-    }
-
     public static Float3 blockAligned(double x, double y, double z) {
         return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
     }
@@ -118,8 +110,16 @@ public class Float3 {
         return new Float3(x + d, y + d, z + d);
     }
 
+    public Float3 add(double dx, double dy, double dz) {
+        return new Float3(x + dx, y + dy, z + dz);
+    }
+
     public Float3 sub(double d) {
         return new Float3(x - d, y - d, z - d);
+    }
+
+    public Float3 sub(double dx, double dy, double dz) {
+        return new Float3(x - dx, y - dy, z - dz);
     }
 
     public Float3 abs() {
@@ -156,6 +156,10 @@ public class Float3 {
 
     public double lengthSquare() {
         return x * x + y * y + z * z;
+    }
+
+    public Float3 project(Float3 unitDirection) {
+        return unitDirection.mul(this.dot(unitDirection));
     }
 
     public Float3 normalized() {

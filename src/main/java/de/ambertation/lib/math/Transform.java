@@ -105,6 +105,10 @@ public class Transform {
         return p.sub(center).unRotate(rotation).div(size);
     }
 
+    public Transform addScale(double sx, double sy, double sz) {
+        return new Transform(center, size.add(sx, sy, sz), rotation);
+    }
+
     @Override
     public String toString() {
         return "Transform{" +

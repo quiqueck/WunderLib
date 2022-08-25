@@ -53,7 +53,7 @@ public class Box extends BaseShape {
 
     @Override
     public double dist(Float3 pos) {
-        Float3 q = pos.sub(getCenter()).abs().sub(getSize().sub(1).div(2));
+        Float3 q = pos.sub(getCenter()).unRotate(transform.rotation).abs().sub(getSize().sub(1).div(2));
         return q.max(0.0).length() + Math.min(Math.max(q.x, Math.max(q.y, q.z)), 0.0);
     }
 
