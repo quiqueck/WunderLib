@@ -109,6 +109,18 @@ public class Transform {
         return new Transform(center, size.add(sx, sy, sz), rotation);
     }
 
+    public Matrix4 asMatrix() {
+        return Matrix4.ofTranslation(center)
+                      .mul(Matrix4.ofRotation(rotation))
+                      .mul(Matrix4.ofScale(size));
+    }
+
+    public Matrix4 asInvertedMatrix() {
+        return Matrix4.ofScale(size.reciprocal())
+                      .mul(Matrix4.ofRotation(rotation.inverted()))
+                      .mul(Matrix4.ofTranslation(center.mul(-1)));
+    }
+
     @Override
     public String toString() {
         return "Transform{" +

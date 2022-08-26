@@ -127,6 +127,10 @@ public final class Quaternion {
         return v.lengthSquare() < Float3.EPSILON;
     }
 
+    public Matrix4 asMatrix() {
+        return Matrix4.ofRotation(this.normalized());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

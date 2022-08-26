@@ -17,16 +17,6 @@ public class Float3 {
     public static final Float3 Y_AXIS = Float3.of(0, 1, 0);
     public static final Float3 Z_AXIS = Float3.of(0, 0, 1);
 
-    public static final Float3[] BLOCK_CORNER_OFFSETS = {
-            Float3.of(0.5, 0.5, 0.5),
-            Float3.of(0.5, -0.5, 0.5),
-            Float3.of(-0.5, -0.5, 0.5),
-            Float3.of(-0.5, 0.5, 0.5),
-            Float3.of(0.5, 0.5, -0.5),
-            Float3.of(0.5, -0.5, -0.5),
-            Float3.of(-0.5, -0.5, -0.5),
-            Float3.of(-0.5, 0.5, -0.5)
-    };
 
     public static final Codec<Float3> CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
@@ -150,6 +140,10 @@ public class Float3 {
         return new Float3(x / d, y / d, z / d);
     }
 
+    public Float3 reciprocal() {
+        return new Float3(1 / x, 1 / y, 1 / z);
+    }
+
     public double length() {
         return Math.sqrt(x * x + y * y + z * z);
     }
@@ -165,6 +159,14 @@ public class Float3 {
     public Float3 normalized() {
         double d = length();
         return new Float3(x / d, y / d, z / d);
+    }
+
+    public Float4 asDirection() {
+        return Float4.ofDirection(this);
+    }
+
+    public Float4 asPoint() {
+        return Float4.ofPoint(this);
     }
 
     public AABB toAABB() {
