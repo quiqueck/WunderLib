@@ -102,9 +102,11 @@ public class Matrix4 {
         newM[M22] = 1;
         newM[M33] = 1;
 
-        newM[M03] = t.x;
-        newM[M13] = t.y;
-        newM[M23] = t.z;
+        if (t != null) {
+            newM[M03] = t.x;
+            newM[M13] = t.y;
+            newM[M23] = t.z;
+        }
 
         return new Matrix4(newM);
     }
@@ -305,5 +307,16 @@ public class Matrix4 {
         sb.append(Float3.toString(m[M33]));
         sb.append("\n");
         return sb.toString();
+    }
+
+    public Float3[] getUnitCubeCorners(boolean blockAligned) {
+        Float3[] corners = new Float3[Bounds.Interpolate.CORNERS.length];
+        for (int i = 0; i < Bounds.Interpolate.CORNERS.length; i++) {
+            Bounds.Interpolate p = Bounds.Interpolate.CORNERS[i];
+            corners[i] = this.transform(Bounds.Interpolate.CORNERS[i].t.sub(0.5));
+            if (blockAligned) corners[i] = corners[i].blockAligned();
+        }
+
+        return corners;
     }
 }

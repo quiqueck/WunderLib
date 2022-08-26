@@ -55,14 +55,16 @@ public class Transform {
 
     public Float3[] getCornersInWorldSpace(boolean blockAligned) {
         Float3[] corners = new Float3[Bounds.Interpolate.CORNERS.length];
-        Bounds localBounds = Bounds.ofBox(Float3.ZERO, size);
         for (int i = 0; i < Bounds.Interpolate.CORNERS.length; i++) {
-            Bounds.Interpolate p = Bounds.Interpolate.CORNERS[i];
-            corners[i] = localBounds.get(p).rotate(rotation).add(center);
+            corners[i] = transform(Bounds.Interpolate.CORNERS[i].t.sub(0.5));
             if (blockAligned) corners[i] = corners[i].blockAligned();
         }
 
         return corners;
+    }
+
+    public Float3[] getCornersInWorldSpace(boolean blockAligned, Matrix4 toWorldMatrix) {
+        return toWorldMatrix.mul(asMatrix()).getUnitCubeCorners(blockAligned);
     }
 
 
