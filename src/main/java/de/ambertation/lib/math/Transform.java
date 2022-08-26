@@ -33,6 +33,10 @@ public class Transform {
         return new Transform(center, size, Quaternion.IDENTITY);
     }
 
+    public static Transform ofTranslation(Float3 center) {
+        return new Transform(center, Float3.IDENTITY, Quaternion.IDENTITY);
+    }
+
     public static Transform of(Bounds b) {
         return new Transform(b.getCenter(), b.getSize(), Quaternion.IDENTITY);
     }

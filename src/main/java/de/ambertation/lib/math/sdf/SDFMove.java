@@ -2,6 +2,7 @@ package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Transform;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -53,5 +54,10 @@ public class SDFMove extends SDFOperation {
     @Override
     public Bounds getBoundingBox() {
         return getFirst().getBoundingBox().move(offset);
+    }
+
+    @Override
+    public Transform getLocalTransform() {
+        return Transform.ofTranslation(offset);
     }
 }

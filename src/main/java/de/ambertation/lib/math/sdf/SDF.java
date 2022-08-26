@@ -3,6 +3,8 @@ package de.ambertation.lib.math.sdf;
 import de.ambertation.lib.WunderLib;
 import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Matrix4;
+import de.ambertation.lib.math.Transform;
 import de.ambertation.lib.math.sdf.shapes.*;
 
 import com.mojang.serialization.Codec;
@@ -74,6 +76,20 @@ public abstract class SDF {
 
     protected SDF(int inputCount) {
         inputSlots = new SDF[inputCount];
+    }
+
+    //---------------------- TRANSFORMS ----------------------
+    public Transform getLocalTransform() {
+        return Transform.IDENTITY;
+    }
+
+    public Matrix4 getWorldTransformMatrix() {
+        return getParentTransformMatrix().mul(getLocalTransform().asMatrix());
+    }
+
+    public Matrix4 getParentTransformMatrix() {
+        if (parent == null) return Matrix4.IDENTITY;
+        return parent.getWorldTransformMatrix();
     }
 
     //---------------------- INPUT SLOTS ----------------------

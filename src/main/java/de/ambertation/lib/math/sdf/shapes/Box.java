@@ -78,4 +78,14 @@ public class Box extends BaseShape {
         System.out.println("         -> " + b.rotate(transform.rotation.inverted()));
         //super.setFromBoundingBox(b.rotate(rotation.inverted()));
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " " + transform.toString();
+    }
+
+    @Override
+    public Transform getLocalTransform() {
+        return transform;
+    }
 }
