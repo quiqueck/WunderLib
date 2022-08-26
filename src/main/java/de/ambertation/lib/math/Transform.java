@@ -92,11 +92,6 @@ public class Transform {
         return new Transform(center, size, this.rotation.mul(rotation));
     }
 
-    public Transform transformBy(Transform t) {
-        if (t == null) return t;
-        return new Transform(center.add(t.center), size.mul(t.size), this.rotation.mul(t.rotation));
-    }
-
     public Float3 transform(Float3 p) {
         return p.mul(size).rotate(rotation).add(center);
     }

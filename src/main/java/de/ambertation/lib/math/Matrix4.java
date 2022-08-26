@@ -145,7 +145,22 @@ public class Matrix4 {
 
     public Matrix4 transposed() {
         double[] newM = new double[16];
-
+        newM[M00] = m[M00];
+        newM[M01] = m[M10];
+        newM[M02] = m[M20];
+        newM[M03] = m[M30];
+        newM[M10] = m[M01];
+        newM[M11] = m[M11];
+        newM[M12] = m[M21];
+        newM[M13] = m[M31];
+        newM[M20] = m[M02];
+        newM[M21] = m[M12];
+        newM[M22] = m[M22];
+        newM[M23] = m[M32];
+        newM[M30] = m[M03];
+        newM[M31] = m[M13];
+        newM[M32] = m[M23];
+        newM[M33] = m[M33];
         return new Matrix4(newM);
     }
 
@@ -231,23 +246,64 @@ public class Matrix4 {
         //http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
         final double iDet = 1 / det;
         double[] newM = new double[16];
-        newM[M00] = (newM[M12] * newM[M23] * newM[M31] - newM[M13] * newM[M22] * newM[M31] + newM[M13] * newM[M21] * newM[M32] - newM[M11] * newM[M23] * newM[M32] - newM[M12] * newM[M21] * newM[M33] + newM[M11] * newM[M22] * newM[M33]) * iDet;
-        newM[M01] = (newM[M03] * newM[M22] * newM[M31] - newM[M02] * newM[M23] * newM[M31] - newM[M03] * newM[M21] * newM[M32] + newM[M01] * newM[M23] * newM[M32] + newM[M02] * newM[M21] * newM[M33] - newM[M01] * newM[M22] * newM[M33]) * iDet;
-        newM[M02] = (newM[M02] * newM[M13] * newM[M31] - newM[M03] * newM[M12] * newM[M31] + newM[M03] * newM[M11] * newM[M32] - newM[M01] * newM[M13] * newM[M32] - newM[M02] * newM[M11] * newM[M33] + newM[M01] * newM[M12] * newM[M33]) * iDet;
-        newM[M03] = (newM[M03] * newM[M12] * newM[M21] - newM[M02] * newM[M13] * newM[M21] - newM[M03] * newM[M11] * newM[M22] + newM[M01] * newM[M13] * newM[M22] + newM[M02] * newM[M11] * newM[M23] - newM[M01] * newM[M12] * newM[M23]) * iDet;
-        newM[M10] = (newM[M13] * newM[M22] * newM[M30] - newM[M12] * newM[M23] * newM[M30] - newM[M13] * newM[M20] * newM[M32] + newM[M10] * newM[M23] * newM[M32] + newM[M12] * newM[M20] * newM[M33] - newM[M10] * newM[M22] * newM[M33]) * iDet;
-        newM[M11] = (newM[M02] * newM[M23] * newM[M30] - newM[M03] * newM[M22] * newM[M30] + newM[M03] * newM[M20] * newM[M32] - newM[M00] * newM[M23] * newM[M32] - newM[M02] * newM[M20] * newM[M33] + newM[M00] * newM[M22] * newM[M33]) * iDet;
-        newM[M12] = (newM[M03] * newM[M12] * newM[M30] - newM[M02] * newM[M13] * newM[M30] - newM[M03] * newM[M10] * newM[M32] + newM[M00] * newM[M13] * newM[M32] + newM[M02] * newM[M10] * newM[M33] - newM[M00] * newM[M12] * newM[M33]) * iDet;
-        newM[M13] = (newM[M02] * newM[M13] * newM[M20] - newM[M03] * newM[M12] * newM[M20] + newM[M03] * newM[M10] * newM[M22] - newM[M00] * newM[M13] * newM[M22] - newM[M02] * newM[M10] * newM[M23] + newM[M00] * newM[M12] * newM[M23]) * iDet;
-        newM[M20] = (newM[M11] * newM[M23] * newM[M30] - newM[M13] * newM[M21] * newM[M30] + newM[M13] * newM[M20] * newM[M31] - newM[M10] * newM[M23] * newM[M31] - newM[M11] * newM[M20] * newM[M33] + newM[M10] * newM[M21] * newM[M33]) * iDet;
-        newM[M21] = (newM[M03] * newM[M21] * newM[M30] - newM[M01] * newM[M23] * newM[M30] - newM[M03] * newM[M20] * newM[M31] + newM[M00] * newM[M23] * newM[M31] + newM[M01] * newM[M20] * newM[M33] - newM[M00] * newM[M21] * newM[M33]) * iDet;
-        newM[M22] = (newM[M01] * newM[M13] * newM[M30] - newM[M03] * newM[M11] * newM[M30] + newM[M03] * newM[M10] * newM[M31] - newM[M00] * newM[M13] * newM[M31] - newM[M01] * newM[M10] * newM[M33] + newM[M00] * newM[M11] * newM[M33]) * iDet;
-        newM[M23] = (newM[M03] * newM[M11] * newM[M20] - newM[M01] * newM[M13] * newM[M20] - newM[M03] * newM[M10] * newM[M21] + newM[M00] * newM[M13] * newM[M21] + newM[M01] * newM[M10] * newM[M23] - newM[M00] * newM[M11] * newM[M23]) * iDet;
-        newM[M30] = (newM[M12] * newM[M21] * newM[M30] - newM[M11] * newM[M22] * newM[M30] - newM[M12] * newM[M20] * newM[M31] + newM[M10] * newM[M22] * newM[M31] + newM[M11] * newM[M20] * newM[M32] - newM[M10] * newM[M21] * newM[M32]) * iDet;
-        newM[M31] = (newM[M01] * newM[M22] * newM[M30] - newM[M02] * newM[M21] * newM[M30] + newM[M02] * newM[M20] * newM[M31] - newM[M00] * newM[M22] * newM[M31] - newM[M01] * newM[M20] * newM[M32] + newM[M00] * newM[M21] * newM[M32]) * iDet;
-        newM[M32] = (newM[M02] * newM[M11] * newM[M30] - newM[M01] * newM[M12] * newM[M30] - newM[M02] * newM[M10] * newM[M31] + newM[M00] * newM[M12] * newM[M31] + newM[M01] * newM[M10] * newM[M32] - newM[M00] * newM[M11] * newM[M32]) * iDet;
-        newM[M33] = (newM[M01] * newM[M12] * newM[M20] - newM[M02] * newM[M11] * newM[M20] + newM[M02] * newM[M10] * newM[M21] - newM[M00] * newM[M12] * newM[M21] - newM[M01] * newM[M10] * newM[M22] + newM[M00] * newM[M11] * newM[M22]) * iDet;
+        newM[M00] = (m[M12] * m[M23] * m[M31] - m[M13] * m[M22] * m[M31] + m[M13] * m[M21] * m[M32] - m[M11] * m[M23] * m[M32] - m[M12] * m[M21] * m[M33] + m[M11] * m[M22] * m[M33]) * iDet;
+        newM[M01] = (m[M03] * m[M22] * m[M31] - m[M02] * m[M23] * m[M31] - m[M03] * m[M21] * m[M32] + m[M01] * m[M23] * m[M32] + m[M02] * m[M21] * m[M33] - m[M01] * m[M22] * m[M33]) * iDet;
+        newM[M02] = (m[M02] * m[M13] * m[M31] - m[M03] * m[M12] * m[M31] + m[M03] * m[M11] * m[M32] - m[M01] * m[M13] * m[M32] - m[M02] * m[M11] * m[M33] + m[M01] * m[M12] * m[M33]) * iDet;
+        newM[M03] = (m[M03] * m[M12] * m[M21] - m[M02] * m[M13] * m[M21] - m[M03] * m[M11] * m[M22] + m[M01] * m[M13] * m[M22] + m[M02] * m[M11] * m[M23] - m[M01] * m[M12] * m[M23]) * iDet;
+        newM[M10] = (m[M13] * m[M22] * m[M30] - m[M12] * m[M23] * m[M30] - m[M13] * m[M20] * m[M32] + m[M10] * m[M23] * m[M32] + m[M12] * m[M20] * m[M33] - m[M10] * m[M22] * m[M33]) * iDet;
+        newM[M11] = (m[M02] * m[M23] * m[M30] - m[M03] * m[M22] * m[M30] + m[M03] * m[M20] * m[M32] - m[M00] * m[M23] * m[M32] - m[M02] * m[M20] * m[M33] + m[M00] * m[M22] * m[M33]) * iDet;
+        newM[M12] = (m[M03] * m[M12] * m[M30] - m[M02] * m[M13] * m[M30] - m[M03] * m[M10] * m[M32] + m[M00] * m[M13] * m[M32] + m[M02] * m[M10] * m[M33] - m[M00] * m[M12] * m[M33]) * iDet;
+        newM[M13] = (m[M02] * m[M13] * m[M20] - m[M03] * m[M12] * m[M20] + m[M03] * m[M10] * m[M22] - m[M00] * m[M13] * m[M22] - m[M02] * m[M10] * m[M23] + m[M00] * m[M12] * m[M23]) * iDet;
+        newM[M20] = (m[M11] * m[M23] * m[M30] - m[M13] * m[M21] * m[M30] + m[M13] * m[M20] * m[M31] - m[M10] * m[M23] * m[M31] - m[M11] * m[M20] * m[M33] + m[M10] * m[M21] * m[M33]) * iDet;
+        newM[M21] = (m[M03] * m[M21] * m[M30] - m[M01] * m[M23] * m[M30] - m[M03] * m[M20] * m[M31] + m[M00] * m[M23] * m[M31] + m[M01] * m[M20] * m[M33] - m[M00] * m[M21] * m[M33]) * iDet;
+        newM[M22] = (m[M01] * m[M13] * m[M30] - m[M03] * m[M11] * m[M30] + m[M03] * m[M10] * m[M31] - m[M00] * m[M13] * m[M31] - m[M01] * m[M10] * m[M33] + m[M00] * m[M11] * m[M33]) * iDet;
+        newM[M23] = (m[M03] * m[M11] * m[M20] - m[M01] * m[M13] * m[M20] - m[M03] * m[M10] * m[M21] + m[M00] * m[M13] * m[M21] + m[M01] * m[M10] * m[M23] - m[M00] * m[M11] * m[M23]) * iDet;
+        newM[M30] = (m[M12] * m[M21] * m[M30] - m[M11] * m[M22] * m[M30] - m[M12] * m[M20] * m[M31] + m[M10] * m[M22] * m[M31] + m[M11] * m[M20] * m[M32] - m[M10] * m[M21] * m[M32]) * iDet;
+        newM[M31] = (m[M01] * m[M22] * m[M30] - m[M02] * m[M21] * m[M30] + m[M02] * m[M20] * m[M31] - m[M00] * m[M22] * m[M31] - m[M01] * m[M20] * m[M32] + m[M00] * m[M21] * m[M32]) * iDet;
+        newM[M32] = (m[M02] * m[M11] * m[M30] - m[M01] * m[M12] * m[M30] - m[M02] * m[M10] * m[M31] + m[M00] * m[M12] * m[M31] + m[M01] * m[M10] * m[M32] - m[M00] * m[M11] * m[M32]) * iDet;
+        newM[M33] = (m[M01] * m[M12] * m[M20] - m[M02] * m[M11] * m[M20] + m[M02] * m[M10] * m[M21] - m[M00] * m[M12] * m[M21] - m[M01] * m[M10] * m[M22] + m[M00] * m[M11] * m[M22]) * iDet;
 
         return new Matrix4(newM);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Float3.toString(m[M00]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M01]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M02]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M03]));
+        sb.append("\n");
+
+        sb.append(Float3.toString(m[M10]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M11]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M12]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M13]));
+        sb.append("\n");
+
+        sb.append(Float3.toString(m[M20]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M21]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M22]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M23]));
+        sb.append("\n");
+
+        sb.append(Float3.toString(m[M30]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M31]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M32]));
+        sb.append("\t, ");
+        sb.append(Float3.toString(m[M33]));
+        sb.append("\n");
+        return sb.toString();
     }
 }
