@@ -95,4 +95,8 @@ public class Box extends BaseShape implements Transformable {
     public Float3[] getCornersInWorldSpace(boolean blockAligned, Transform transform) {
         return transform.getCornersInWorldSpace(blockAligned, getParentTransformMatrix());
     }
+
+    public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform) {
+        return transform.getCornerInWorldSpace(corner, blockAligned, getParentTransformMatrix());
+    }
 }

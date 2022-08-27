@@ -312,11 +312,13 @@ public class Matrix4 {
     public Float3[] getUnitCubeCorners(boolean blockAligned) {
         Float3[] corners = new Float3[Bounds.Interpolate.CORNERS.length];
         for (int i = 0; i < Bounds.Interpolate.CORNERS.length; i++) {
-            Bounds.Interpolate p = Bounds.Interpolate.CORNERS[i];
-            corners[i] = this.transform(Bounds.Interpolate.CORNERS[i].t.sub(0.5));
-            if (blockAligned) corners[i] = corners[i].blockAligned();
+            corners[i] = getUnitCubeCorner(Bounds.Interpolate.CORNERS[i], blockAligned);
         }
 
         return corners;
+    }
+
+    public Float3 getUnitCubeCorner(Bounds.Interpolate corner, boolean blockAligned) {
+        return this.transform(Bounds.Interpolate.CORNERS[corner.idx].t.sub(0.5)).align(blockAligned);
     }
 }

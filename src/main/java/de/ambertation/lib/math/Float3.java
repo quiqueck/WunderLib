@@ -68,6 +68,17 @@ public class Float3 {
         return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
     }
 
+    /**
+     * Will BlockAlign this position if <i>toBlock</i> is <i>true</i>.
+     *
+     * @param toBlock if <i>true</i> the result is a block-Aligned ({@link #blockAligned()} position. Otherwise
+     *                the uncahnged position is returned
+     * @return The same position or the block-Aligned position.
+     */
+    public Float3 align(boolean toBlock) {
+        return toBlock ? new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z)) : this;
+    }
+
     public Float3 div(Float3 p) {
         return new Float3(x / p.x, y / p.y, z / p.z);
     }

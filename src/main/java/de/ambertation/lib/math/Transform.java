@@ -75,6 +75,10 @@ public class Transform {
         return toWorldMatrix.mul(asMatrix()).getUnitCubeCorners(blockAligned);
     }
 
+    public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Matrix4 toWorldMatrix) {
+        return toWorldMatrix.mul(asMatrix()).getUnitCubeCorner(corner, blockAligned);
+    }
+
 
     public Transform translate(Float3 offset) {
         if (offset == null) return this;
