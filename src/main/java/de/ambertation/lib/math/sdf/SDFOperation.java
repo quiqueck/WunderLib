@@ -1,9 +1,6 @@
 package de.ambertation.lib.math.sdf;
 
-import de.ambertation.lib.math.Bounds;
-import de.ambertation.lib.math.Float3;
-import de.ambertation.lib.math.Quaternion;
-import de.ambertation.lib.math.Transform;
+import de.ambertation.lib.math.*;
 import de.ambertation.lib.math.sdf.interfaces.Rotatable;
 import de.ambertation.lib.math.sdf.interfaces.Transformable;
 
@@ -49,10 +46,11 @@ public abstract class SDFOperation extends SDF implements Transformable, Rotatab
     }
 
     public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform) {
+        Bounds b = getLocalBoundingBox(Matrix4.IDENTITY);
         return getParentTransformMatrix().mul(transform.asMatrix())
                                          .transform(blockAligned
-                                                 ? getLocalBoundingBox().getBlockAligned(corner)
-                                                 : getLocalBoundingBox().get(corner));
+                                                 ? b.getBlockAligned(corner)
+                                                 : b.get(corner));
     }
 
     @Override

@@ -1,9 +1,6 @@
 package de.ambertation.lib.math.sdf.shapes;
 
-import de.ambertation.lib.math.Bounds;
-import de.ambertation.lib.math.Float3;
-import de.ambertation.lib.math.Quaternion;
-import de.ambertation.lib.math.Transform;
+import de.ambertation.lib.math.*;
 import de.ambertation.lib.math.sdf.SDF;
 import de.ambertation.lib.math.sdf.interfaces.MaterialProvider;
 import de.ambertation.lib.math.sdf.interfaces.Transformable;
@@ -37,8 +34,8 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Transfo
     }
 
     @Override
-    public Bounds getLocalBoundingBox() {
-        return transform.getBoundingBoxWorldSpace();
+    public Bounds getLocalBoundingBox(Matrix4 m) {
+        return transform.getBoundingBoxWorldSpace(getLocalTransform().asInvertedMatrix().mul(m));
     }
 
     @Override

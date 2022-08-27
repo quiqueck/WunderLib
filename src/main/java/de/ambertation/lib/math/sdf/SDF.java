@@ -2,6 +2,7 @@ package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.WunderLib;
 import de.ambertation.lib.math.*;
+import de.ambertation.lib.math.sdf.interfaces.Transformable;
 import de.ambertation.lib.math.sdf.shapes.*;
 
 import com.mojang.serialization.Codec;
@@ -222,10 +223,14 @@ public abstract class SDF {
         return b;
     }
 
-    public Bounds getLocalBoundingBox() {
+    public Bounds getLocalBoundingBox(Matrix4 m) {
         Bounds b = Bounds.EMPTY;
+
         for (SDF sdf : inputSlots) {
-            b = b.encapsulate(sdf.getLocalBoundingBox());
+            Matrix4 mm = (sdf instanceof Transformable tf /*&& tf.isOperation()*/) ? tf.getLocalTransform()
+                                                                                       .asMatrix()
+                                                                                       .mul(m) : m;
+            b = b.encapsulate(sdf.getLocalBoundingBox(mm));
         }
         return b;
     }
