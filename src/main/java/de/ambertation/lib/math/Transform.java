@@ -42,7 +42,7 @@ public class Transform {
     }
 
     public Bounds getBoundingBoxWorldSpace() {
-        return Bounds.ofBox(center, size).rotate(rotation);
+        return getBoundingBoxWorldSpace(Matrix4.IDENTITY);//Bounds.ofBox(center, size).rotate(rotation);
     }
 
     public Bounds getBoundingBoxWorldSpace(Matrix4 parentTransform) {
