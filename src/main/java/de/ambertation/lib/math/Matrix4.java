@@ -243,7 +243,7 @@ public class Matrix4 {
 
     public Matrix4 inverted() {
         final double det = det();
-        if (Math.abs(Math.abs(det()) - 1) < Float3.EPSILON) return transposed();
+        //if (Math.abs(Math.abs(det()) - 1) < Float3.EPSILON) return transposed();
 
         //http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
         final double iDet = 1 / det;

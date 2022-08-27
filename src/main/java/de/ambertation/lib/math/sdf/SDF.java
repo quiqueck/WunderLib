@@ -1,10 +1,7 @@
 package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.WunderLib;
-import de.ambertation.lib.math.Bounds;
-import de.ambertation.lib.math.Float3;
-import de.ambertation.lib.math.Matrix4;
-import de.ambertation.lib.math.Transform;
+import de.ambertation.lib.math.*;
 import de.ambertation.lib.math.sdf.shapes.*;
 
 import com.mojang.serialization.Codec;
@@ -18,6 +15,7 @@ import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 import java.util.Objects;
 import java.util.function.Function;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class SDF {
 
@@ -79,6 +77,27 @@ public abstract class SDF {
     }
 
     //---------------------- TRANSFORMS ----------------------
+    private Matrix4 rootTransform;
+
+    public void setRootTransform(Matrix4 m) {
+        if (parent == null) {
+            rootTransform = m.mul(Matrix4.ofRotation(Quaternion.ofAxisAngle(
+                    Float3.Y_AXIS,
+                    Math.toRadians(30)
+            )));
+        } else {
+            parent.setRootTransform(m);
+        }
+    }
+
+    @NotNull
+    public Matrix4 getRootTransform() {
+        if (parent == null) {
+            return rootTransform == null ? Matrix4.IDENTITY : rootTransform;
+        }
+        return parent.getRootTransform();
+    }
+
     public Transform getLocalTransform() {
         return Transform.IDENTITY;
     }
@@ -88,7 +107,7 @@ public abstract class SDF {
     }
 
     public Matrix4 getParentTransformMatrix() {
-        if (parent == null) return Matrix4.IDENTITY;
+        if (parent == null) return rootTransform == null ? Matrix4.IDENTITY : rootTransform;
         return parent.getWorldTransformMatrix();
     }
 
@@ -216,6 +235,8 @@ public abstract class SDF {
     }
 
     //---------------------- EVAlUATION ----------------------
+
+
     public void dist(EvaluationData d, Float3 pos) {
         d.dist = dist(pos);
         d.source = this;
@@ -290,7 +311,6 @@ public abstract class SDF {
         register(registry, "intersect", SDFIntersection.CODEC);
         register(registry, "dif", SDFDifference.CODEC);
         register(registry, "invert", SDFInvert.CODEC);
-        register(registry, "move", SDFMove.CODEC);
 
         register(registry, "empty", Empty.CODEC);
         register(registry, "sphere", Sphere.CODEC);

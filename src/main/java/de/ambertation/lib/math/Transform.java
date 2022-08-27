@@ -45,6 +45,14 @@ public class Transform {
         return Bounds.ofBox(center, size).rotate(rotation);
     }
 
+    public Bounds getBoundingBoxWorldSpace(Matrix4 parentTransform) {
+        Bounds b = Bounds.EMPTY;
+        for (Float3 c : getCornersInWorldSpace(false, parentTransform)) {
+            b = b.encapsulate(c);
+        }
+        return b;
+    }
+
     public Bounds getBoundingBoxUnrotated() {
         return Bounds.ofBox(center, size);
     }

@@ -5,6 +5,7 @@ import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.Quaternion;
 import de.ambertation.lib.math.Transform;
 import de.ambertation.lib.math.sdf.SDF;
+import de.ambertation.lib.math.sdf.interfaces.Transformable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -13,7 +14,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 import org.jetbrains.annotations.NotNull;
 
 // https://iquilezles.org/articles/distfunctions/
-public class Box extends BaseShape {
+public class Box extends BaseShape implements Transformable {
     public static final Codec<Box> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
@@ -53,6 +54,7 @@ public class Box extends BaseShape {
 
     @Override
     public double dist(Float3 pos) {
+        pos = getParentTransformMatrix().inverted().transform(pos);
         Float3 q = pos.sub(getCenter()).unRotate(transform.rotation).abs().sub(getSize().sub(1).div(2));
         return q.max(0.0).length() + Math.min(Math.max(q.x, Math.max(q.y, q.z)), 0.0);
     }
@@ -69,7 +71,7 @@ public class Box extends BaseShape {
 
     @Override
     public Bounds getBoundingBox() {
-        return transform.getBoundingBoxWorldSpace();
+        return transform.getBoundingBoxWorldSpace(getParentTransformMatrix());
     }
 
     @Override
@@ -87,5 +89,10 @@ public class Box extends BaseShape {
     @Override
     public Transform getLocalTransform() {
         return transform;
+    }
+
+    @Override
+    public Float3[] getCornersInWorldSpace(boolean blockAligned, Transform transform) {
+        return transform.getCornersInWorldSpace(blockAligned, getParentTransformMatrix());
     }
 }

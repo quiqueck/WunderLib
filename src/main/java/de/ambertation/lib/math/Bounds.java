@@ -19,7 +19,14 @@ public class Bounds {
             )
             .apply(instance, Bounds::of)
     );
-    public static final Bounds EMPTY = new Bounds(0, 0, 0, 0, 0, 0);
+    public static final Bounds EMPTY = new Bounds(
+            Integer.MIN_VALUE,
+            Integer.MIN_VALUE,
+            Integer.MIN_VALUE,
+            Integer.MIN_VALUE,
+            Integer.MIN_VALUE,
+            Integer.MIN_VALUE
+    );
 
     public static class Interpolate {
         public static final Interpolate MIN_MIN_MIN = new Interpolate(
@@ -174,12 +181,25 @@ public class Bounds {
         this.max = Float3.of(Math.max(lx, hx), Math.max(ly, hy), Math.max(lz, hz));
     }
 
+    public boolean empty() {
+        return min.x == Integer.MIN_VALUE
+                && min.y == Integer.MIN_VALUE
+                && min.z == Integer.MIN_VALUE
+                && max.x == Integer.MIN_VALUE
+                && max.y == Integer.MIN_VALUE
+                && max.z == Integer.MIN_VALUE;
+    }
+
     public static Bounds of(BoundingBox box) {
         return new Bounds(box.minX(), box.minY(), box.minZ(), box.maxX(), box.maxY(), box.maxZ());
     }
 
     public static Bounds of(BlockPos pos) {
         return new Bounds(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static Bounds of(Float3 pos) {
+        return new Bounds(pos.x, pos.y, pos.z, pos.x, pos.y, pos.z);
     }
 
     public static Bounds of(Float3 min, Float3 max) {
@@ -221,6 +241,9 @@ public class Bounds {
     }
 
     public Bounds encapsulate(Bounds bounds) {
+        if (empty()) return bounds;
+        if (bounds.empty()) return this;
+
         return new Bounds(
                 Math.min(this.min.x, bounds.min.x),
                 Math.min(this.min.y, bounds.min.y),
@@ -232,6 +255,7 @@ public class Bounds {
     }
 
     public Bounds encapsulate(BlockPos blockPos) {
+        if (empty()) return Bounds.of(blockPos);
         return new Bounds(
                 Math.min(this.min.x, blockPos.getX()),
                 Math.min(this.min.y, blockPos.getY()),
@@ -243,6 +267,7 @@ public class Bounds {
     }
 
     public Bounds encapsulate(Float3 p) {
+        if (empty()) return Bounds.of(p);
         return new Bounds(
                 Math.min(this.min.x, p.x),
                 Math.min(this.min.y, p.y),
@@ -372,7 +397,7 @@ public class Bounds {
 
     @Override
     public String toString() {
-        return min + " -> " + max + " (c: " + getCenter() + ", s:" + getSize() + ")";
+        return empty() ? "EMPTY" : min + " -> " + max + " (c: " + getCenter() + ", s:" + getSize() + ")";
     }
 
 
