@@ -84,7 +84,7 @@ public abstract class SDF {
         if (parent == null) {
             rootTransform = m.mul(Matrix4.ofRotation(Quaternion.ofAxisAngle(
                     Float3.Y_AXIS,
-                    Math.toRadians(30)
+                    Math.toRadians(60 + 90)
             )));
         } else {
             parent.setRootTransform(m);
