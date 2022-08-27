@@ -1,18 +1,19 @@
 package de.ambertation.lib.math.sdf.shapes;
 
-import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Transform;
 import de.ambertation.lib.math.sdf.SDF;
+import de.ambertation.lib.math.sdf.interfaces.Rotatable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
 
 //based on https://iquilezles.org/articles/ellipsoids/
-public class Ellipsoid extends BaseShape {
+public class Ellipsoid extends BaseShape implements Rotatable {
     public static final Codec<Ellipsoid> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
-                    Bounds.CODEC.fieldOf("bounds").forGetter(BaseShape::getBoundingBox),
+                    Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     Codec.INT.fieldOf("material").orElse(0).forGetter(BaseShape::getMaterialIndex)
             )
             .apply(instance, Ellipsoid::new)
@@ -27,21 +28,23 @@ public class Ellipsoid extends BaseShape {
 
 
     //-------------------------------------------------------------------------------
-    public Ellipsoid(Bounds b, int matIndex) {
-        super(b, matIndex);
+    public Ellipsoid(Transform t, int matIndex) {
+        super(t, matIndex);
     }
 
-    public Ellipsoid(Bounds b) {
-        this(b, 0);
+    public Ellipsoid(Transform t) {
+        this(t, 0);
     }
 
     public Ellipsoid(Float3 center, Float3 size) {
-        super(Bounds.ofBox(center, size), 0);
+        this(Transform.of(center, size), 0);
     }
 
     @Override
     public double dist(Float3 pos) {
-        Float3 size = bounds.getSize();
+        pos = getParentTransformMatrix().inverted().transform(pos);
+        
+        Float3 size = getSize().sub(1);
         pos = pos.sub(getCenter());
         double k1 = pos.div(size).length();
         double k2 = pos.div(size.square()).length();
@@ -50,8 +53,7 @@ public class Ellipsoid extends BaseShape {
     }
 
     public Float3 getSize() {
-        return bounds.getSize();
+        return transform.size;
     }
-
 }
 

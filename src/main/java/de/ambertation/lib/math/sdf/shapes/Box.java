@@ -1,21 +1,16 @@
 package de.ambertation.lib.math.sdf.shapes;
 
-import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
-import de.ambertation.lib.math.Quaternion;
 import de.ambertation.lib.math.Transform;
 import de.ambertation.lib.math.sdf.SDF;
 import de.ambertation.lib.math.sdf.interfaces.Rotatable;
-import de.ambertation.lib.math.sdf.interfaces.Transformable;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
 
-import org.jetbrains.annotations.NotNull;
-
 // https://iquilezles.org/articles/distfunctions/
-public class Box extends BaseShape implements Transformable, Rotatable {
+public class Box extends BaseShape implements Rotatable {
     public static final Codec<Box> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
@@ -34,25 +29,13 @@ public class Box extends BaseShape implements Transformable, Rotatable {
 
     //-------------------------------------------------------------------------------
     public Box(Transform t, int matIndex) {
-        super(t.getBoundingBoxUnrotated(), matIndex);
-        this.transform = t;
-    }
-
-    public Box(Bounds b) {
-        this(Transform.of(b), 0);
+        super(t, matIndex);
     }
 
     public Box(Float3 center, Float3 size) {
         this(Transform.of(center, size), 0);
     }
 
-    @NotNull
-    private Transform transform;
-
-    @Override
-    public void rotate(double angle) {
-        transform = transform.rotate(Quaternion.ofAxisAngle(Float3.Y_AXIS, angle));
-    }
 
     @Override
     public double dist(Float3 pos) {
@@ -63,47 +46,5 @@ public class Box extends BaseShape implements Transformable, Rotatable {
 
     public Float3 getSize() {
         return transform.size;
-    }
-
-
-    @Override
-    public Float3 getCenter() {
-        return transform.center.blockAligned();
-    }
-
-    @Override
-    public Bounds getBoundingBox() {
-        return transform.getBoundingBoxWorldSpace(getParentTransformMatrix());
-    }
-
-    @Override
-    public void setFromBoundingBox(Bounds b) {
-        System.out.println("new Bounds: " + b);
-        System.out.println("         -> " + b.rotate(transform.rotation.inverted()));
-        //super.setFromBoundingBox(b.rotate(rotation.inverted()));
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() + " " + transform.toString();
-    }
-
-    @Override
-    public Transform getLocalTransform() {
-        return transform;
-    }
-
-    @Override
-    public Float3[] getCornersInWorldSpace(boolean blockAligned, Transform transform) {
-        return transform.getCornersInWorldSpace(blockAligned, getParentTransformMatrix());
-    }
-
-    public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform) {
-        return transform.getCornerInWorldSpace(corner, blockAligned, getParentTransformMatrix());
-    }
-
-    @Override
-    public void setLocalTransform(Transform t) {
-        transform = t;
     }
 }

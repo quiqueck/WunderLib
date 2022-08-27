@@ -316,7 +316,6 @@ public abstract class SDF {
         register(registry, "sphere", Sphere.CODEC);
         register(registry, "box", Box.CODEC);
         register(registry, "cylinder", Cylinder.CODEC);
-        register(registry, "prism", Prism.CODEC);
         register(registry, "ellipsoid", Ellipsoid.CODEC);
     }
 

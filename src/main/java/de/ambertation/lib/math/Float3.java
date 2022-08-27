@@ -135,6 +135,10 @@ public class Float3 {
         return new Float3(Math.min(x, d), Math.min(y, d), Math.min(z, d));
     }
 
+    public double min() {
+        return Math.min(Math.min(x, y), z);
+    }
+
     public Float3 sub(Float3 p) {
         return new Float3(x - p.x, y - p.y, z - p.z);
     }
