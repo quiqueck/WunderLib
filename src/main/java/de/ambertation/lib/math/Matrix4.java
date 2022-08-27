@@ -319,6 +319,6 @@ public class Matrix4 {
     }
 
     public Float3 getUnitCubeCorner(Bounds.Interpolate corner, boolean blockAligned) {
-        return this.transform(Bounds.Interpolate.CORNERS[corner.idx].t.sub(0.5)).align(blockAligned);
+        return this.transform(Bounds.Interpolate.CORNERS_AND_CENTER[corner.idx].t.sub(0.5)).align(blockAligned);
     }
 }

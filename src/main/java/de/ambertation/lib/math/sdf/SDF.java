@@ -222,6 +222,14 @@ public abstract class SDF {
         return b;
     }
 
+    public Bounds getLocalBoundingBox() {
+        Bounds b = Bounds.EMPTY;
+        for (SDF sdf : inputSlots) {
+            b = b.encapsulate(sdf.getLocalBoundingBox());
+        }
+        return b;
+    }
+
 
     //---------------------- PARENT HANDLING ----------------------
     private SDF parent;
@@ -249,6 +257,7 @@ public abstract class SDF {
     public void evaluate(Bounds box, PlaceBlock callback, VisitBlock visitor) {
         SDF.EvaluationData ed = new SDF.EvaluationData();
         double dist;
+        if (box.maxExtension() > 100) return;
         //System.out.println(box);
         for (double xx = box.min.x - 2; xx < box.max.x + 2; xx++) {
             for (double xy = box.min.y - 2; xy < box.max.y + 2; xy++) {
@@ -270,7 +279,6 @@ public abstract class SDF {
                         for (Bounds.Interpolate offset : Bounds.Interpolate.CORNERS) {
                             Float3 pd = p.add(offset.t.sub(0.5));
                             double dd = this.dist(pd);
-
                             dd = Math.round(dd * 80) / 80.0;
                             // if (Math.abs(dd) < Float3.EPSILON) continue;
                             if (sign == 0) sign = dd < 0 ? (byte) -1 : (byte) 1;

@@ -2,6 +2,7 @@ package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Transform;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -10,6 +11,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class SDFInvert extends SDFOperation {
     public static final Codec<SDFInvert> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
+                    Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     SDF.CODEC.fieldOf("sdf").forGetter(b -> b.getFirst())
             )
             .apply(instance, SDFInvert::new)
@@ -24,8 +26,12 @@ public class SDFInvert extends SDFOperation {
 
 
     //-------------------------------------------------------------------------------
+    protected SDFInvert(Transform t, SDF sdf) {
+        super(t, sdf);
+    }
+
     protected SDFInvert(SDF sdf) {
-        super(sdf);
+        this(Transform.IDENTITY, sdf);
     }
 
     @Override

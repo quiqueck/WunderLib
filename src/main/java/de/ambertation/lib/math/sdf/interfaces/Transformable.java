@@ -24,4 +24,5 @@ public interface Transformable extends RootedSDF {
         return getParentTransformMatrix().mul(getLocalTransform().asMatrix());
     }
 
+    boolean isOperation();
 }

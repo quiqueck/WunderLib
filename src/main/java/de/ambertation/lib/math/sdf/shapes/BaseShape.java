@@ -37,6 +37,11 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Transfo
     }
 
     @Override
+    public Bounds getLocalBoundingBox() {
+        return transform.getBoundingBoxWorldSpace();
+    }
+
+    @Override
     public int getMaterialIndex() {
         return materialIndex;
     }
@@ -70,5 +75,10 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Transfo
     @Override
     public void setLocalTransform(Transform t) {
         transform = t;
+    }
+
+    @Override
+    public boolean isOperation() {
+        return false;
     }
 }

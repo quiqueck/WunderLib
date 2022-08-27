@@ -1,6 +1,7 @@
 package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Transform;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -9,6 +10,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 public class SDFDifference extends SDFBinaryOperation {
     public static final Codec<SDFDifference> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
+                    Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     SDF.CODEC.fieldOf("sdf_a").forGetter(b -> b.getFirst()),
                     SDF.CODEC.fieldOf("sdf_b").forGetter(b -> b.getSecond())
             )
@@ -24,8 +26,12 @@ public class SDFDifference extends SDFBinaryOperation {
 
 
     //-------------------------------------------------------------------------------
+    public SDFDifference(Transform t, SDF a, SDF b) {
+        super(t, a, b);
+    }
+
     public SDFDifference(SDF a, SDF b) {
-        super(a, b);
+        this(Transform.IDENTITY, a, b);
     }
 
     @Override

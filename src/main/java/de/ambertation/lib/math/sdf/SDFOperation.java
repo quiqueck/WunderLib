@@ -1,13 +1,21 @@
 package de.ambertation.lib.math.sdf;
 
-public abstract class SDFOperation extends SDF {
-    protected SDFOperation(SDF sdf) {
-        this(sdf, 0);
+import de.ambertation.lib.math.Bounds;
+import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Quaternion;
+import de.ambertation.lib.math.Transform;
+import de.ambertation.lib.math.sdf.interfaces.Rotatable;
+import de.ambertation.lib.math.sdf.interfaces.Transformable;
+
+public abstract class SDFOperation extends SDF implements Transformable, Rotatable {
+    protected SDFOperation(Transform t, SDF sdf) {
+        this(t, sdf, 0);
     }
 
-    protected SDFOperation(SDF sdf, int additionalInputSlots) {
+    protected SDFOperation(Transform t, SDF sdf, int additionalInputSlots) {
         super(1 + additionalInputSlots);
         setSlotSilent(0, sdf);
+        this.transform = t;
     }
 
     @Override
@@ -21,5 +29,45 @@ public abstract class SDFOperation extends SDF {
 
     public void setFirst(SDF a) {
         setSlot(0, a);
+    }
+
+    //--------------------- Transformable ---------------------
+    protected Transform transform;
+
+    @Override
+    public Transform getLocalTransform() {
+        return transform;
+    }
+
+    @Override
+    public Float3[] getCornersInWorldSpace(boolean blockAligned, Transform transform) {
+        Float3[] corners = new Float3[Bounds.Interpolate.CORNERS.length];
+        for (Bounds.Interpolate corner : Bounds.Interpolate.CORNERS) {
+            corners[corner.idx] = getCornerInWorldSpace(corner, blockAligned, transform);
+        }
+        return corners;
+    }
+
+    public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform) {
+        return getParentTransformMatrix().mul(transform.asMatrix())
+                                         .transform(blockAligned
+                                                 ? getLocalBoundingBox().getBlockAligned(corner)
+                                                 : getLocalBoundingBox().get(corner));
+    }
+
+    @Override
+    public void setLocalTransform(Transform t) {
+        transform = t;
+    }
+
+
+    @Override
+    public boolean isOperation() {
+        return true;
+    }
+
+    //--------------------- Rotatable ---------------------
+    public void rotate(double angle) {
+        transform = transform.rotate(Quaternion.ofAxisAngle(Float3.Y_AXIS, angle));
     }
 }

@@ -1,8 +1,10 @@
 package de.ambertation.lib.math.sdf;
 
+import de.ambertation.lib.math.Transform;
+
 public abstract class SDFBinaryOperation extends SDFOperation {
-    public SDFBinaryOperation(SDF a, SDF b) {
-        super(a, 1);
+    public SDFBinaryOperation(Transform t, SDF a, SDF b) {
+        super(t, a, 1);
         setSlotSilent(1, b);
     }
 
