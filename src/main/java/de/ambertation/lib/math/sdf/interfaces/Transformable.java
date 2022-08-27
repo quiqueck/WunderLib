@@ -5,10 +5,11 @@ import de.ambertation.lib.math.Float3;
 import de.ambertation.lib.math.Matrix4;
 import de.ambertation.lib.math.Transform;
 
-public interface Transformable {
+public interface Transformable extends RootedSDF {
     Float3[] getCornersInWorldSpace(boolean blockAligned, Transform localTransform);
     Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform);
     Transform getLocalTransform();
+    void setLocalTransform(Transform t);
     Matrix4 getParentTransformMatrix();
 
     default Float3[] getCornersInWorldSpace(boolean blockAligned) {
