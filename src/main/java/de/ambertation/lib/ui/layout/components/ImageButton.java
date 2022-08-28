@@ -61,6 +61,11 @@ public class ImageButton extends Image {
         return this;
     }
 
+    public ImageButton setEnabled(boolean enabled) {
+        setAlpha(enabled ? 1f : 0.5f);
+        return this;
+    }
+
     @Override
     public ImageButton setAlpha(float a) {
         return (ImageButton) super.setAlpha(a);

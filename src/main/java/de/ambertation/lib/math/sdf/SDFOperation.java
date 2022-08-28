@@ -45,6 +45,15 @@ public abstract class SDFOperation extends SDF implements Transformable, Rotatab
         return corners;
     }
 
+    @Override
+    public Float3[] getCornersAndCenterInWorldSpace(boolean blockAligned, Transform transform) {
+        Float3[] corners = new Float3[Bounds.Interpolate.CORNERS_AND_CENTER.length];
+        for (Bounds.Interpolate corner : Bounds.Interpolate.CORNERS_AND_CENTER) {
+            corners[corner.idx] = getCornerInWorldSpace(corner, blockAligned, transform);
+        }
+        return corners;
+    }
+
     public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform) {
         Bounds b = getLocalBoundingBox(Matrix4.IDENTITY);
         return getParentTransformMatrix().mul(transform.asMatrix())

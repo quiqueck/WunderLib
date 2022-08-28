@@ -1,7 +1,10 @@
 package de.ambertation.lib.math.sdf;
 
 import de.ambertation.lib.WunderLib;
-import de.ambertation.lib.math.*;
+import de.ambertation.lib.math.Bounds;
+import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Matrix4;
+import de.ambertation.lib.math.Transform;
 import de.ambertation.lib.math.sdf.interfaces.Transformable;
 import de.ambertation.lib.math.sdf.shapes.*;
 
@@ -82,10 +85,7 @@ public abstract class SDF {
 
     public void setRootTransform(Matrix4 m) {
         if (parent == null) {
-            rootTransform = m.mul(Matrix4.ofRotation(Quaternion.ofAxisAngle(
-                    Float3.Y_AXIS,
-                    Math.toRadians(60 + 90)
-            )));
+            rootTransform = m;
         } else {
             parent.setRootTransform(m);
         }

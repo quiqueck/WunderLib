@@ -65,6 +65,11 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Transfo
         return transform.getCornersInWorldSpace(blockAligned, getParentTransformMatrix());
     }
 
+    @Override
+    public Float3[] getCornersAndCenterInWorldSpace(boolean blockAligned, Transform transform) {
+        return transform.getCornersAndCenterInWorldSpace(blockAligned, getParentTransformMatrix());
+    }
+
     public Float3 getCornerInWorldSpace(Bounds.Interpolate corner, boolean blockAligned, Transform transform) {
         return transform.getCornerInWorldSpace(corner, blockAligned, getParentTransformMatrix());
     }

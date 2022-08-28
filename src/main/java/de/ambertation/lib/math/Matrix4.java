@@ -309,12 +309,21 @@ public class Matrix4 {
         return sb.toString();
     }
 
-    public Float3[] getUnitCubeCorners(boolean blockAligned) {
-        Float3[] corners = new Float3[Bounds.Interpolate.CORNERS.length];
-        for (int i = 0; i < Bounds.Interpolate.CORNERS.length; i++) {
-            corners[i] = getUnitCubeCorner(Bounds.Interpolate.CORNERS[i], blockAligned);
+    public Float3[] getUnitCubeCornersAndCenter(boolean blockAligned) {
+        Float3[] corners = new Float3[Bounds.Interpolate.CORNERS_AND_CENTER.length];
+        for (var c : Bounds.Interpolate.CORNERS_AND_CENTER) {
+            corners[c.idx] = getUnitCubeCorner(c, blockAligned);
         }
 
+        return corners;
+    }
+
+    public Float3[] getUnitCubeCorners(boolean blockAligned) {
+        Float3[] corners = new Float3[Bounds.Interpolate.CORNERS.length];
+        for (var c : Bounds.Interpolate.CORNERS) {
+            corners[c.idx] = getUnitCubeCorner(c, blockAligned);
+        }
+        
         return corners;
     }
 

@@ -71,6 +71,10 @@ public class Transform {
         return corners;
     }
 
+    public Float3[] getCornersAndCenterInWorldSpace(boolean blockAligned, Matrix4 toWorldMatrix) {
+        return toWorldMatrix.mul(asMatrix()).getUnitCubeCornersAndCenter(blockAligned);
+    }
+
     public Float3[] getCornersInWorldSpace(boolean blockAligned, Matrix4 toWorldMatrix) {
         return toWorldMatrix.mul(asMatrix()).getUnitCubeCorners(blockAligned);
     }
@@ -103,6 +107,11 @@ public class Transform {
     public Transform scale(Float3 scale) {
         if (scale == null) return this;
         return new Transform(center, size.mul(scale), rotation);
+    }
+
+    public Transform moveTo(Float3 newCenter) {
+        if (newCenter == null) newCenter = Float3.ZERO;
+        return new Transform(newCenter, size, rotation);
     }
 
     public Transform rotate(Quaternion rotation) {
