@@ -232,6 +232,12 @@ public class Bounds {
         return Float3.of((max.x - min.x) / 2, (max.y - min.y) / 2, (max.z - min.z) / 2);
     }
 
+
+    public double volume() {
+        Float3 sz = getSize();
+        return sz.x * sz.y * sz.z;
+    }
+
     public boolean isInside(Float3 p) {
         return p.x >= this.min.x && p.x <= this.max.x && p.z >= this.min.z && p.z <= this.max.z && p.y >= this.min.y && p.y <= this.max.y;
     }

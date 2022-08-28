@@ -262,8 +262,8 @@ public abstract class SDF {
     public void evaluate(Bounds box, PlaceBlock callback, VisitBlock visitor) {
         SDF.EvaluationData ed = new SDF.EvaluationData();
         double dist;
-        if (box.maxExtension() > 100) return;
-        //System.out.println(box);
+        if (box.volume() > 32 * 32 * 32) return;
+        
         for (double xx = box.min.x - 2; xx < box.max.x + 2; xx++) {
             for (double xy = box.min.y - 2; xy < box.max.y + 2; xy++) {
                 for (double xz = box.min.z - 2; xz < box.max.z + 2; xz++) {
