@@ -257,14 +257,16 @@ public abstract class SDF {
         evaluate(getBoundingBox(), callback, visitor);
     }
 
-    public void evaluate(Bounds box, PlaceBlock callback, VisitBlock visitor) {
+    public void evaluate(Bounds bBox, PlaceBlock callback, VisitBlock visitor) {
         SDF.EvaluationData ed = new SDF.EvaluationData();
         double dist;
-        if (box.volume() > 32 * 32 * 32) return;
+        if (bBox.volume() > 32 * 32 * 32) return;
 
-        for (double xx = box.min.x - 2; xx < box.max.x + 2; xx++) {
-            for (double xy = box.min.y - 2; xy < box.max.y + 2; xy++) {
-                for (double xz = box.min.z - 2; xz < box.max.z + 2; xz++) {
+        Float3 min = bBox.min.mul(2).round().div(2);
+        Float3 max = bBox.max.mul(2).round().div(2);
+        for (double xx = min.x - 2; xx < max.x + 2; xx++) {
+            for (double xy = min.y - 2; xy < max.y + 2; xy++) {
+                for (double xz = min.z - 2; xz < max.z + 2; xz++) {
                     final Float3 p = Float3.of(xx, xy, xz);
                     final Float3 pMid = p.sub(0.5).blockAligned();
                     this.dist(ed, p);
