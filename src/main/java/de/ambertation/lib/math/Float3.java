@@ -16,6 +16,24 @@ public class Float3 {
     public static final Float3 X_AXIS = Float3.of(1, 0, 0);
     public static final Float3 Y_AXIS = Float3.of(0, 1, 0);
     public static final Float3 Z_AXIS = Float3.of(0, 0, 1);
+    public static final Float3 mX_AXIS = Float3.of(-1, 0, 0);
+    public static final Float3 mY_AXIS = Float3.of(0, -1, 0);
+    public static final Float3 mZ_AXIS = Float3.of(0, 0, -1);
+
+    public static final Float3 XZ_PLANE = Float3.of(1, 0, 1);
+    public static final Float3 mXZ_PLANE = Float3.of(-1, 0, 1);
+    public static final Float3 XmZ_PLANE = Float3.of(1, 0, -1);
+    public static final Float3 mXmZ_PLANE = Float3.of(-1, 0, -1);
+
+    public static final Float3 XY_PLANE = Float3.of(1, 1, 0);
+    public static final Float3 mXY_PLANE = Float3.of(-1, 1, 0);
+    public static final Float3 XmY_PLANE = Float3.of(1, -1, 0);
+    public static final Float3 mXmY_PLANE = Float3.of(-1, -1, 0);
+
+    public static final Float3 YZ_PLANE = Float3.of(0, 1, 1);
+    public static final Float3 mYZ_PLANE = Float3.of(0, -1, 1);
+    public static final Float3 YmZ_PLANE = Float3.of(0, 1, -1);
+    public static final Float3 mYmZ_PLANE = Float3.of(0, -1, -1);
 
 
     public static final Codec<Float3> CODEC = RecordCodecBuilder.create(instance -> instance

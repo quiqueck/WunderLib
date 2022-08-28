@@ -8,6 +8,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.util.Objects;
 
 public class Float2 {
+    public static final Float2 ZERO = new Float2(0, 0);
+    public static final Float2 IDENTITY = new Float2(1, 1);
     public static final Codec<Float2> CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("x").forGetter(o -> (float) o.x),
