@@ -9,6 +9,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
 
 public class Sphere extends BaseShape {
+    public static final Transform DEFAULT_TRANSFORM = Transform.of(Float3.of(0, 0, 0), Float3.of(8, 8, 8));
     public static final Codec<Sphere> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
@@ -42,11 +43,16 @@ public class Sphere extends BaseShape {
     @Override
     public double dist(Float3 pos) {
         pos = getParentTransformMatrix().inverted().transform(pos);
-        
+
         return pos.sub(getCenter()).length() - getRadius();
     }
 
     public double getRadius() {
         return transform.size.min() / 2;
+    }
+
+    @Override
+    public Transform defaultTransform() {
+        return DEFAULT_TRANSFORM;
     }
 }

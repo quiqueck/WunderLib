@@ -51,7 +51,7 @@ public abstract class BaseShape extends SDF implements MaterialProvider, Transfo
 
     //--------------------- Rotatable ---------------------
     public void rotate(double angle) {
-        transform = transform.rotate(Quaternion.ofAxisAngle(Float3.Y_AXIS, angle));
+        transform = transform.rotateBy(Quaternion.ofAxisAngle(Float3.Y_AXIS, angle));
     }
 
     //--------------------- Transformable ---------------------

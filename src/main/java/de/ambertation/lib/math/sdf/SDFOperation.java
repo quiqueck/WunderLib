@@ -73,8 +73,13 @@ public abstract class SDFOperation extends SDF implements Transformable, Rotatab
         return true;
     }
 
+    @Override
+    public Transform defaultTransform() {
+        return Transform.IDENTITY;
+    }
+
     //--------------------- Rotatable ---------------------
     public void rotate(double angle) {
-        transform = transform.rotate(Quaternion.ofAxisAngle(Float3.Y_AXIS, angle));
+        transform = transform.rotateBy(Quaternion.ofAxisAngle(Float3.Y_AXIS, angle));
     }
 }

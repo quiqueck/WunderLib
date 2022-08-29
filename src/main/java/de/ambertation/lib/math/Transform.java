@@ -2,6 +2,7 @@ package de.ambertation.lib.math;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 
 public class Transform {
@@ -104,19 +105,35 @@ public class Transform {
         return new Transform(center.sub(offset), size, rotation);
     }
 
-    public Transform scale(Float3 scale) {
+    public Transform scaleBy(Float3 scale) {
         if (scale == null) return this;
         return new Transform(center, size.mul(scale), rotation);
     }
+
+    public Transform setScale(Float3 scale) {
+        if (scale == null) scale = Float3.IDENTITY;
+        return new Transform(center, scale, rotation);
+    }
+
 
     public Transform moveTo(Float3 newCenter) {
         if (newCenter == null) newCenter = Float3.ZERO;
         return new Transform(newCenter, size, rotation);
     }
 
-    public Transform rotate(Quaternion rotation) {
+    public Transform moveBy(Float3 offset) {
+        if (offset == null) return this;
+        return new Transform(center.add(offset), size, rotation);
+    }
+
+    public Transform rotateBy(Quaternion rotation) {
         if (rotation == null) return this;
         return new Transform(center, size, this.rotation.mul(rotation));
+    }
+
+    public Transform setRotation(Quaternion rotation) {
+        if (rotation == null) rotation = Quaternion.IDENTITY;
+        return new Transform(center, size, rotation);
     }
 
     public Float3 transform(Float3 p) {
@@ -150,5 +167,18 @@ public class Transform {
                 ", s=" + size +
                 ", r=" + rotation +
                 '}';
+    }
+
+    public void serializeToNetwork(FriendlyByteBuf buf) {
+        center.serializeToNetwork(buf);
+        size.serializeToNetwork(buf);
+        rotation.serializeToNetwork(buf);
+    }
+
+    public static Transform deserializeFromNetwork(FriendlyByteBuf buf) {
+        Float3 c = Float3.deserializeFromNetwork(buf);
+        Float3 s = Float3.deserializeFromNetwork(buf);
+        Quaternion r = Quaternion.deserializeFromNetwork(buf);
+        return new Transform(c, s, r);
     }
 }

@@ -1,6 +1,7 @@
 package de.ambertation.lib.ui.layout.components;
 
 import de.ambertation.lib.ui.ColorHelper;
+import de.ambertation.lib.ui.layout.LineWithWidth;
 import de.ambertation.lib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.lib.ui.layout.components.render.TextProvider;
 import de.ambertation.lib.ui.layout.values.Alignment;
@@ -12,15 +13,11 @@ import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.util.FormattedCharSequence;
 
 import com.google.common.collect.ImmutableList;
 
 import java.util.Iterator;
 import java.util.List;
-
-record LineWithWidth(FormattedCharSequence text, int width) {
-}
 
 public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRenderer, MultiLineText> {
     net.minecraft.network.chat.Component text;

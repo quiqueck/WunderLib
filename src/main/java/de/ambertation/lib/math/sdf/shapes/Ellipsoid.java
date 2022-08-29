@@ -11,6 +11,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 
 //based on https://iquilezles.org/articles/ellipsoids/
 public class Ellipsoid extends BaseShape implements Rotatable {
+    public static final Transform DEFAULT_TRANSFORM = Box.DEFAULT_TRANSFORM;
     public static final Codec<Ellipsoid> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
@@ -43,7 +44,7 @@ public class Ellipsoid extends BaseShape implements Rotatable {
     @Override
     public double dist(Float3 pos) {
         pos = getParentTransformMatrix().inverted().transform(pos);
-        
+
         Float3 size = getSize().sub(1);
         pos = pos.sub(getCenter());
         double k1 = pos.div(size).length();
@@ -54,6 +55,11 @@ public class Ellipsoid extends BaseShape implements Rotatable {
 
     public Float3 getSize() {
         return transform.size;
+    }
+
+    @Override
+    public Transform defaultTransform() {
+        return DEFAULT_TRANSFORM;
     }
 }
 

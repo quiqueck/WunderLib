@@ -235,6 +235,8 @@ public abstract class SDF {
         return b;
     }
 
+    public abstract Transform defaultTransform();
+
 
     //---------------------- PARENT HANDLING ----------------------
     private SDF parent;

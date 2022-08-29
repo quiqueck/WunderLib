@@ -2,6 +2,7 @@ package de.ambertation.lib.math.sdf.shapes;
 
 import de.ambertation.lib.math.Bounds;
 import de.ambertation.lib.math.Float3;
+import de.ambertation.lib.math.Transform;
 import de.ambertation.lib.math.sdf.SDF;
 
 import com.mojang.serialization.Codec;
@@ -41,5 +42,10 @@ public class Empty extends SDF {
     @Override
     public boolean isEmpty() {
         return true;
+    }
+
+    @Override
+    public Transform defaultTransform() {
+        return Transform.IDENTITY;
     }
 }

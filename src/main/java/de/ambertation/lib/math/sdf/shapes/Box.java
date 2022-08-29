@@ -11,6 +11,7 @@ import net.minecraft.util.KeyDispatchDataCodec;
 
 // https://iquilezles.org/articles/distfunctions/
 public class Box extends BaseShape implements Rotatable {
+    public static final Transform DEFAULT_TRANSFORM = Transform.of(Float3.of(0, 0, 0), Float3.of(8, 5, 5));
     public static final Codec<Box> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
@@ -46,5 +47,10 @@ public class Box extends BaseShape implements Rotatable {
 
     public Float3 getSize() {
         return transform.size;
+    }
+
+    @Override
+    public Transform defaultTransform() {
+        return DEFAULT_TRANSFORM;
     }
 }
