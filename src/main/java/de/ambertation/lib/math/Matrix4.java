@@ -145,6 +145,21 @@ public class Matrix4 {
         return new Matrix4(newM);
     }
 
+    public Float3 getBasisX() {
+        return getUnitCubeCorner(Bounds.Interpolate.MAX_MIN_MIN, false)
+                .sub(getUnitCubeCorner(Bounds.Interpolate.MIN_MIN_MIN, false)).normalized();
+    }
+
+    public Float3 getBasisY() {
+        return getUnitCubeCorner(Bounds.Interpolate.MIN_MAX_MIN, false)
+                .sub(getUnitCubeCorner(Bounds.Interpolate.MIN_MIN_MIN, false)).normalized();
+    }
+
+    public Float3 getBasisZ() {
+        return getUnitCubeCorner(Bounds.Interpolate.MIN_MIN_MAX, false)
+                .sub(getUnitCubeCorner(Bounds.Interpolate.MIN_MIN_MIN, false)).normalized();
+    }
+
     public Matrix4 transposed() {
         double[] newM = new double[16];
         newM[M00] = m[M00];
@@ -323,7 +338,7 @@ public class Matrix4 {
         for (var c : Bounds.Interpolate.CORNERS) {
             corners[c.idx] = getUnitCubeCorner(c, blockAligned);
         }
-        
+
         return corners;
     }
 

@@ -1,5 +1,6 @@
 package de.ambertation.lib.math;
 
+import com.mojang.math.Vector3f;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -78,6 +79,10 @@ public class Float3 {
         return new Float3(pos.x(), pos.y(), pos.z());
     }
 
+    public static Float3 of(Vector3f pos) {
+        return new Float3(pos.x(), pos.y(), pos.z());
+    }
+
     public static Float3 blockAligned(double x, double y, double z) {
         return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
     }
@@ -107,6 +112,10 @@ public class Float3 {
 
     public double dot(Float3 p) {
         return x * p.x + y * p.y + z * p.z;
+    }
+
+    public double angleTo(Float3 target) {
+        return Math.acos(Math.max(-1, Math.min(1, this.dot(target) / (this.length() * target.length()))));
     }
 
     public Float3 cross(Float3 p) {
@@ -147,6 +156,10 @@ public class Float3 {
 
     public Float3 max(double d) {
         return new Float3(Math.max(x, d), Math.max(y, d), Math.max(z, d));
+    }
+
+    public double maxAbsComponent() {
+        return maxAbs(maxAbs(x, y), z);
     }
 
     public Float3 min(double d) {
@@ -281,6 +294,10 @@ public class Float3 {
 
     public static double conservative(double x) {
         return x < 0 ? Math.floor(x) : Math.ceil(x);
+    }
+
+    public static double maxAbs(double a, double b) {
+        return Math.abs(a) > Math.abs(b) ? a : b;
     }
 
     public static double toBlockPos(double d) {

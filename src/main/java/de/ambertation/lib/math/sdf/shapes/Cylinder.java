@@ -56,9 +56,12 @@ public class Cylinder extends BaseShape implements Rotatable {
     public double dist(Float3 p) {
         p = getParentTransformMatrix().inverted().transform(p);
         p = p.sub(transform.center).unRotate(transform.rotation).div(transform.size);
-//        Float2 d = Float2.of(p.xz().length(), p.y).abs().sub(Float2.of(.5, .5));
-//        return Math.min(d.maxComp(), 0.0) + d.max(0.0).length();
-        return Math.max(p.xz().length() - 0.5, Math.abs(p.y) - 0.5);
+        //non uniform scaling will distort the distances, however if we underestimate the distance,
+        //it should be ok...
+        return Math.max(
+                (p.xz().length() - 0.5) * transform.size.xz().minComp(),
+                (Math.abs(p.y) - 0.5) * transform.size.y
+        );
     }
 
     @Override

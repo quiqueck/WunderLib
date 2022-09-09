@@ -131,6 +131,12 @@ public class Transform {
         return new Transform(center, size, this.rotation.mul(rotation));
     }
 
+    public Transform rotateBy(Float3 normalizedAxis, double angle) {
+        if (normalizedAxis == null || angle == 0) return this;
+
+        return new Transform(center, size, this.rotation.mul(Quaternion.ofAxisAngle(normalizedAxis, angle)));
+    }
+
     public Transform setRotation(Quaternion rotation) {
         if (rotation == null) rotation = Quaternion.IDENTITY;
         return new Transform(center, size, rotation);

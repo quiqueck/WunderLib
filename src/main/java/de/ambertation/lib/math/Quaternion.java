@@ -41,6 +41,12 @@ public final class Quaternion {
         return new Quaternion(0, imaginary);
     }
 
+    public static Quaternion between(Float3 start, Float3 target) {
+        double angle = start.angleTo(target);
+        Float3 axis = start.cross(target).normalized();
+        return ofAxisAngle(axis, angle);
+    }
+
     public static Quaternion ofAxisAngle(Float3 normalizedAxis, double angle) {
         angle /= 2;
         return new Quaternion(Math.cos(angle), normalizedAxis.mul(Math.sin(angle)));

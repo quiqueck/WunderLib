@@ -1,5 +1,7 @@
 package de.ambertation.lib.ui.layout.values;
 
+import de.ambertation.lib.math.Float2;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -40,6 +42,10 @@ public class Rectangle {
 
     public int right() {
         return left + width;
+    }
+
+    public Float2 center() {
+        return Float2.of(left + width / 2, top + height / 2);
     }
 
     public int bottom() {

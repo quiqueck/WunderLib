@@ -9,6 +9,10 @@ import java.util.Objects;
 
 public class Float2 {
     public static final Float2 ZERO = new Float2(0, 0);
+    public static final Float2 X_AXIS = new Float2(1, 0);
+    public static final Float2 Y_AXIS = new Float2(0, 1);
+    public static final Float2 mX_AXIS = new Float2(-1, 0);
+    public static final Float2 mY_AXIS = new Float2(0, -1);
     public static final Float2 IDENTITY = new Float2(1, 1);
     public static final Codec<Float2> CODEC = RecordCodecBuilder.create(instance -> instance
             .group(
@@ -35,6 +39,10 @@ public class Float2 {
 
     public static Float2 blockAligned(double x, double y) {
         return new Float2(Float3.toBlockPos(x), Float3.toBlockPos(y));
+    }
+
+    public double dot(Float2 p) {
+        return x * p.x + y * p.y;
     }
 
     public Float2 div(Float2 p) {
@@ -91,6 +99,10 @@ public class Float2 {
 
     public Float2 div(double d) {
         return new Float2(x / d, y / d);
+    }
+
+    public double angleTo(Float2 target) {
+        return Math.acos(Math.max(-1, Math.min(1, this.dot(target) / (this.length() * target.length()))));
     }
 
     public double length() {
