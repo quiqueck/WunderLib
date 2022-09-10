@@ -52,6 +52,29 @@ public final class Quaternion {
         return new Quaternion(Math.cos(angle), normalizedAxis.mul(Math.sin(angle)));
     }
 
+    //https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+    public Float3 toEuler() {
+        // roll (x-axis rotation)
+        double sinr_cosp = 2 * (this.w * this.v.x + this.v.y * this.v.z);
+        double cosr_cosp = 1 - 2 * (this.v.x * this.v.x + this.v.y * this.v.y);
+        double x = Math.atan2(sinr_cosp, cosr_cosp);
+
+        // pitch (y-axis rotation)
+        double y;
+        double sinp = 2 * (this.w * this.v.y - this.v.z * this.v.x);
+        if (Math.abs(sinp) >= 1)
+            y = Math.PI / 2 * Math.signum(sinp); // use 90 degrees if out of range
+        else
+            y = Math.asin(sinp);
+
+        // yaw (z-axis rotation)
+        double siny_cosp = 2 * (this.w * this.v.z + this.v.x * this.v.y);
+        double cosy_cosp = 1 - 2 * (this.v.y * this.v.y + this.v.z * this.v.z);
+        double z = Math.atan2(siny_cosp, cosy_cosp);
+
+        return Float3.of(x, y, z);
+    }
+
     public Quaternion conjugate() {
         return new Quaternion(w, v.mul(-1));
     }

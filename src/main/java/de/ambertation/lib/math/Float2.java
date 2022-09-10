@@ -152,6 +152,10 @@ public class Float2 {
         return of(Float3.conservative(x), Float3.conservative(y));
     }
 
+    public Float2 blockAligned() {
+        return new Float2(Float3.toBlockPos(x), Float3.toBlockPos(y));
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
