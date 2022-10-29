@@ -1,8 +1,8 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.values.Value;
-
 import net.minecraft.client.gui.components.AbstractWidget;
+
+import org.wunder.lib.ui.layout.values.Value;
 
 public abstract class AbstractVanillaComponent<C extends AbstractWidget, V extends AbstractVanillaComponent<C, V>> extends LayoutComponent<AbstractVanillaComponentRenderer<C, V>, V> {
     protected C vanillaComponent;

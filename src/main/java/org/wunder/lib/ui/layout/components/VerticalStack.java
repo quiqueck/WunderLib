@@ -1,16 +1,16 @@
 package org.wunder.lib.ui.layout.components;
 
 
-import org.wunder.lib.ui.layout.values.Size;
-import org.wunder.lib.ui.layout.values.Value;
-import org.wunder.lib.ui.vanilla.VanillaScrollerRenderer;
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.values.Size;
+import org.wunder.lib.ui.layout.values.Value;
+import org.wunder.lib.ui.vanilla.VanillaScrollerRenderer;
 
 @Environment(EnvType.CLIENT)
 public class VerticalStack extends AbstractVerticalStack<VerticalStack> {

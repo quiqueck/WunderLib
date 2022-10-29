@@ -1,13 +1,13 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Value;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Value;
 
 @Environment(EnvType.CLIENT)
 public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> extends LayoutComponent<CustomRenderComponent.CustomRenderRenderer<C>, C> {

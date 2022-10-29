@@ -1,9 +1,9 @@
 package org.wunder.lib.ui.layout.values;
 
-import org.wunder.lib.math.Float2;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.math.Float2;
 
 @Environment(EnvType.CLIENT)
 public class Rectangle {

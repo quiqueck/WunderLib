@@ -1,12 +1,12 @@
 package org.wunder.lib.math.sdf.shapes;
 
+import com.mojang.serialization.Codec;
+import net.minecraft.util.KeyDispatchDataCodec;
+
 import org.wunder.lib.math.Bounds;
 import org.wunder.lib.math.Float3;
 import org.wunder.lib.math.Transform;
 import org.wunder.lib.math.sdf.SDF;
-
-import com.mojang.serialization.Codec;
-import net.minecraft.util.KeyDispatchDataCodec;
 
 public class Empty extends SDF {
     public static final Codec<Empty> DIRECT_CODEC = Codec.unit(Empty::new);

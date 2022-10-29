@@ -1,10 +1,5 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
-import org.wunder.lib.ui.layout.values.Alignment;
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Value;
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -12,6 +7,11 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
+import org.wunder.lib.ui.layout.values.Alignment;
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Value;
 
 @Environment(EnvType.CLIENT)
 public abstract class LayoutComponent<R extends ComponentRenderer, L extends LayoutComponent<R, L>> implements ComponentWithBounds, GuiEventListener {

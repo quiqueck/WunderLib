@@ -1,11 +1,5 @@
 package org.wunder.lib.ui.vanilla;
 
-import org.wunder.lib.ui.ColorHelper;
-import de.ambertation.lib.ui.layout.components.*;
-
-import org.wunder.lib.ui.layout.components.*;
-import org.wunder.lib.ui.layout.values.Value;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -16,6 +10,10 @@ import net.minecraft.network.chat.MutableComponent;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.ColorHelper;
+import org.wunder.lib.ui.layout.components.*;
+import org.wunder.lib.ui.layout.values.Value;
 
 import org.jetbrains.annotations.Nullable;
 

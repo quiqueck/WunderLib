@@ -1,9 +1,8 @@
 package org.wunder.lib.general;
 
-import org.wunder.lib.WunderLib;
-
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.wunder.lib.WunderLib;
 
 public class Logger {
     private final org.apache.logging.log4j.Logger LOGGER = LogManager.getLogger(WunderLib.MOD_ID);

@@ -1,12 +1,12 @@
 package org.wunder.lib.ui.layout.components.input;
 
-import org.wunder.lib.ui.layout.values.Rectangle;
-
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.values.Rectangle;
 
 import java.util.Optional;
 

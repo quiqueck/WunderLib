@@ -1,12 +1,12 @@
 package org.wunder.lib.math.sdf.shapes;
 
-import org.wunder.lib.math.Float3;
-import org.wunder.lib.math.Transform;
-import org.wunder.lib.math.sdf.SDF;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
+
+import org.wunder.lib.math.Float3;
+import org.wunder.lib.math.Transform;
+import org.wunder.lib.math.sdf.SDF;
 
 public class Sphere extends BaseShape {
     public static final Transform DEFAULT_TRANSFORM = Transform.of(Float3.of(0, 0, 0), Float3.of(8, 8, 8));

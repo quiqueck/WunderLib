@@ -1,12 +1,12 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Value;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
+
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Value;
 
 public class Item extends CustomRenderComponent {
     private ItemStack itemStack;

@@ -1,8 +1,8 @@
 package org.wunder.lib;
 
-import org.wunder.lib.general.Logger;
-
 import net.minecraft.resources.ResourceLocation;
+
+import org.wunder.lib.general.Logger;
 
 public class WunderLib {
     public static final String MOD_ID = "wunderlib";

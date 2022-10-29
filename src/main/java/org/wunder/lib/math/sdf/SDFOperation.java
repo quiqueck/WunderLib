@@ -1,7 +1,5 @@
 package org.wunder.lib.math.sdf;
 
-import de.ambertation.lib.math.*;
-
 import org.wunder.lib.math.*;
 import org.wunder.lib.math.sdf.interfaces.Rotatable;
 import org.wunder.lib.math.sdf.interfaces.Transformable;

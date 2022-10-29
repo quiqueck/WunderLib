@@ -1,10 +1,10 @@
 package org.wunder.lib.ui.layout.components.render;
 
 
-import org.wunder.lib.ui.layout.values.Rectangle;
-
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.values.Rectangle;
 
 @Environment(EnvType.CLIENT)
 public interface ScrollerRenderer {

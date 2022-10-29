@@ -1,13 +1,13 @@
 package org.wunder.lib.math.sdf.shapes;
 
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.KeyDispatchDataCodec;
+
 import org.wunder.lib.math.Float3;
 import org.wunder.lib.math.Transform;
 import org.wunder.lib.math.sdf.SDF;
 import org.wunder.lib.math.sdf.interfaces.Rotatable;
-
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.KeyDispatchDataCodec;
 
 //based on https://iquilezles.org/articles/ellipsoids/
 public class Ellipsoid extends BaseShape implements Rotatable {

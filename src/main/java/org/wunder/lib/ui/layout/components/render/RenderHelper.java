@@ -1,9 +1,5 @@
 package org.wunder.lib.ui.layout.components.render;
 
-import org.wunder.lib.ui.ColorHelper;
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Size;
-
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -12,6 +8,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 import org.joml.Matrix4f;
+import org.wunder.lib.ui.ColorHelper;
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Size;
 
 public class RenderHelper {
     public static void outline(PoseStack poseStack, int x0, int y0, int x1, int y1, int color) {

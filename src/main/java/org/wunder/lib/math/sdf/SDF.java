@@ -1,13 +1,5 @@
 package org.wunder.lib.math.sdf;
 
-import org.wunder.lib.WunderLib;
-import org.wunder.lib.math.Bounds;
-import org.wunder.lib.math.Float3;
-import org.wunder.lib.math.Matrix4;
-import org.wunder.lib.math.Transform;
-import org.wunder.lib.math.sdf.interfaces.Transformable;
-import de.ambertation.lib.math.sdf.shapes.*;
-
 import com.mojang.serialization.Codec;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -16,6 +8,12 @@ import net.minecraft.util.KeyDispatchDataCodec;
 import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder;
 import net.fabricmc.fabric.api.event.registry.RegistryAttribute;
 
+import org.wunder.lib.WunderLib;
+import org.wunder.lib.math.Bounds;
+import org.wunder.lib.math.Float3;
+import org.wunder.lib.math.Matrix4;
+import org.wunder.lib.math.Transform;
+import org.wunder.lib.math.sdf.interfaces.Transformable;
 import org.wunder.lib.math.sdf.shapes.*;
 
 import java.util.Objects;

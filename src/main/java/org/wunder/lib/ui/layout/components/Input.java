@@ -1,14 +1,14 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.components.render.EditBoxRenderer;
-import org.wunder.lib.ui.layout.values.Value;
-
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.components.render.EditBoxRenderer;
+import org.wunder.lib.ui.layout.values.Value;
 
 import java.util.function.BiFunction;
 import java.util.function.Consumer;

@@ -1,14 +1,14 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Size;
-import org.wunder.lib.ui.layout.values.Value;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Size;
+import org.wunder.lib.ui.layout.values.Value;
 
 @Environment(EnvType.CLIENT)
 public class ImageButton extends Image {

@@ -1,12 +1,12 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.components.render.CheckboxRenderer;
-import org.wunder.lib.ui.layout.values.Value;
-
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.components.render.CheckboxRenderer;
+import org.wunder.lib.ui.layout.values.Value;
 
 @Environment(EnvType.CLIENT)
 public class Checkbox extends AbstractVanillaComponent<net.minecraft.client.gui.components.Checkbox, Checkbox> {

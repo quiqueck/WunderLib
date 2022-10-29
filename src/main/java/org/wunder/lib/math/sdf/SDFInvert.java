@@ -1,12 +1,12 @@
 package org.wunder.lib.math.sdf;
 
-import org.wunder.lib.math.Bounds;
-import org.wunder.lib.math.Float3;
-import org.wunder.lib.math.Transform;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.KeyDispatchDataCodec;
+
+import org.wunder.lib.math.Bounds;
+import org.wunder.lib.math.Float3;
+import org.wunder.lib.math.Transform;
 
 public class SDFInvert extends SDFOperation {
     public static final Codec<SDFInvert> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance

@@ -1,7 +1,5 @@
 package org.wunder.lib.math.sdf.shapes;
 
-import de.ambertation.lib.math.*;
-
 import org.wunder.lib.math.*;
 import org.wunder.lib.math.sdf.SDF;
 import org.wunder.lib.math.sdf.interfaces.MaterialProvider;

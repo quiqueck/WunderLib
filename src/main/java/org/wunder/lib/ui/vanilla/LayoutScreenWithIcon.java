@@ -1,12 +1,12 @@
 package org.wunder.lib.ui.vanilla;
 
-import org.wunder.lib.ui.layout.components.HorizontalStack;
-import org.wunder.lib.ui.layout.components.LayoutComponent;
-import org.wunder.lib.ui.layout.values.Size;
-
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+
+import org.wunder.lib.ui.layout.components.HorizontalStack;
+import org.wunder.lib.ui.layout.components.LayoutComponent;
+import org.wunder.lib.ui.layout.values.Size;
 
 import org.jetbrains.annotations.Nullable;
 

@@ -1,13 +1,5 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.ColorHelper;
-import org.wunder.lib.ui.layout.LineWithWidth;
-import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
-import org.wunder.lib.ui.layout.components.render.TextProvider;
-import org.wunder.lib.ui.layout.values.Alignment;
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Value;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.network.chat.Component;
@@ -15,6 +7,13 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
 
 import com.google.common.collect.ImmutableList;
+import org.wunder.lib.ui.ColorHelper;
+import org.wunder.lib.ui.layout.LineWithWidth;
+import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
+import org.wunder.lib.ui.layout.components.render.TextProvider;
+import org.wunder.lib.ui.layout.values.Alignment;
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Value;
 
 import java.util.Iterator;
 import java.util.List;

@@ -1,15 +1,15 @@
 package org.wunder.lib.math;
 
-import org.wunder.lib.math.sdf.shapes.Box;
-import org.wunder.lib.math.sdf.shapes.Ellipsoid;
-import org.wunder.lib.math.sdf.shapes.Sphere;
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
+
+import org.wunder.lib.math.sdf.shapes.Box;
+import org.wunder.lib.math.sdf.shapes.Ellipsoid;
+import org.wunder.lib.math.sdf.shapes.Sphere;
 
 public class Bounds {
     public static final Codec<Bounds> CODEC = RecordCodecBuilder.create(instance -> instance

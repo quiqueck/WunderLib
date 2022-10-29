@@ -1,11 +1,11 @@
 package org.wunder.lib.ui.layout.components.render;
 
-import org.wunder.lib.ui.layout.values.Rectangle;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.values.Rectangle;
 
 @Environment(EnvType.CLIENT)
 public class NullRenderer implements ComponentRenderer {

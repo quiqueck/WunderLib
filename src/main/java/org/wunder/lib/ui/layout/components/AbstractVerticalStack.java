@@ -1,12 +1,12 @@
 package org.wunder.lib.ui.layout.components;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
+
 import org.wunder.lib.ui.layout.components.input.RelativeContainerEventHandler;
 import org.wunder.lib.ui.layout.components.render.NullRenderer;
 import org.wunder.lib.ui.layout.values.Alignment;
 import org.wunder.lib.ui.layout.values.Value;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class AbstractVerticalStack<S extends AbstractVerticalStack<S>> extends AbstractStack<NullRenderer, S> implements RelativeContainerEventHandler {

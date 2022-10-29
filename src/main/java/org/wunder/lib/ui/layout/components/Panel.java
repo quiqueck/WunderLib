@@ -1,9 +1,6 @@
 package org.wunder.lib.ui.layout.components;
 
 
-import org.wunder.lib.ui.layout.components.input.RelativeContainerEventHandler;
-import org.wunder.lib.ui.layout.values.Rectangle;
-
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -12,6 +9,9 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.components.input.RelativeContainerEventHandler;
+import org.wunder.lib.ui.layout.values.Rectangle;
 
 import java.util.List;
 import org.jetbrains.annotations.Nullable;

@@ -1,13 +1,13 @@
 package org.wunder.lib.ui.layout.components;
 
-import org.wunder.lib.ui.layout.components.render.RangeRenderer;
-import org.wunder.lib.ui.layout.values.Value;
-import org.wunder.lib.ui.vanilla.Slider;
-
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+
+import org.wunder.lib.ui.layout.components.render.RangeRenderer;
+import org.wunder.lib.ui.layout.values.Value;
+import org.wunder.lib.ui.vanilla.Slider;
 
 @Environment(EnvType.CLIENT)
 public class Range<N extends Number> extends AbstractVanillaComponent<Slider<N>, Range<N>> {
