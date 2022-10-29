@@ -248,6 +248,9 @@ public class Float3 {
         return new Vec3(x, y, z);
     }
 
+    public Vector3f toVector3() {
+        return new Vector3f((float) x, (float) y, (float) z);
+    }
 
     public double distSquare(Float3 b) {
         return Math.pow(x - b.x, 2) +
