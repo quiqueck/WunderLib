@@ -1,6 +1,8 @@
 package org.wunder.lib.ui.layout.components;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -26,18 +28,18 @@ public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.co
     }
 
     OnPress onPress;
-    OnTooltip onTooltip;
+    Component onTooltip;
 
     boolean glow = false;
 
     public Button(
             Value width,
             Value height,
-            net.minecraft.network.chat.Component component
+            Component component
     ) {
         super(width, height, new ButtonRenderer(), component);
         this.onPress = NO_ACTION;
-        this.onTooltip = NO_TOOLTIP;
+        this.onTooltip = null;
     }
 
     public Button onPress(OnPress onPress) {
@@ -45,7 +47,7 @@ public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.co
         return this;
     }
 
-    public Button onToolTip(OnTooltip onTooltip) {
+    public Button onToolTip(Component message) {
         this.onTooltip = onTooltip;
         return this;
     }
@@ -53,11 +55,13 @@ public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.co
     @Override
     protected net.minecraft.client.gui.components.Button createVanillaComponent() {
         Button self = this;
-        return net.minecraft.client.gui.components.Button
+        var builder = net.minecraft.client.gui.components.Button
                 .builder(component, (bt) -> onPress.onPress(self))
-                .bounds(0, 0, relativeBounds.width, relativeBounds.height)
-                .tooltip((bt, stack, x, y) -> onTooltip.onTooltip(self, stack, x, y))
-                .build();
+                .bounds(0, 0, relativeBounds.width, relativeBounds.height);
+        if (onTooltip != null) {
+            builder.tooltip(Tooltip.create(onTooltip));
+        }
+        return builder.build();
     }
 
     public boolean isGlowing() {
