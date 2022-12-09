@@ -116,7 +116,10 @@ public class Float3 {
     }
 
     public double angleTo(Float3 target) {
-        return Math.acos(Math.max(-1, Math.min(1, this.dot(target) / (this.length() * target.length()))));
+        return Math.acos(Math.max(
+                -1,
+                Math.min(1, this.dot(target) / Math.sqrt(this.lengthSquare() * target.lengthSquare()))
+        ));
     }
 
     public Float3 cross(Float3 p) {
