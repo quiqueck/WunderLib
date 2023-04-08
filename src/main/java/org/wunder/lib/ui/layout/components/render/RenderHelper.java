@@ -72,7 +72,6 @@ public class RenderHelper {
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -81,7 +80,6 @@ public class RenderHelper {
         bufferBuilder.vertex(transform, (float) x1, (float) y0, 0.0F).color(cl[0], cl[1], cl[2], cl[3]).endVertex();
         bufferBuilder.vertex(transform, (float) x0, (float) y0, 0.0F).color(cl[0], cl[1], cl[2], cl[3]).endVertex();
         BufferUploader.drawWithShader(bufferBuilder.end());
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 

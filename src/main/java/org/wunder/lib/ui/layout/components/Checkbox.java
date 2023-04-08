@@ -65,4 +65,16 @@ public class Checkbox extends AbstractVanillaComponent<net.minecraft.client.gui.
         onSelectionChange.now(this, cb.selected());
         return cb;
     }
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
 }

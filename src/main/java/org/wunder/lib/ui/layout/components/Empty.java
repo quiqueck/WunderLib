@@ -29,4 +29,16 @@ public class Empty extends LayoutComponent<NullRenderer, Empty> {
     public boolean isMouseOver(double d, double e) {
         return false;
     }
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
 }

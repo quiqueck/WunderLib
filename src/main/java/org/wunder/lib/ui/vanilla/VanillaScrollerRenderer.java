@@ -21,7 +21,6 @@ public class VanillaScrollerRenderer implements ScrollerRenderer {
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        RenderSystem.disableTexture();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
 

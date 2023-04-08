@@ -107,6 +107,19 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
         return renderer.getHeight(text);
     }
 
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
+
     protected static class MultiLineTextRenderer implements ComponentRenderer, TextProvider {
         MultiLineText linkedComponent;
 

@@ -45,6 +45,18 @@ public class Text extends LayoutComponent<Text.TextRenderer, Text> {
     public int getContentHeight() {
         return renderer.getHeight(text);
     }
+    
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
 
     public static class TextRenderer implements ComponentRenderer, TextProvider {
         Text linkedComponent;

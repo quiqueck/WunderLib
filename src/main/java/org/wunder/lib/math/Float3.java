@@ -317,9 +317,9 @@ public class Float3 {
 
     public static BlockPos toBlockPos(double x, double y, double z) {
         return new BlockPos(
-                toBlockPos(x),
-                toBlockPos(y),
-                toBlockPos(z)
+                (int) toBlockPos(x),
+                (int) toBlockPos(y),
+                (int) toBlockPos(z)
         );
     }
 

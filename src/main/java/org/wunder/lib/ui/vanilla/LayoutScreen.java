@@ -101,7 +101,7 @@ public abstract class LayoutScreen extends Screen {
     }
 
     protected void renderBackground(PoseStack poseStack, int i, int j, float f) {
-        renderDirtBackground(i);
+        renderDirtBackground(poseStack);
     }
 
     @Override

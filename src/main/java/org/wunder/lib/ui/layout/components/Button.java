@@ -67,4 +67,16 @@ public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.co
     public boolean isGlowing() {
         return glow;
     }
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
 }

@@ -89,4 +89,16 @@ public class Range<N extends Number> extends AbstractVanillaComponent<Slider<N>,
         );
         return dummy.getValueComponent(maxValue);
     }
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
 }

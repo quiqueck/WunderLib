@@ -43,4 +43,16 @@ public class HLine extends CustomRenderComponent {
     public int getContentHeight() {
         return 1;
     }
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
+    }
 }

@@ -29,9 +29,17 @@ public class Item extends CustomRenderComponent {
     @Override
     protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
         final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        itemRenderer.renderAndDecorateItem(Minecraft.getInstance().player, itemStack, bounds.left, bounds.top, 0);
+        itemRenderer.renderAndDecorateItem(
+                stack,
+                Minecraft.getInstance().player,
+                itemStack,
+                bounds.left,
+                bounds.top,
+                0
+        );
         if (decoration != null) {
             itemRenderer.renderGuiItemDecorations(
+                    stack,
                     Minecraft.getInstance().font,
                     itemStack,
                     bounds.left,
@@ -40,6 +48,7 @@ public class Item extends CustomRenderComponent {
             );
         } else if (itemStack.getCount() > 1) {
             itemRenderer.renderGuiItemDecorations(
+                    stack,
                     Minecraft.getInstance().font,
                     itemStack,
                     bounds.left,
@@ -57,5 +66,17 @@ public class Item extends CustomRenderComponent {
     @Override
     public int getContentHeight() {
         return 16;
+    }
+
+    private boolean focused;
+
+    @Override
+    public boolean isFocused() {
+        return focused;
+    }
+
+    @Override
+    public void setFocused(boolean bl) {
+        focused = bl;
     }
 }
