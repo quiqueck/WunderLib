@@ -1,15 +1,15 @@
 package org.wunder.lib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.network.chat.Component;
-
 import org.wunder.lib.ui.ColorHelper;
 import org.wunder.lib.ui.layout.components.render.ComponentRenderer;
 import org.wunder.lib.ui.layout.components.render.TextProvider;
 import org.wunder.lib.ui.layout.values.Alignment;
 import org.wunder.lib.ui.layout.values.Rectangle;
 import org.wunder.lib.ui.layout.values.Value;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.network.chat.Component;
 
 public class Text extends LayoutComponent<Text.TextRenderer, Text> {
     net.minecraft.network.chat.Component text;
@@ -45,7 +45,7 @@ public class Text extends LayoutComponent<Text.TextRenderer, Text> {
     public int getContentHeight() {
         return renderer.getHeight(text);
     }
-    
+
     private boolean focused;
 
     @Override

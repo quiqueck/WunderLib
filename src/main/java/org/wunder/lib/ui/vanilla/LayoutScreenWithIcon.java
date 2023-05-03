@@ -1,12 +1,12 @@
 package org.wunder.lib.ui.vanilla;
 
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-
 import org.wunder.lib.ui.layout.components.HorizontalStack;
 import org.wunder.lib.ui.layout.components.LayoutComponent;
 import org.wunder.lib.ui.layout.values.Size;
+
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +22,7 @@ public abstract class LayoutScreenWithIcon extends LayoutScreen {
             ResourceLocation icon,
             Component component
     ) {
-        this(parent, icon, component, 20, 10, 20);
+        this(parent, icon, component, 20, 10, 20, 15);
     }
 
     public LayoutScreenWithIcon(
@@ -33,13 +33,25 @@ public abstract class LayoutScreenWithIcon extends LayoutScreen {
             int bottomPadding,
             int sidePadding
     ) {
-        super(parent, component, topPadding, bottomPadding, sidePadding);
+        this(parent, icon, component, topPadding, bottomPadding, sidePadding, 15);
+    }
+
+    public LayoutScreenWithIcon(
+            @Nullable Screen parent,
+            ResourceLocation icon,
+            Component component,
+            int topPadding,
+            int bottomPadding,
+            int sidePadding,
+            int titleSpacing
+    ) {
+        super(parent, component, topPadding, bottomPadding, sidePadding, titleSpacing);
         this.icon = icon;
     }
 
     @Override
-    protected LayoutComponent<?, ?> buildTitle() {
-        LayoutComponent<?, ?> title = super.buildTitle();
+    protected LayoutComponent<?, ?> createTitle() {
+        LayoutComponent<?, ?> title = super.createTitle();
         HorizontalStack row = new HorizontalStack(fill(), fit()).setDebugName("title bar");
         row.addFiller();
         row.addIcon(icon, Size.of(512)).setDebugName("icon");

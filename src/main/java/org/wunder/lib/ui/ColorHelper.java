@@ -22,6 +22,9 @@ public class ColorHelper {
     public static final int WHITE = ChatFormatting.WHITE.getColor() | 0xFF000000;
     public static final int DEFAULT_TEXT = WHITE;
 
+    public static final int SCREEN_BACKGROUND = 0xFF343444;
+    public static final int CONTAINER_BACKGROUND = 0x77000000;
+
     public static int color(int r, int g, int b) {
         return FastColor.ARGB32.color(0xff, r, g, b);
     }

@@ -1,12 +1,13 @@
 package org.wunder.lib.ui.layout.components;
 
+import org.wunder.lib.ui.layout.values.Rectangle;
+import org.wunder.lib.ui.layout.values.Value;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.world.item.ItemStack;
-
-import org.wunder.lib.ui.layout.values.Rectangle;
-import org.wunder.lib.ui.layout.values.Value;
+import net.minecraft.world.level.ItemLike;
 
 public class Item extends CustomRenderComponent {
     private ItemStack itemStack;
@@ -14,6 +15,10 @@ public class Item extends CustomRenderComponent {
 
     public Item(Value width, Value height) {
         super(width, height);
+    }
+
+    public Item setItem(ItemLike item) {
+        return setItem(new ItemStack(item));
     }
 
     public Item setItem(ItemStack item) {
@@ -29,13 +34,11 @@ public class Item extends CustomRenderComponent {
     @Override
     protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
         final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        itemRenderer.renderAndDecorateItem(
+        itemRenderer.renderAndDecorateFakeItem(
                 stack,
-                Minecraft.getInstance().player,
                 itemStack,
                 bounds.left,
-                bounds.top,
-                0
+                bounds.top
         );
         if (decoration != null) {
             itemRenderer.renderGuiItemDecorations(
