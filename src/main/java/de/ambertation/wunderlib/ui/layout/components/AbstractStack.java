@@ -1,6 +1,13 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
+import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
+import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+import de.ambertation.wunderlib.ui.layout.values.Size;
+import de.ambertation.wunderlib.ui.layout.values.Value;
+import de.ambertation.wunderlib.ui.vanilla.VanillaScrollerRenderer;
+
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -8,13 +15,6 @@ import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
-import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
-import de.ambertation.wunderlib.ui.layout.values.Rectangle;
-import de.ambertation.wunderlib.ui.layout.values.Size;
-import de.ambertation.wunderlib.ui.layout.values.Value;
-import de.ambertation.wunderlib.ui.vanilla.VanillaScrollerRenderer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -59,16 +59,16 @@ public abstract class AbstractStack<R extends ComponentRenderer, T extends Abstr
 
     @Override
     protected void renderInBounds(
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
             Rectangle renderBounds,
             Rectangle clipRect
     ) {
-        super.renderInBounds(poseStack, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
+        super.renderInBounds(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
         for (LayoutComponent<?, ?> c : components) {
-            c.render(poseStack, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
+            c.render(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
         }
     }
 

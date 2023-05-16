@@ -1,18 +1,17 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
 import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.components.render.RenderHelper;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
 
         @Override
         public void renderInBounds(
-                PoseStack stack,
+                GuiGraphics guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,
@@ -34,10 +33,10 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
         ) {
             if (linkedContainer != null) {
                 if ((linkedContainer.backgroundColor & 0xFF000000) != 0)
-                    GuiComponent.fill(stack, 0, 0, bounds.width, bounds.height, linkedContainer.backgroundColor);
+                    guiGraphics.fill(0, 0, bounds.width, bounds.height, linkedContainer.backgroundColor);
 
                 if ((linkedContainer.outlineColor & 0xFF000000) != 0)
-                    RenderHelper.outline(stack, 0, 0, bounds.width, bounds.height, linkedContainer.outlineColor);
+                    RenderHelper.outline(guiGraphics, 0, 0, bounds.width, bounds.height, linkedContainer.outlineColor);
             }
         }
     }
@@ -226,7 +225,7 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
 
     @Override
     protected void renderInBounds(
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -234,12 +233,12 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
             Rectangle clipRect
     ) {
         if (visible) {
-            super.renderInBounds(poseStack, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
+            super.renderInBounds(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
 
             setClippingRect(clipRect);
             for (var child : children) {
                 child.component.render(
-                        poseStack, mouseX, mouseY, deltaTicks,
+                        guiGraphics, mouseX, mouseY, deltaTicks,
                         renderBounds, clipRect
                 );
             }

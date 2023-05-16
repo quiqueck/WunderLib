@@ -1,18 +1,18 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.events.ContainerEventHandler;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.layout.components.render.NullRenderer;
 import de.ambertation.wunderlib.ui.layout.components.render.ScrollerRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 import de.ambertation.wunderlib.ui.vanilla.VanillaScrollerRenderer;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.ContainerEventHandler;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
@@ -140,32 +140,32 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
     @Override
     protected void renderInBounds(
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
             Rectangle renderBounds,
             Rectangle clipRect
     ) {
-        super.renderInBounds(poseStack, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
+        super.renderInBounds(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
 
         if (showScrollBar()) {
             if (child != null) {
-                poseStack.pushPose();
-                poseStack.translate(0, scrollerOffset(), 0);
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(0, scrollerOffset(), 0);
                 setClippingRect(clipRect);
                 child.render(
-                        poseStack, mouseX, mouseY - scrollerOffset(), deltaTicks,
+                        guiGraphics, mouseX, mouseY - scrollerOffset(), deltaTicks,
                         renderBounds.movedBy(0, scrollerOffset(), scrollerWidth(), 0),
                         clipRect
                 );
                 setClippingRect(null);
-                poseStack.popPose();
+                guiGraphics.pose().popPose();
             }
             scrollerRenderer.renderScrollBar(renderBounds, saveScrollerY(), scrollerHeight);
         } else {
             if (child != null) {
-                child.render(poseStack, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
+                child.render(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
             }
         }
     }

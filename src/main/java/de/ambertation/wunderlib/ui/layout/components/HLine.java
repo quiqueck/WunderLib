@@ -1,15 +1,15 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.components.render.RenderHelper;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class HLine extends CustomRenderComponent {
@@ -27,11 +27,18 @@ public class HLine extends CustomRenderComponent {
     }
 
     @Override
-    protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
+    protected void customRender(
+            GuiGraphics guiGraphics,
+            int x,
+            int y,
+            float deltaTicks,
+            Rectangle bounds,
+            Rectangle clipRect
+    ) {
         int top = bounds.height - getContentHeight();
         if (vAlign == Alignment.CENTER) top /= 2;
         else if (vAlign == Alignment.MIN) top = 0;
-        RenderHelper.hLine(stack, 0, bounds.width, top, color);
+        RenderHelper.hLine(guiGraphics, 0, bounds.width, top, color);
     }
 
     @Override

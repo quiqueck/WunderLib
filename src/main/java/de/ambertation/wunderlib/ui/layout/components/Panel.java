@@ -1,7 +1,10 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
+import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -9,9 +12,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
-import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
 import java.util.List;
 import org.jetbrains.annotations.Nullable;
@@ -99,12 +99,12 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float deltaTicks) {
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
         if (child != null) {
-            poseStack.pushPose();
-            poseStack.translate(bounds.left, bounds.top, 0);
-            child.render(poseStack, mouseX - bounds.left, mouseY - bounds.top, deltaTicks, bounds, bounds);
-            poseStack.popPose();
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(bounds.left, bounds.top, 0);
+            child.render(guiGraphics, mouseX - bounds.left, mouseY - bounds.top, deltaTicks, bounds, bounds);
+            guiGraphics.pose().popPose();
         }
     }
 

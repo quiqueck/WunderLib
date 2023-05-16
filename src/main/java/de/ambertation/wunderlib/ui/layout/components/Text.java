@@ -7,8 +7,7 @@ import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 
 public class Text extends LayoutComponent<Text.TextRenderer, Text> {
@@ -73,7 +72,7 @@ public class Text extends LayoutComponent<Text.TextRenderer, Text> {
 
         @Override
         public void renderInBounds(
-                PoseStack stack,
+                GuiGraphics guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,
@@ -89,7 +88,7 @@ public class Text extends LayoutComponent<Text.TextRenderer, Text> {
                 if (linkedComponent.vAlign == Alignment.MIN) top = 0;
                 if (linkedComponent.vAlign == Alignment.CENTER) top = top / 2 + 1;
 
-                GuiComponent.drawString(stack, getFont(), linkedComponent.text, left, top, linkedComponent.color);
+                guiGraphics.drawString(getFont(), linkedComponent.text, left, top, linkedComponent.color);
             }
         }
     }

@@ -1,15 +1,14 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.GuiComponent;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.components.render.RenderHelper;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class ColorSwatch extends CustomRenderComponent<ColorSwatch> {
@@ -23,10 +22,17 @@ public class ColorSwatch extends CustomRenderComponent<ColorSwatch> {
     }
 
     @Override
-    protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
+    protected void customRender(
+            GuiGraphics guiGraphics,
+            int x,
+            int y,
+            float deltaTicks,
+            Rectangle bounds,
+            Rectangle clipRect
+    ) {
         int o = offsetInner ? 2 : 1;
-        RenderHelper.outline(stack, 0, 0, bounds.width, bounds.height, borderColor);
-        GuiComponent.fill(stack, o, o, bounds.width - o, bounds.height - o, color);
+        RenderHelper.outline(guiGraphics, 0, 0, bounds.width, bounds.height, borderColor);
+        guiGraphics.fill(o, o, bounds.width - o, bounds.height - o, color);
     }
 
     public int getColor() {

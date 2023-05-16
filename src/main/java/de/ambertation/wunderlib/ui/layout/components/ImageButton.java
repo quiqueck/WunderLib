@@ -1,14 +1,14 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+import de.ambertation.wunderlib.ui.layout.values.Size;
+import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.values.Rectangle;
-import de.ambertation.wunderlib.ui.layout.values.Size;
-import de.ambertation.wunderlib.ui.layout.values.Value;
 
 @Environment(EnvType.CLIENT)
 public class ImageButton extends Image {
@@ -19,7 +19,7 @@ public class ImageButton extends Image {
 
     @Environment(EnvType.CLIENT)
     public interface OnTooltip {
-        void onTooltip(ImageButton button, PoseStack poseStack, int mouseX, int mouseY);
+        void onTooltip(ImageButton button, GuiGraphics guiGraphics, int mouseX, int mouseY);
     }
 
     @Environment(EnvType.CLIENT)
@@ -102,16 +102,16 @@ public class ImageButton extends Image {
 
     @Override
     protected void customRender(
-            PoseStack stack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
             Rectangle bounds,
             Rectangle clipRect
     ) {
-        super.customRender(stack, mouseX, mouseY, deltaTicks, bounds, clipRect);
+        super.customRender(guiGraphics, mouseX, mouseY, deltaTicks, bounds, clipRect);
         if (getRelativeBounds().contains(mouseX, mouseY)) {
-            onTooltip.onTooltip(this, stack, mouseX, mouseY);
+            onTooltip.onTooltip(this, guiGraphics, mouseX, mouseY);
         }
     }
 }

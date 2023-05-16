@@ -1,17 +1,17 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public abstract class LayoutComponent<R extends ComponentRenderer, L extends LayoutComponent<R, L>> implements ComponentWithBounds, GuiEventListener {
@@ -100,7 +100,7 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     }
 
     public void render(
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -109,17 +109,17 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     ) {
         Rectangle r = relativeBounds.movedBy(parentBounds.left, parentBounds.top);
         Rectangle clip = r.intersect(clipRect);
-        poseStack.pushPose();
-        poseStack.translate(relativeBounds.left, relativeBounds.top, 0);
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(relativeBounds.left, relativeBounds.top, 0);
         //if (r.overlaps(clip))
         {
-            renderInBounds(poseStack, mouseX - relativeBounds.left, mouseY - relativeBounds.top, deltaTicks, r, clip);
+            renderInBounds(guiGraphics, mouseX - relativeBounds.left, mouseY - relativeBounds.top, deltaTicks, r, clip);
         }
-        poseStack.popPose();
+        guiGraphics.pose().popPose();
     }
 
     protected void renderInBounds(
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -128,7 +128,7 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     ) {
         if (renderer != null) {
             setClippingRect(clipRect);
-            renderer.renderInBounds(poseStack, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
+            renderer.renderInBounds(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
             setClippingRect(null);
         }
     }

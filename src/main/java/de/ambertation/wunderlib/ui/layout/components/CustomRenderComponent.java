@@ -1,13 +1,13 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> extends LayoutComponent<CustomRenderComponent.CustomRenderRenderer<C>, C> {
@@ -20,7 +20,7 @@ public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> 
     }
 
     protected abstract void customRender(
-            PoseStack stack,
+            GuiGraphics guiGraphics,
             int x,
             int y,
             float deltaTicks,
@@ -33,7 +33,7 @@ public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> 
 
         @Override
         public void renderInBounds(
-                PoseStack stack,
+                GuiGraphics guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,
@@ -41,7 +41,7 @@ public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> 
                 Rectangle clipRect
         ) {
             if (linkedComponent != null) {
-                linkedComponent.customRender(stack, mouseX, mouseY, deltaTicks, bounds, clipRect);
+                linkedComponent.customRender(guiGraphics, mouseX, mouseY, deltaTicks, bounds, clipRect);
             }
         }
     }

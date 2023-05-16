@@ -4,9 +4,9 @@ import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.components.*;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -113,14 +113,15 @@ public abstract class LayoutScreen extends Screen {
         return cols;
     }
 
-    protected void renderBackground(PoseStack poseStack, int i, int j, float f) {
-        renderDirtBackground(poseStack);
+    protected void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
+        renderDirtBackground(guiGraphics);
     }
 
+
     @Override
-    public void render(PoseStack poseStack, int i, int j, float f) {
-        renderBackground(poseStack, i, j, f);
-        super.render(poseStack, i, j, f);
+    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+        renderBackground(guiGraphics, i, j, f);
+        super.render(guiGraphics, i, j, f);
     }
 
     final protected void close() {

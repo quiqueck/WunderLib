@@ -1,12 +1,5 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.gui.components.MultiLineLabel;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-
-import com.google.common.collect.ImmutableList;
 import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.LineWithWidth;
 import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
@@ -14,6 +7,14 @@ import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.MultiLineLabel;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
+
+import com.google.common.collect.ImmutableList;
 
 import java.util.Iterator;
 import java.util.List;
@@ -139,7 +140,7 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
 
         @Override
         public void renderInBounds(
-                PoseStack stack,
+                GuiGraphics guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,
@@ -153,7 +154,7 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
 
                 if (linkedComponent.hAlign == Alignment.CENTER) {
                     linkedComponent.multiLineLabel.renderCentered(
-                            stack, bounds.width / 2, top,
+                            guiGraphics, bounds.width / 2, top,
                             getLineHeight(linkedComponent.text),
                             linkedComponent.color
                     );
@@ -163,8 +164,8 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
 
                     for (Iterator<LineWithWidth> iter = linkedComponent.lines.iterator(); iter.hasNext(); lineY += lineHeight) {
                         LineWithWidth textWithWidth = iter.next();
-                        getFont().drawShadow(
-                                stack,
+                        guiGraphics.drawString(
+                                getFont(),
                                 textWithWidth.text(),
                                 linkedComponent.width.calculatedSize() - textWithWidth.width(),
                                 lineY,
@@ -173,7 +174,7 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
                     }
                 } else {
                     linkedComponent.multiLineLabel.renderLeftAligned(
-                            stack, 0, top,
+                            guiGraphics, 0, top,
                             getLineHeight(linkedComponent.text),
                             linkedComponent.color
                     );

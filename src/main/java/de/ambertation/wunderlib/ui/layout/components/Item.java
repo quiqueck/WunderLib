@@ -3,9 +3,8 @@ package de.ambertation.wunderlib.ui.layout.components;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -32,17 +31,21 @@ public class Item extends CustomRenderComponent {
     }
 
     @Override
-    protected void customRender(PoseStack stack, int x, int y, float deltaTicks, Rectangle bounds, Rectangle clipRect) {
-        final ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
-        itemRenderer.renderAndDecorateFakeItem(
-                stack,
+    protected void customRender(
+            GuiGraphics guiGraphics,
+            int x,
+            int y,
+            float deltaTicks,
+            Rectangle bounds,
+            Rectangle clipRect
+    ) {
+        guiGraphics.renderFakeItem(
                 itemStack,
                 bounds.left,
                 bounds.top
         );
         if (decoration != null) {
-            itemRenderer.renderGuiItemDecorations(
-                    stack,
+            guiGraphics.renderItemDecorations(
                     Minecraft.getInstance().font,
                     itemStack,
                     bounds.left,
@@ -50,8 +53,7 @@ public class Item extends CustomRenderComponent {
                     decoration
             );
         } else if (itemStack.getCount() > 1) {
-            itemRenderer.renderGuiItemDecorations(
-                    stack,
+            guiGraphics.renderItemDecorations(
                     Minecraft.getInstance().font,
                     itemStack,
                     bounds.left,

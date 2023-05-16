@@ -1,15 +1,15 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.resources.ResourceLocation;
-
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-
 import de.ambertation.wunderlib.ui.layout.components.render.RenderHelper;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Size;
 import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class Image extends CustomRenderComponent {
@@ -82,14 +82,14 @@ public class Image extends CustomRenderComponent {
 
     @Override
     protected void customRender(
-            PoseStack stack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
             Rectangle bounds,
             Rectangle clipRect
     ) {
-        RenderHelper.renderImage(stack, 0, 0, bounds.width, bounds.height, location, resourceSize, uvRect, alpha);
+        RenderHelper.renderImage(guiGraphics, 0, 0, bounds.width, bounds.height, location, resourceSize, uvRect, alpha);
     }
 
     @Override

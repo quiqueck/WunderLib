@@ -1,14 +1,14 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
+import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
+import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
-import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
-import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
 @Environment(EnvType.CLIENT)
 public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extends AbstractVanillaComponent<C, V>> implements ComponentRenderer, TextProvider {
@@ -20,7 +20,7 @@ public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extend
 
     @Override
     public void renderInBounds(
-            PoseStack poseStack,
+            GuiGraphics guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -32,7 +32,7 @@ public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extend
                 if (!linkedComponent.enabled) {
                     linkedComponent.vanillaComponent.setAlpha(linkedComponent.alpha / 2);
                 }
-                linkedComponent.vanillaComponent.render(poseStack, mouseX, mouseY, deltaTicks);
+                linkedComponent.vanillaComponent.render(guiGraphics, mouseX, mouseY, deltaTicks);
                 if (!linkedComponent.enabled) {
                     linkedComponent.vanillaComponent.setAlpha(linkedComponent.alpha);
                 }
