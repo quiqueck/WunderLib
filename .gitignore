@@ -6,3 +6,5 @@
 /run-client/
 /build/
 /bin/
+/CHANGES.md
+/consts.js
