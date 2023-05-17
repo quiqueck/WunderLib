@@ -1,25 +1,25 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import de.ambertation.wunderlib.ui.layout.components.render.ButtonRenderer;
+import de.ambertation.wunderlib.ui.layout.values.Value;
+
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-import de.ambertation.wunderlib.ui.layout.components.render.ButtonRenderer;
-import de.ambertation.wunderlib.ui.layout.values.Value;
-
 @Environment(EnvType.CLIENT)
 public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.components.Button, Button> {
-    public static final OnTooltip NO_TOOLTIP = (button, poseStack, i, j) -> {
+    public static final OnTooltip NO_TOOLTIP = (button, guiGraphics, i, j) -> {
     };
     public static final OnPress NO_ACTION = (button) -> {
     };
 
     @Environment(EnvType.CLIENT)
     public interface OnTooltip {
-        void onTooltip(Button button, PoseStack poseStack, int mouseX, int mouseY);
+        void onTooltip(Button button, GuiGraphics guiGraphics, int mouseX, int mouseY);
     }
 
     @Environment(EnvType.CLIENT)
