@@ -22,6 +22,13 @@ public class Float3 {
     public static final Float3 mY_AXIS = Float3.of(0, -1, 0);
     public static final Float3 mZ_AXIS = Float3.of(0, 0, -1);
 
+    public static final Float3 SOUTH = Z_AXIS;
+    public static final Float3 NORTH = mZ_AXIS;
+    public static final Float3 EAST = X_AXIS;
+    public static final Float3 WEST = mX_AXIS;
+    public static final Float3 UP = Y_AXIS;
+    public static final Float3 DOWN = mY_AXIS;
+
     public static final Float3 XZ_PLANE = Float3.of(1, 0, 1);
     public static final Float3 mXZ_PLANE = Float3.of(-1, 0, 1);
     public static final Float3 XmZ_PLANE = Float3.of(1, 0, -1);
@@ -85,11 +92,11 @@ public class Float3 {
     }
 
     public static Float3 blockAligned(double x, double y, double z) {
-        return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
+        return new Float3(toAlignedPos(x), toAlignedPos(y), toAlignedPos(z));
     }
 
     public Float3 blockAligned() {
-        return new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z));
+        return new Float3(toAlignedPos(x), toAlignedPos(y), toAlignedPos(z));
     }
 
     /**
@@ -100,7 +107,7 @@ public class Float3 {
      * @return The same position or the block-Aligned position.
      */
     public Float3 align(boolean toBlock) {
-        return toBlock ? new Float3(toBlockPos(x), toBlockPos(y), toBlockPos(z)) : this;
+        return toBlock ? new Float3(toAlignedPos(x), toAlignedPos(y), toAlignedPos(z)) : this;
     }
 
     public Float3 div(Float3 p) {
@@ -307,7 +314,11 @@ public class Float3 {
         return Math.abs(a) > Math.abs(b) ? a : b;
     }
 
-    public static double toBlockPos(double d) {
+    public static int toBlockPos(double d) {
+        return (int) d;
+    }
+
+    public static double toAlignedPos(double d) {
         return (int) Math.round(d + 0.5) - 0.5;
     }
 
