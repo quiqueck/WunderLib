@@ -1,15 +1,16 @@
 package de.ambertation.wunderlib.math;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.BlockPos;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
-import net.minecraft.world.phys.AABB;
-
 import de.ambertation.wunderlib.math.sdf.shapes.Box;
 import de.ambertation.wunderlib.math.sdf.shapes.Ellipsoid;
 import de.ambertation.wunderlib.math.sdf.shapes.Sphere;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.phys.AABB;
 
 public class Bounds {
     public static final Codec<Bounds> CODEC = RecordCodecBuilder.create(instance -> instance
@@ -196,6 +197,17 @@ public class Bounds {
 
     public static Bounds of(BlockPos pos) {
         return new Bounds(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static Bounds of(BlockPos pos, Vec3i size) {
+        return new Bounds(
+                pos.getX(),
+                pos.getY(),
+                pos.getZ(),
+                pos.getX() + size.getX(),
+                pos.getY() + size.getY(),
+                pos.getZ() + size.getZ()
+        );
     }
 
     public static Bounds of(Float3 pos) {
