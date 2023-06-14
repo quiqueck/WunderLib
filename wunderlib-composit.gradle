@@ -5,4 +5,5 @@ plugins {
     id 'maven-publish'
 }
 
+print("wunderlib-composite.gradle")
 apply from: "wunderlib.gradle"

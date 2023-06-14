@@ -4,7 +4,7 @@ plugins {
     id 'fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
-
+print("build.gradle")
 apply from: "wunderlib.gradle"
 
 //from https://lowcarbrob.medium.com/android-pro-tip-generating-your-apps-changelog-from-git-inside-build-gradle-19a07533eec4
