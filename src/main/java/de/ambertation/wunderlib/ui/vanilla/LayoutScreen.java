@@ -124,7 +124,7 @@ public abstract class LayoutScreen extends Screen {
         super.render(guiGraphics, i, j, f);
     }
 
-    final protected void close() {
+    final protected void closeScreen() {
         onClose();
     }
 

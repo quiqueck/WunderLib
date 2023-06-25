@@ -71,7 +71,7 @@ public class ConfigScreen extends LayoutScreen {
         HorizontalStack buttons = new HorizontalStack(fill(), fixed(20)).setDebugName("buttons");
         buttons.addFiller();
         buttons.addButton(fit(), fit(), CommonComponents.GUI_DONE).onPress((bt) -> {
-            this.close();
+            this.closeScreen();
         });
 
         VerticalStack all = new VerticalStack(fill(), fill()).setDebugName("all");
