@@ -2,7 +2,7 @@
 
 # WunderLib
 
-BCLib is a library mod mainly focused on UI and Math, MC 1.19
+WunderLib is a library mod mainly focused on UI and Math, MC 1.19
 
 ## Importing:
 
