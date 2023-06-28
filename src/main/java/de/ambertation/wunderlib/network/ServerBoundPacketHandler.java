@@ -1,5 +1,7 @@
 package de.ambertation.wunderlib.network;
 
+import de.ambertation.wunderlib.utils.EnvHelper;
+
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -7,18 +9,25 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 import net.fabricmc.api.EnvType;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public abstract class ServerBoundPacketHandler<D> {
     protected ResourceLocation CHANNEL;
+    SendToServerAdapter sendToServerAdapter;
+    static List<ServerBoundPacketHandler<?>> packetHandlers = new LinkedList<>();
 
     public static <D, T extends ServerBoundPacketHandler<D>> T register(ResourceLocation channel, T packetHandler) {
         packetHandler.CHANNEL = channel;
+        packetHandlers.add(packetHandler);
+        packetHandler.onRegister();
+
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayNetworking.registerReceiver(
                     handler,
@@ -35,17 +44,13 @@ public abstract class ServerBoundPacketHandler<D> {
     }
 
     public void sendToServer(D content) {
-        if (FabricLoader.getInstance().getEnvironmentType() == EnvType.CLIENT) {
-            _sendToServer(content);
+        if (sendToServerAdapter!=null && EnvHelper.isClient()) {
+            FriendlyByteBuf buf = PacketByteBufs.create();
+            serializeOnClient(buf, content);
+            sendToServerAdapter.sendToServer(CHANNEL, buf);
         } else {
             //
         }
-    }
-
-    private void _sendToServer(D content) {
-        FriendlyByteBuf buf = PacketByteBufs.create();
-        serializeOnClient(buf, content);
-        ClientPlayNetworking.send(CHANNEL, buf);
     }
 
     void receiveOnServer(
