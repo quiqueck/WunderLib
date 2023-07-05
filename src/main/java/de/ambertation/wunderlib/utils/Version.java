@@ -14,6 +14,10 @@ public class Version {
     public interface ModVersionProvider {
         Version getModVersion();
         String getModID();
+
+        default String getNamespace() {
+            return getModID();
+        }
         default ResourceLocation mk(String key) {
             return new ResourceLocation(getModID(), key);
         }

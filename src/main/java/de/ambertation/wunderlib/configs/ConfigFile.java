@@ -30,7 +30,7 @@ public class ConfigFile {
     private final Version.ModVersionProvider versionProvider;
 
     public ConfigFile(Version.ModVersionProvider versionProvider, String category) {
-        this(versionProvider, versionProvider.getModID(), category);
+        this(versionProvider, versionProvider.getNamespace(), category);
     }
 
     public ConfigFile(Version.ModVersionProvider versionProvider, String basePath, String category) {
