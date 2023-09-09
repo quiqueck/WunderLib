@@ -133,9 +133,9 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
     }
 
     @Override
-    public void updateScreenBounds(int worldX, int worldY) {
-        super.updateScreenBounds(worldX, worldY);
-        child.updateScreenBounds(screenBounds.left, screenBounds.top);
+    public void updateScreenBounds(Panel parentpanel, int worldX, int worldY) {
+        super.updateScreenBounds(parentpanel, worldX, worldY);
+        child.updateScreenBounds(parentpanel, screenBounds.left, screenBounds.top);
     }
 
     @Override
@@ -162,7 +162,7 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
                 setClippingRect(null);
                 guiGraphics.pose().popPose();
             }
-            scrollerRenderer.renderScrollBar(renderBounds, saveScrollerY(), scrollerHeight);
+            scrollerRenderer.renderScrollBar(renderBounds, saveScrollerY(), scrollerHeight, getZIndex());
         } else {
             if (child != null) {
                 child.render(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);

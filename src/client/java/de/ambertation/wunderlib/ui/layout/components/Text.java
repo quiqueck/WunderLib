@@ -93,6 +93,7 @@ public class Text extends LayoutComponent<Text.TextRenderer, Text> {
         }
     }
 
+
     @Override
     public boolean isMouseOver(double d, double e) {
         return false;

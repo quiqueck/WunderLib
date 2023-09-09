@@ -56,7 +56,7 @@ public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.co
     protected net.minecraft.client.gui.components.Button createVanillaComponent() {
         Button self = this;
         var builder = net.minecraft.client.gui.components.Button
-                .builder(component, (bt) -> onPress.onPress(self))
+                .builder(contentComponent(), (bt) -> onPress.onPress(self))
                 .bounds(0, 0, relativeBounds.width, relativeBounds.height);
         if (onTooltip != null) {
             builder.tooltip(Tooltip.create(onTooltip));

@@ -24,6 +24,8 @@ public class ColorHelper {
 
     public static final int SCREEN_BACKGROUND = 0xFF343444;
     public static final int CONTAINER_BACKGROUND = 0x77000000;
+    public static final int OVERLAY_BACKGROUND = 0x97000000;
+    public static final int OVERLAY_BORDER = 0x555566FF;
 
     public static int color(int r, int g, int b) {
         return FastColor.ARGB32.color(0xff, r, g, b);

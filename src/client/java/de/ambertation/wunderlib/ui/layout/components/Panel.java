@@ -3,6 +3,7 @@ package de.ambertation.wunderlib.ui.layout.components;
 
 import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+import de.ambertation.wunderlib.ui.vanilla.LayoutScreen;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Renderable;
@@ -21,30 +22,46 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     protected LayoutComponent<?, ?> child;
     List<? extends GuiEventListener> listeners = List.of();
     public final Rectangle bounds;
+    public final LayoutScreen parentScreen;
 
-    public Panel(int width, int height) {
-        this(0, 0, width, height);
+    private float zIndex = 0;
+    private boolean inputEnabled = true;
+
+    public Panel(LayoutScreen parentScreen) {
+        this(parentScreen, 0, 0, parentScreen.width, parentScreen.height);
     }
 
-    public Panel(int left, int top, int width, int height) {
-        this(new Rectangle(left, top, width, height));
+    public Panel(LayoutScreen parentScreen, int width, int height) {
+        this(parentScreen, 0, 0, width, height);
     }
 
-    public Panel(Rectangle bounds) {
+    public Panel(LayoutScreen parentScreen, int left, int top, int width, int height) {
+        this(parentScreen, new Rectangle(left, top, width, height));
+    }
+
+    public Panel(LayoutScreen parentScreen, Rectangle bounds) {
+        this.parentScreen = parentScreen;
         this.bounds = bounds;
     }
 
-    public void setChild(LayoutComponent<?, ?> c) {
+    public Panel setZIndex(float zIndex) {
+        this.zIndex = zIndex;
+        return this;
+    }
+
+    public float getZIndex() {
+        return zIndex;
+    }
+
+    public Panel setChild(LayoutComponent<?, ?> c) {
         this.child = c;
         listeners = List.of(c);
+        return this;
     }
 
     public void calculateLayout() {
         if (child != null) {
-            child.updateContainerWidth(bounds.width);
-            child.updateContainerHeight(bounds.height);
-            child.setRelativeBounds(0, 0);
-            child.updateScreenBounds(bounds.left, bounds.top);
+            child.calculateLayoutInParent(this);
         }
     }
 
@@ -102,11 +119,64 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
         if (child != null) {
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(bounds.left, bounds.top, 0);
-            child.render(guiGraphics, mouseX - bounds.left, mouseY - bounds.top, deltaTicks, bounds, bounds);
+            guiGraphics.pose().translate(bounds.left, bounds.top, zIndex);
+            child.render(
+                    guiGraphics,
+                    inputEnabled ? mouseX - bounds.left : -1000,
+                    mouseY - bounds.top,
+                    deltaTicks,
+                    bounds,
+                    bounds
+            );
             guiGraphics.pose().popPose();
         }
     }
 
+    public Panel setInputEnabled(boolean inputEnabled) {
+        this.inputEnabled = inputEnabled;
+        return this;
+    }
 
+    @Override
+    public boolean mouseClicked(double d, double e, int i) {
+        if (inputEnabled)
+            return RelativeContainerEventHandler.super.mouseClicked(d, e, i);
+
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double d, double e, int i, double f, double g) {
+        if (inputEnabled)
+            return RelativeContainerEventHandler.super.mouseDragged(d, e, i, f, g);
+        return false;
+    }
+
+    @Override
+    public boolean mouseReleased(double d, double e, int i) {
+        if (inputEnabled)
+            return RelativeContainerEventHandler.super.mouseReleased(d, e, i);
+        return false;
+    }
+
+    @Override
+    public boolean mouseScrolled(double d, double e, double f) {
+        if (inputEnabled)
+            return RelativeContainerEventHandler.super.mouseScrolled(d, e, f);
+        return false;
+    }
+
+    @Override
+    public void mouseMoved(double d, double e) {
+        if (inputEnabled)
+            RelativeContainerEventHandler.super.mouseMoved(d, e);
+    }
+
+    @Override
+    public boolean isMouseOver(double x, double y) {
+        if (inputEnabled)
+            return RelativeContainerEventHandler.super.isMouseOver(x, y);
+
+        return false;
+    }
 }

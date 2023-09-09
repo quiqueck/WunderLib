@@ -32,8 +32,9 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
                 Rectangle clipRect
         ) {
             if (linkedContainer != null) {
-                if ((linkedContainer.backgroundColor & 0xFF000000) != 0)
+                if ((linkedContainer.backgroundColor & 0xFF000000) != 0) {
                     guiGraphics.fill(0, 0, bounds.width, bounds.height, linkedContainer.backgroundColor);
+                }
 
                 if ((linkedContainer.outlineColor & 0xFF000000) != 0)
                     RenderHelper.outline(guiGraphics, 0, 0, bounds.width, bounds.height, linkedContainer.outlineColor);
@@ -264,10 +265,10 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
     }
 
     @Override
-    public void updateScreenBounds(int worldX, int worldY) {
-        super.updateScreenBounds(worldX, worldY);
+    public void updateScreenBounds(Panel parentpanel, int worldX, int worldY) {
+        super.updateScreenBounds(parentpanel, worldX, worldY);
         for (Positional p : children) {
-            p.component.updateScreenBounds(p.left + screenBounds.left, p.top + screenBounds.top);
+            p.component.updateScreenBounds(parentpanel, p.left + screenBounds.left, p.top + screenBounds.top);
         }
     }
 

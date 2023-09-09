@@ -1,10 +1,10 @@
 package de.ambertation.wunderlib.ui.layout.components.render;
 
 
+import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
 @Environment(EnvType.CLIENT)
 public interface ScrollerRenderer {
@@ -37,5 +37,5 @@ public interface ScrollerRenderer {
         );
     }
 
-    void renderScrollBar(Rectangle renderBounds, int pickerOffset, int pickerSize);
+    void renderScrollBar(Rectangle renderBounds, int pickerOffset, int pickerSize, float zIndex);
 }

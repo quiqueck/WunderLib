@@ -24,17 +24,23 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     protected Alignment vAlign = Alignment.MIN;
     protected Alignment hAlign = Alignment.MIN;
 
+    protected Panel parentPanel;
+
     public LayoutComponent(Value width, Value height, R renderer) {
         this.width = width.attachComponent(this::getContentWidth);
         this.height = height.attachComponent(this::getContentHeight);
         this.renderer = renderer;
     }
 
-    public void reCalculateLayout() {
+    public void reCalculateLayout(Panel parentPanel) {
         updateContainerWidth(relativeBounds.width);
         updateContainerHeight(relativeBounds.height);
         setRelativeBounds(relativeBounds.left, relativeBounds.top);
-        updateScreenBounds(screenBounds.left, screenBounds.top);
+        updateScreenBounds(parentPanel, screenBounds.left, screenBounds.top);
+    }
+
+    protected float getZIndex() {
+        return parentPanel == null ? 0 : parentPanel.getZIndex();
     }
 
     protected int updateContainerWidth(int containerWidth) {
@@ -50,7 +56,8 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
         onBoundsChanged();
     }
 
-    public void updateScreenBounds(int worldX, int worldY) {
+    public void updateScreenBounds(Panel parentpanel, int worldX, int worldY) {
+        this.parentPanel = parentpanel;
         screenBounds = relativeBounds.movedBy(worldX, worldY);
     }
 
@@ -180,5 +187,12 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     @Override
     public boolean isMouseOver(double d, double e) {
         return relativeBounds.contains(d, e);
+    }
+
+    public void calculateLayoutInParent(Panel parentPanel) {
+        this.updateContainerWidth(parentPanel.bounds.width);
+        this.updateContainerHeight(parentPanel.bounds.height);
+        this.setRelativeBounds(0, 0);
+        this.updateScreenBounds(parentPanel, parentPanel.bounds.left, parentPanel.bounds.top);
     }
 }

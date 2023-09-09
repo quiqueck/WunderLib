@@ -15,14 +15,25 @@ import net.minecraft.network.chat.MutableComponent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public abstract class LayoutScreen extends Screen {
+    public interface OverlayProvider {
+        @NotNull
+        Panel getOverlay();
+
+        void willRemoveOverlay();
+    }
+
     protected final int topPadding;
     protected final int bottomPadding;
     protected final int sidePadding;
     protected final int titleSpacing;
+
+    private OverlayProvider overlayProvider = null;
+    private Panel currentOverlay = null;
 
     public LayoutScreen(Component component) {
         this(null, component, 20, 10, 20, 15);
@@ -80,7 +91,7 @@ public abstract class LayoutScreen extends Screen {
     @Override
     protected final void init() {
         super.init();
-        main = new Panel(this.width, this.height);
+        main = new Panel(this, this.width, this.height);
         main.setChild(createScreen(initContent()));
 
         main.calculateLayout();
@@ -122,6 +133,19 @@ public abstract class LayoutScreen extends Screen {
     public void render(GuiGraphics guiGraphics, int i, int j, float f) {
         renderBackground(guiGraphics, i, j, f);
         super.render(guiGraphics, i, j, f);
+
+//        guiGraphics.drawString(font, "HelloHello", 10, 10, ColorHelper.WHITE);
+//        guiGraphics.drawManaged(() -> {
+//            TooltipRenderUtil.renderTooltipBackground(guiGraphics, 0, 0, 20, 100, 400);
+//
+//        });
+//        guiGraphics.pose().pushPose();
+//        guiGraphics.pose().translate(0, 0, 400);
+//        guiGraphics.fill(20, 0, 40, 100, ColorHelper.BLUE);
+//        guiGraphics.drawString(font, "WorldWorld", 10, 30, ColorHelper.WHITE);
+//        guiGraphics.pose().popPose();
+////        guiGraphics.fill(0, 0, 20, 100, ColorHelper.RED);
+
     }
 
     final protected void closeScreen() {
@@ -164,5 +188,23 @@ public abstract class LayoutScreen extends Screen {
 
     public static MutableComponent literal(String content) {
         return Component.literal(content);
+    }
+
+
+    public void setOverlayProvider(OverlayProvider newOverlay) {
+        if (overlayProvider != null) {
+            overlayProvider.willRemoveOverlay();
+        }
+        if (currentOverlay != null) {
+            removeWidget(currentOverlay);
+            currentOverlay = null;
+        }
+        
+        overlayProvider = newOverlay;
+
+        if (overlayProvider != null) {
+            currentOverlay = overlayProvider.getOverlay();
+            addRenderableWidget(currentOverlay);
+        }
     }
 }

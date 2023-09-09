@@ -49,10 +49,10 @@ public abstract class AbstractStack<R extends ComponentRenderer, T extends Abstr
     }
 
     @Override
-    public void updateScreenBounds(int worldX, int worldY) {
-        super.updateScreenBounds(worldX, worldY);
+    public void updateScreenBounds(Panel parentpanel, int worldX, int worldY) {
+        super.updateScreenBounds(parentpanel, worldX, worldY);
         for (LayoutComponent<?, ?> c : components) {
-            c.updateScreenBounds(screenBounds.left, screenBounds.top);
+            c.updateScreenBounds(parentpanel, screenBounds.left, screenBounds.top);
         }
     }
 
