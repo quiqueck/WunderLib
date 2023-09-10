@@ -1,13 +1,13 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
+import de.ambertation.wunderlib.ui.layout.components.render.RangeRenderer;
+import de.ambertation.wunderlib.ui.layout.values.Value;
+import de.ambertation.wunderlib.ui.vanilla.Slider;
+
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.components.render.RangeRenderer;
-import de.ambertation.wunderlib.ui.layout.values.Value;
-import de.ambertation.wunderlib.ui.vanilla.Slider;
 
 @Environment(EnvType.CLIENT)
 public class Range<N extends Number> extends AbstractVanillaComponent<Slider<N>, Range<N>> {
@@ -63,13 +63,15 @@ public class Range<N extends Number> extends AbstractVanillaComponent<Slider<N>,
                 component,
                 minValue,
                 maxValue,
-                initialValue,
+                getValue(),
                 (s, v) -> onChange.now(self, v)
         );
     }
 
     public N getValue() {
-        return vanillaComponent.currentValue();
+        if (vanillaComponent != null)
+            return vanillaComponent.currentValue();
+        return initialValue;
     }
 
 

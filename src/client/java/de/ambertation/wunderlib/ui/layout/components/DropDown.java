@@ -93,8 +93,12 @@ public class DropDown<T> extends Button {
         values.add(item);
         items.add(item.component);
 
-        if (valueComponent == null) select(value, false);
         return this;
+    }
+
+    public boolean selectFirst() {
+        if (values.isEmpty()) return false;
+        return select(values.get(0).value);
     }
 
     public boolean select(T value) {

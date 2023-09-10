@@ -64,7 +64,7 @@ public abstract class LayoutScreen extends Screen {
         super(component);
         this.parent = parent;
         this.topPadding = topPadding;
-        this.bottomPadding = topPadding;
+        this.bottomPadding = bottomPadding;
         this.sidePadding = sidePadding;
         this.titleSpacing = titleSpacing;
     }
@@ -199,7 +199,7 @@ public abstract class LayoutScreen extends Screen {
             removeWidget(currentOverlay);
             currentOverlay = null;
         }
-        
+
         overlayProvider = newOverlay;
 
         if (overlayProvider != null) {

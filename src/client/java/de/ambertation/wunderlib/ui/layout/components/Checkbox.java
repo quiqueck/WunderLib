@@ -52,7 +52,7 @@ public class Checkbox extends AbstractVanillaComponent<net.minecraft.client.gui.
                 0, 0,
                 relativeBounds.width, relativeBounds.height,
                 component,
-                selected,
+                isChecked(),
                 showLabel
         ) {
             @Override
