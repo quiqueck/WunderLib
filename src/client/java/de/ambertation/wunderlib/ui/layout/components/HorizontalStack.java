@@ -1,15 +1,15 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
+import de.ambertation.wunderlib.ui.layout.values.Size;
+import de.ambertation.wunderlib.ui.layout.values.Value;
+import de.ambertation.wunderlib.ui.vanilla.VanillaScrollerRenderer;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.values.Size;
-import de.ambertation.wunderlib.ui.layout.values.Value;
-import de.ambertation.wunderlib.ui.vanilla.VanillaScrollerRenderer;
 
 @Environment(EnvType.CLIENT)
 public class HorizontalStack extends AbstractHorizontalStack<HorizontalStack> {
@@ -34,6 +34,16 @@ public class HorizontalStack extends AbstractHorizontalStack<HorizontalStack> {
     @Override
     public HorizontalStack add(LayoutComponent<?, ?> c) {
         return super.add(c);
+    }
+
+    @Override
+    public HorizontalStack replaceOrAdd(int index, LayoutComponent<?, ?> newComponent) {
+        return super.replaceOrAdd(index, newComponent);
+    }
+
+    @Override
+    public HorizontalStack replace(LayoutComponent<?, ?> oldComponent, LayoutComponent<?, ?> newComponent) {
+        return super.replace(oldComponent, newComponent);
     }
 
     public VerticalStack addColumn(Value width, Value height) {
@@ -76,6 +86,11 @@ public class HorizontalStack extends AbstractHorizontalStack<HorizontalStack> {
             boolean selected
     ) {
         return super.addCheckbox(width, height, component, selected);
+    }
+
+    @Override
+    public <T> DropDown<T> addDropDown(Value width, Value height) {
+        return super.addDropDown(width, height);
     }
 
     @Override

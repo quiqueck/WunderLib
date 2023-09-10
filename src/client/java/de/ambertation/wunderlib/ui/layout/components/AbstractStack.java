@@ -118,6 +118,29 @@ public abstract class AbstractStack<R extends ComponentRenderer, T extends Abstr
         return (T) this;
     }
 
+    protected T replace(LayoutComponent<?, ?> oldComponent, LayoutComponent<?, ?> newComponent) {
+        if (this.components.remove(oldComponent)) {
+            this.components.add(newComponent);
+        }
+        return (T) this;
+    }
+
+    public int size() {
+        return this.components.size();
+    }
+
+    protected T replaceOrAdd(int index, LayoutComponent<?, ?> newComponent) {
+        if (index < 0) {
+            return (T) this;
+        }
+        if (index >= components.size()) {
+            return add(newComponent);
+        }
+
+        components.set(index, newComponent);
+        return (T) this;
+    }
+
     protected T addSpacer(int size) {
         return addEmpty(Value.fixed(size));
     }
@@ -148,6 +171,14 @@ public abstract class AbstractStack<R extends ComponentRenderer, T extends Abstr
             boolean selected
     ) {
         Checkbox c = new Checkbox(width, height, component, selected, true);
+        add(c);
+        return c;
+    }
+
+    protected <T> DropDown<T> addDropDown(
+            Value width, Value height
+    ) {
+        DropDown<T> c = new DropDown<>(width, height);
         add(c);
         return c;
     }

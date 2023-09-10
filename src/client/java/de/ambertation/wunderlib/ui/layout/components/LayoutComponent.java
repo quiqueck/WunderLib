@@ -32,13 +32,6 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
         this.renderer = renderer;
     }
 
-    public void reCalculateLayout(Panel parentPanel) {
-        updateContainerWidth(relativeBounds.width);
-        updateContainerHeight(relativeBounds.height);
-        setRelativeBounds(relativeBounds.left, relativeBounds.top);
-        updateScreenBounds(parentPanel, screenBounds.left, screenBounds.top);
-    }
-
     protected float getZIndex() {
         return parentPanel == null ? 0 : parentPanel.getZIndex();
     }
@@ -142,11 +135,18 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
 
     @Override
     public String toString() {
-        return super.toString() + "(" +
-                (debugName == null ? "" : debugName + " - ") +
-                relativeBounds + ", " +
-                width.calculatedSize() + "x" + height.calculatedSize() +
-                ")";
+        if (debugName == null) {
+            return super.toString() + "(" +
+                    relativeBounds + ", " +
+                    width.calculatedSize() + "x" + height.calculatedSize() +
+                    ")";
+        } else {
+            return debugName + "(" +
+                    relativeBounds + ", " +
+                    width.calculatedSize() + "x" + height.calculatedSize() +
+                    ")";
+        }
+
     }
 
     public L alignTop() {
@@ -189,10 +189,15 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
         return relativeBounds.contains(d, e);
     }
 
-    public void calculateLayoutInParent(Panel parentPanel) {
+    protected void calculateLayoutInParent(Panel parentPanel) {
         this.updateContainerWidth(parentPanel.bounds.width);
         this.updateContainerHeight(parentPanel.bounds.height);
         this.setRelativeBounds(0, 0);
         this.updateScreenBounds(parentPanel, parentPanel.bounds.left, parentPanel.bounds.top);
+    }
+
+    public void recalculateLayout() {
+        if (parentPanel != null)
+            parentPanel.calculateLayout();
     }
 }

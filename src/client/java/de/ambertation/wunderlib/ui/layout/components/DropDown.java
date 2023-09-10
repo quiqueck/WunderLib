@@ -16,32 +16,30 @@ import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DropDown extends Button {
-    public interface OnChange {
-        void now(DropDown dropDown, Object value);
+public class DropDown<T> extends Button {
+    private final static Component EMPTY = Component.literal("---");
+
+    public interface OnChange<T> {
+        void now(DropDown<T> dropDown, T value);
     }
 
     Panel panel;
     private final VerticalStack items;
     private Component valueComponent;
-    private Object currentValue;
+    private T currentValue;
 
-    private List<ValueItem> values = new ArrayList<>(4);
+    private final List<ValueItem<T>> values = new ArrayList<>(4);
 
-    private OnChange onChange;
+    private OnChange<T> onChange;
 
     public DropDown(
             Value width,
-            Value height,
-            Component component
+            Value height
     ) {
-        super(width, height, component);
+        super(width, height, EMPTY);
         this.onPress = this::onPress;
 
         this.items = new VerticalStack(Value.fit(), Value.fit());
-        for (int i = 0; i < 20; i++) {
-            addItem(Component.literal("Item " + i), i);
-        }
     }
 
     public void close() {
@@ -60,24 +58,24 @@ public class DropDown extends Button {
         soundManager.play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
     }
 
-    private record ValueItem(
+    private record ValueItem<T>(
             Component title,
-            Object value,
+            T value,
             LayoutComponent<?, ?> component,
-            Consumer<ValueItem> callback) {
+            Consumer<T> callback) {
 
     }
 
-    public DropDown onChange(OnChange onChange) {
+    public DropDown<T> onChange(OnChange<T> onChange) {
         this.onChange = onChange;
         return this;
     }
 
-    public DropDown addItem(Component title, Object value) {
-        return addItem(title, value, null);
+    public DropDown<T> addOption(Component title, T value) {
+        return addOption(title, value, null);
     }
 
-    public DropDown addItem(Component title, Object value, @Nullable Consumer<ValueItem> callback) {
+    public DropDown<T> addOption(Component title, T value, @Nullable Consumer<T> callback) {
         final var component = new Text(Value.fit(), Value.fixed(20), title) {
             @Override
             public boolean mouseClicked(double d, double e, int i) {
@@ -90,8 +88,8 @@ public class DropDown extends Button {
                 return false;
             }
         };
-        
-        ValueItem item = new ValueItem(title, value, component, callback);
+
+        ValueItem<T> item = new ValueItem<>(title, value, component, callback);
         values.add(item);
         items.add(item.component);
 
@@ -99,35 +97,39 @@ public class DropDown extends Button {
         return this;
     }
 
-    public boolean select(Object value) {
+    public boolean select(T value) {
         return select(value, true);
     }
 
-    public boolean select(Object value, boolean fireEvent) {
-        for (var item : values) {
+    public boolean select(T value, boolean fireEvent) {
+        for (ValueItem<T> item : values) {
             if (item.value.equals(value)) {
                 valueComponent = item.title;
-                currentValue = value;
-                if (fireEvent && item.callback != null) item.callback.accept(item);
-                if (fireEvent && onChange != null) onChange.now(this, value);
+                if (currentValue != value) {
+                    currentValue = value;
+                    if (fireEvent && item.callback != null) item.callback.accept(item.value);
+                    if (fireEvent && onChange != null) onChange.now(this, value);
+                }
                 return true;
             }
         }
 
         valueComponent = null;
-        currentValue = null;
-        if (fireEvent && onChange != null) onChange.now(this, null);
+        if (currentValue != null) {
+            currentValue = null;
+            if (fireEvent && onChange != null) onChange.now(this, null);
+        }
         return false;
     }
 
-    public Object getValue() {
+    public T selectedOption() {
         return currentValue;
     }
 
     @Override
     protected Component contentComponent() {
         if (valueComponent == null)
-            return Component.literal("---");
+            return EMPTY;
         return valueComponent;
     }
 
@@ -151,7 +153,7 @@ public class DropDown extends Button {
             items.calculateLayoutInParent(parentPanel);
             int height = items.getScreenBounds().height;
             if (screenBounds.bottom() + height > parentPanel.parentScreen.height) {
-                height = Math.max(30, parentPanel.parentScreen.height - screenBounds.top);
+                height = Math.max(30, parentPanel.parentScreen.height - screenBounds.bottom() - 3 * PADDING);
             }
 
             Container contentContainer = Container.create(
