@@ -1,11 +1,12 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
+import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.ui.layout.values.Value;
+
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.values.Value;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -23,7 +24,7 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
     private final List<Container> pageList = new LinkedList<>();
     private final List<Button> buttonList = new LinkedList<>();
 
-    private int initialPage = 0;
+    private int visiblePageIndex = 0;
 
     private OnPageChange onPageChange;
 
@@ -37,8 +38,22 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
         this.add(buttons);
         this.add(content);
 
-        setBackgroundColor(0x77000000);
+        setBackgroundColor(ColorHelper.CONTAINER_BACKGROUND);
         setPadding(4);
+    }
+
+    public int pageCount() {
+        return buttonList.size();
+    }
+
+    @Override
+    public int size() {
+        return buttonList.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return buttonList.isEmpty();
     }
 
     public Tabs addPage(Component title, LayoutComponent<?, ?> content) {
@@ -48,6 +63,7 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
         pageList.add(c);
         if (!buttons.isEmpty()) buttons.addSpacer(4);
         Button b = new Button(Value.fit(), Value.fit(), title).alignBottom();
+        final int index = buttonList.size();
         b.onPress((bt) -> {
             for (Container cc : pageList) {
                 cc.setVisible(cc == c);
@@ -57,10 +73,10 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
                 bb.glow = bb == b;
             }
 
+            visiblePageIndex = index;
+
             if (onPageChange != null) {
-                for (int i = 0; i < buttonList.size(); i++) {
-                    if (buttonList.get(i).glow) onPageChange.now(this, i);
-                }
+                onPageChange.now(this, index);
             }
         });
         buttons.add(b);
@@ -118,12 +134,12 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
             pageList.get(i).setVisible(i == idx);
             buttonList.get(i).glow = i == idx;
         }
-        initialPage = idx;
+        visiblePageIndex = idx;
         return this;
     }
 
     public int getSelectedPage() {
-        return initialPage;
+        return visiblePageIndex;
     }
 
     public Tabs addComponent(LayoutComponent<?, ?> title) {
@@ -135,7 +151,7 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
     @Override
     protected void onBoundsChanged() {
         super.onBoundsChanged();
-        selectPage(initialPage);
+        selectPage(visiblePageIndex);
     }
 
     @Override
