@@ -69,7 +69,7 @@ public class RenderHelper {
     }
 
     private static void innerFill(Matrix4f transform, int x0, int y0, int x1, int y1, int color) {
-        float[] cl = ColorHelper.toFloatArray(color);
+        float[] cl = ColorHelper.toFloatArrayRGBA(color);
 
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();

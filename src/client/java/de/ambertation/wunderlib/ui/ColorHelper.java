@@ -25,7 +25,7 @@ public class ColorHelper {
     public static final int SCREEN_BACKGROUND = 0xFF343444;
     public static final int CONTAINER_BACKGROUND = 0x77000000;
     public static final int OVERLAY_BACKGROUND = 0x97000000;
-    public static final int OVERLAY_BORDER = 0x555566FF;
+    public static final int OVERLAY_BORDER = 0xFF555566;
 
     public static int color(int r, int g, int b) {
         return FastColor.ARGB32.color(0xff, r, g, b);
@@ -38,21 +38,21 @@ public class ColorHelper {
         return color(r, g, b);
     }
 
-    public static int[] toIntARGB(int color) {
+    public static int[] toIntTGBA(int color) {
         return new int[]{
-                FastColor.ARGB32.alpha(color),
                 FastColor.ARGB32.red(color),
                 FastColor.ARGB32.green(color),
-                FastColor.ARGB32.blue(color)
+                FastColor.ARGB32.blue(color),
+                FastColor.ARGB32.alpha(color)
         };
     }
 
-    public static float[] toFloatArray(int color) {
+    public static float[] toFloatArrayRGBA(int color) {
         return new float[]{
-                ((float) FastColor.ARGB32.alpha(color) / 0xFF),
                 ((float) FastColor.ARGB32.red(color) / 0xFF),
                 ((float) FastColor.ARGB32.green(color) / 0xFF),
-                ((float) FastColor.ARGB32.blue(color) / 0xFF)
+                ((float) FastColor.ARGB32.blue(color) / 0xFF),
+                ((float) FastColor.ARGB32.alpha(color) / 0xFF),
         };
     }
 
