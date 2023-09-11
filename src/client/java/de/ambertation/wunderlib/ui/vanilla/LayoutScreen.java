@@ -124,14 +124,14 @@ public abstract class LayoutScreen extends Screen {
         return cols;
     }
 
-    protected void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
-        renderDirtBackground(guiGraphics);
+    protected void renderBackgroundLayer(GuiGraphics guiGraphics, int i, int j, float f) {
+        renderBackground(guiGraphics);
     }
 
 
     @Override
     public void render(GuiGraphics guiGraphics, int i, int j, float f) {
-        renderBackground(guiGraphics, i, j, f);
+        renderBackgroundLayer(guiGraphics, i, j, f);
         super.render(guiGraphics, i, j, f);
 
 //        guiGraphics.drawString(font, "HelloHello", 10, 10, ColorHelper.WHITE);
