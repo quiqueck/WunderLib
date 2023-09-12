@@ -189,6 +189,13 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
         return relativeBounds.contains(d, e);
     }
 
+    public void reCalculateLayout() {
+        updateContainerWidth(relativeBounds.width);
+        updateContainerHeight(relativeBounds.height);
+        setRelativeBounds(relativeBounds.left, relativeBounds.top);
+        updateScreenBounds(this.parentPanel, screenBounds.left, screenBounds.top);
+    }
+
     protected void calculateLayoutInParent(Panel parentPanel) {
         this.updateContainerWidth(parentPanel.bounds.width);
         this.updateContainerHeight(parentPanel.bounds.height);
