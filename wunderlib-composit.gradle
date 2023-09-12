@@ -5,5 +5,12 @@ plugins {
     id 'maven-publish'
 }
 
-print("wunderlib-composite.gradle")
+sourceSets {
+    main {
+        java {
+            srcDirs += ['src/client/java', 'src/datagen/java']
+        }
+    }
+}
+
 apply from: "wunderlib.gradle"
