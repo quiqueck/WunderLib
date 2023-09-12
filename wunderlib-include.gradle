@@ -2,3 +2,11 @@ print("wunderlib-include.gradle")
 dependencies {
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
+
+sourceSets {
+    main {
+        java {
+            srcDirs += ['src/client/java', 'src/datagen/java']
+        }
+    }
+}
