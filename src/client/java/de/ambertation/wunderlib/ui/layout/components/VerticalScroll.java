@@ -272,8 +272,6 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
         if (!didCapture) {
             scrollerY = Math.max(0, Math.min(travel, scrollerY)) - delta;
             return true;
-        } else {
-            System.out.println("Child did capture scroll");
         }
         return false;
     }
