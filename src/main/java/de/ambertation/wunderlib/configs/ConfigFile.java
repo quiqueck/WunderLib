@@ -4,6 +4,8 @@ package de.ambertation.wunderlib.configs;
 import de.ambertation.wunderlib.WunderLib;
 import de.ambertation.wunderlib.utils.Version;
 
+import net.minecraft.resources.ResourceLocation;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.loader.api.FabricLoader;
@@ -23,6 +25,7 @@ public class ConfigFile {
     private static final Gson JSON_BUILDER = new GsonBuilder().setPrettyPrinting()
                                                               .create();
     public final String category;
+    public final ResourceLocation location;
     private final File path;
     private final List<Value<?, ?>> knownValues = new LinkedList<>();
     private JsonObject root;
@@ -38,6 +41,7 @@ public class ConfigFile {
         path = dir.resolve(category + ".json").toFile();
         this.category = basePath + "." + category;
         this.versionProvider = versionProvider;
+        this.location = versionProvider.mk(category);
 
         if (!dir.toFile().exists()) dir.toFile().mkdirs();
         loadFromDisc();
@@ -277,7 +281,16 @@ public class ConfigFile {
         return sb.toString();
     }
 
-    //---- Client Code
+    //---- Client Code End
+
+    public Value<?, ?> getValue(String path, String key) {
+        for (Value<?, ?> v : knownValues) {
+            if (v.token.path().equals(path) && v.token.key.equals(key)) {
+                return v;
+            }
+        }
+        return null;
+    }
 
     public record ConfigToken<T>(String path, String key, T defaultValue) {
         @Override
@@ -433,10 +446,17 @@ public class ConfigFile {
         @NotNull
         protected abstract JsonElement convert(T value);
 
+        @NotNull
+        protected abstract T convert(@NotNull String value);
+
         public void set(T value) {
             if (deprecated) throw new IllegalStateException("'" + token.path() + "." +
                     token.key + "' is deprecated and can no-longer be used");
             setValue(token, convert(value));
+        }
+
+        public boolean valueEquals(String value) {
+            return get().equals(convert(value));
         }
 
         @Override
@@ -488,6 +508,15 @@ public class ConfigFile {
             return new JsonPrimitive(value);
         }
 
+        @Override
+        protected @NotNull Integer convert(String value) {
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException ex) {
+                return 0;
+            }
+        }
+
         public IntValue hideInUI() {
             return (IntValue) super.hideInUI();
         }
@@ -520,6 +549,15 @@ public class ConfigFile {
             return new JsonPrimitive(value);
         }
 
+        @Override
+        protected @NotNull Float convert(String value) {
+            try {
+                return Float.parseFloat(value);
+            } catch (NumberFormatException ex) {
+                return Float.NaN;
+            }
+        }
+
         public FloatValue hideInUI() {
             return (FloatValue) super.hideInUI();
         }
@@ -550,6 +588,15 @@ public class ConfigFile {
         @Override
         protected @NotNull JsonElement convert(Boolean value) {
             return new JsonPrimitive(value);
+        }
+
+        @Override
+        protected @NotNull Boolean convert(String value) {
+            try {
+                return Boolean.parseBoolean(value);
+            } catch (NumberFormatException ex) {
+                return false;
+            }
         }
 
         /**
