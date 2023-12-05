@@ -98,9 +98,9 @@ public abstract class AbstractVanillaComponent<C extends AbstractWidget, V exten
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double f) {
+    public boolean mouseScrolled(double x, double y, double f, double g) {
         if (vanillaComponent != null && enabled)
-            return vanillaComponent.mouseScrolled(x - relativeBounds.left, y - relativeBounds.top, f);
+            return vanillaComponent.mouseScrolled(x - relativeBounds.left, y - relativeBounds.top, f, g);
         return false;
     }
 

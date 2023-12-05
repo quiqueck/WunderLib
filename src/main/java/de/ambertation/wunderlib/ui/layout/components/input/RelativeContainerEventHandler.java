@@ -37,9 +37,9 @@ public interface RelativeContainerEventHandler extends ContainerEventHandler {
         return ContainerEventHandler.super.mouseDragged(d - r.left, e - r.top, i, f - r.left, g - r.top);
     }
 
-    default boolean mouseScrolled(double d, double e, double f) {
+    default boolean mouseScrolled(double d, double e, double f, double g) {
         Rectangle r = getInputBounds();
-        return ContainerEventHandler.super.mouseScrolled(d - r.left, e - r.top, f);
+        return ContainerEventHandler.super.mouseScrolled(d - r.left, e - r.top, f, g);
     }
 
     default boolean isMouseOver(double x, double y) {

@@ -3,6 +3,7 @@ package de.ambertation.wunderlib.ui.layout.components;
 import de.ambertation.wunderlib.ui.layout.components.render.CheckboxRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import net.fabricmc.api.EnvType;
@@ -48,19 +49,13 @@ public class Checkbox extends AbstractVanillaComponent<net.minecraft.client.gui.
     @Override
     protected net.minecraft.client.gui.components.Checkbox createVanillaComponent() {
         Checkbox self = this;
-        net.minecraft.client.gui.components.Checkbox cb = new net.minecraft.client.gui.components.Checkbox(
-                0, 0,
-                relativeBounds.width, relativeBounds.height,
-                component,
-                selected,
-                showLabel
-        ) {
-            @Override
-            public void onPress() {
-                super.onPress();
-                onSelectionChange.now(self, this.selected());
-            }
-        };
+        var builder = net.minecraft.client.gui.components.Checkbox.builder(component, Minecraft.getInstance().font);
+        builder.selected(selected);
+        builder.pos(0,0);
+        builder.onValueChange((cb, selected) -> {
+            onSelectionChange.now(self, selected);
+        });
+        net.minecraft.client.gui.components.Checkbox cb = builder.build();
 
         onSelectionChange.now(this, cb.selected());
         return cb;

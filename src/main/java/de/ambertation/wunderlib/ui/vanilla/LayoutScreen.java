@@ -113,7 +113,7 @@ public abstract class LayoutScreen extends Screen {
         return cols;
     }
 
-    protected void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
+    public void renderBackground(GuiGraphics guiGraphics, int i, int j, float f) {
         renderDirtBackground(guiGraphics);
     }
 
