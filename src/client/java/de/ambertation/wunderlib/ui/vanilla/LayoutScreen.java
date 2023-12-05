@@ -124,8 +124,8 @@ public abstract class LayoutScreen extends Screen {
         return cols;
     }
 
-    protected void renderBackgroundLayer(GuiGraphics guiGraphics, int i, int j, float f) {
-        renderBackground(guiGraphics);
+    public void renderBackgroundLayer(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+        renderBackground(guiGraphics, mouseX, mouseY, delta);
     }
 
 

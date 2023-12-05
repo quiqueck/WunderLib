@@ -1,12 +1,12 @@
 package de.ambertation.wunderlib.ui.layout.components.input;
 
+import de.ambertation.wunderlib.ui.layout.values.Rectangle;
+
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-
-import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
 import java.util.Optional;
 
@@ -37,9 +37,9 @@ public interface RelativeContainerEventHandler extends ContainerEventHandler {
         return ContainerEventHandler.super.mouseDragged(d - r.left, e - r.top, i, f - r.left, g - r.top);
     }
 
-    default boolean mouseScrolled(double d, double e, double f) {
+    default boolean mouseScrolled(double d, double e, double f, double g) {
         Rectangle r = getInputBounds();
-        return ContainerEventHandler.super.mouseScrolled(d - r.left, e - r.top, f);
+        return ContainerEventHandler.super.mouseScrolled(d - r.left, e - r.top, f, g);
     }
 
     default boolean isMouseOver(double x, double y) {

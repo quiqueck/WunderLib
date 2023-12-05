@@ -292,10 +292,14 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
         return false;
     }
 
+//    public boolean mouseScrolled(double d, double e, double f) {
+//       return mouseScrolled(d, e, f, 1);
+//    }
+
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
+    public boolean mouseScrolled(double d, double e, double f, double g) {
         if (visible)
-            return RelativeContainerEventHandler.super.mouseScrolled(d, e, f);
+            return RelativeContainerEventHandler.super.mouseScrolled(d, e, f, g);
         return false;
     }
 
