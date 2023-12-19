@@ -23,11 +23,11 @@ public class ConfigScreen extends LayoutScreen {
     protected final List<OnCheckboxChangeEvent> checkboxListeners;
 
     public ConfigScreen(Component component, List<ConfigFile> configs) {
-        this(null, component, configs, 20, 10, 20, 15);
+        this(EMPTY_SCREEN, component, configs);
     }
 
     public ConfigScreen(@Nullable Screen parent, Component component, List<ConfigFile> configs) {
-        this(parent, component, configs, 20, 10, 20, 15);
+        this(setScreenOnClose(parent), component, configs);
     }
 
     public ConfigScreen(
@@ -38,11 +38,26 @@ public class ConfigScreen extends LayoutScreen {
             int bottomPadding,
             int sidePadding
     ) {
-        this(parent, component, configs, topPadding, bottomPadding, sidePadding, 15);
+        this(setScreenOnClose(parent), component, configs, topPadding, bottomPadding, sidePadding);
+    }
+
+    public ConfigScreen(Runnable onClose, Component component, List<ConfigFile> configs) {
+        this(onClose, component, configs, 20, 10, 20, 15);
     }
 
     public ConfigScreen(
-            @Nullable Screen parent,
+            @Nullable Runnable onClose,
+            Component component,
+            List<ConfigFile> configs,
+            int topPadding,
+            int bottomPadding,
+            int sidePadding
+    ) {
+        this(onClose, component, configs, topPadding, bottomPadding, sidePadding, 15);
+    }
+
+    public ConfigScreen(
+            @Nullable Runnable onClose,
             Component component,
             List<ConfigFile> configs,
             int topPadding,
@@ -50,7 +65,7 @@ public class ConfigScreen extends LayoutScreen {
             int sidePadding,
             int titleSpacing
     ) {
-        super(parent, component, topPadding, bottomPadding, sidePadding, titleSpacing);
+        super(onClose, component, topPadding, bottomPadding, sidePadding, titleSpacing);
         this.configFiles = configs;
         this.checkboxListeners = new LinkedList<>();
     }
