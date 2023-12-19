@@ -14,7 +14,7 @@ public abstract class LayoutScreenWithIcon extends LayoutScreen {
     protected final ResourceLocation icon;
 
     public LayoutScreenWithIcon(ResourceLocation icon, Component component) {
-        this(null, icon, component);
+        this(EMPTY_SCREEN, icon, component);
     }
 
     public LayoutScreenWithIcon(
@@ -22,7 +22,7 @@ public abstract class LayoutScreenWithIcon extends LayoutScreen {
             ResourceLocation icon,
             Component component
     ) {
-        this(parent, icon, component, 20, 10, 20, 15);
+        this(setScreenOnClose(parent), icon, component);
     }
 
     public LayoutScreenWithIcon(
@@ -33,11 +33,30 @@ public abstract class LayoutScreenWithIcon extends LayoutScreen {
             int bottomPadding,
             int sidePadding
     ) {
-        this(parent, icon, component, topPadding, bottomPadding, sidePadding, 15);
+        this(setScreenOnClose(parent), icon, component, topPadding, bottomPadding, sidePadding);
     }
 
     public LayoutScreenWithIcon(
-            @Nullable Screen parent,
+            @Nullable Runnable onClose,
+            ResourceLocation icon,
+            Component component
+    ) {
+        this(onClose, icon, component, 20, 10, 20, 15);
+    }
+
+    public LayoutScreenWithIcon(
+            @Nullable Runnable onClose,
+            ResourceLocation icon,
+            Component component,
+            int topPadding,
+            int bottomPadding,
+            int sidePadding
+    ) {
+        this(onClose, icon, component, topPadding, bottomPadding, sidePadding, 15);
+    }
+
+    public LayoutScreenWithIcon(
+            @Nullable Runnable onClose,
             ResourceLocation icon,
             Component component,
             int topPadding,
@@ -45,7 +64,7 @@ public abstract class LayoutScreenWithIcon extends LayoutScreen {
             int sidePadding,
             int titleSpacing
     ) {
-        super(parent, component, topPadding, bottomPadding, sidePadding, titleSpacing);
+        super(onClose, component, topPadding, bottomPadding, sidePadding, titleSpacing);
         this.icon = icon;
     }
 

@@ -20,6 +20,9 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public abstract class LayoutScreen extends Screen {
+    protected static final Runnable EMPTY_SCREEN = () -> {
+        Minecraft.getInstance().setScreen(null);
+    };
     public interface OverlayProvider {
         @NotNull
         Panel getOverlay();
@@ -36,11 +39,11 @@ public abstract class LayoutScreen extends Screen {
     private Panel currentOverlay = null;
 
     public LayoutScreen(Component component) {
-        this(null, component, 20, 10, 20, 15);
+        this(EMPTY_SCREEN, component);
     }
 
     public LayoutScreen(@Nullable Screen parent, Component component) {
-        this(parent, component, 20, 10, 20, 15);
+        this(setScreenOnClose(parent), component);
     }
 
     public LayoutScreen(
@@ -50,11 +53,26 @@ public abstract class LayoutScreen extends Screen {
             int bottomPadding,
             int sidePadding
     ) {
-        this(parent, component, topPadding, bottomPadding, sidePadding, 15);
+        this(setScreenOnClose(parent), component, topPadding, bottomPadding, sidePadding);
+    }
+
+
+    public LayoutScreen(@Nullable Runnable onClose, Component component) {
+        this(onClose, component, 20, 10, 20, 15);
     }
 
     public LayoutScreen(
-            @Nullable Screen parent,
+            @Nullable Runnable onClose,
+            Component component,
+            int topPadding,
+            int bottomPadding,
+            int sidePadding
+    ) {
+        this(onClose, component, topPadding, bottomPadding, sidePadding, 15);
+    }
+
+    public LayoutScreen(
+            @Nullable Runnable onClose,
             Component component,
             int topPadding,
             int bottomPadding,
@@ -62,7 +80,7 @@ public abstract class LayoutScreen extends Screen {
             int titleSpacing
     ) {
         super(component);
-        this.parent = parent;
+        this.onClose = onClose;
         this.topPadding = topPadding;
         this.bottomPadding = bottomPadding;
         this.sidePadding = sidePadding;
@@ -73,7 +91,7 @@ public abstract class LayoutScreen extends Screen {
     protected Panel main;
 
     @Nullable
-    public final Screen parent;
+    public final Runnable onClose;
 
     protected abstract LayoutComponent<?, ?> initContent();
 
@@ -148,13 +166,24 @@ public abstract class LayoutScreen extends Screen {
 
     }
 
+    protected static Runnable setScreenOnClose(Screen screen) {
+        if (screen == null) return EMPTY_SCREEN;
+        return () -> {
+            Minecraft.getInstance().setScreen(screen);
+        };
+    }
+
     final protected void closeScreen() {
         onClose();
     }
 
     @Override
     public void onClose() {
-        this.minecraft.setScreen(parent);
+        if (this.onClose != null) {
+            this.onClose.run();
+        } else {
+            Minecraft.getInstance().setScreen(null);
+        }
     }
 
     @Override
