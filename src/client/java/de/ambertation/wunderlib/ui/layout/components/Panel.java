@@ -160,9 +160,9 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     }
 
     @Override
-    public boolean mouseScrolled(double d, double e, double f) {
+    public boolean mouseScrolled(double d, double e, double f, double g) {
         if (inputEnabled)
-            return RelativeContainerEventHandler.super.mouseScrolled(d, e, f);
+            return RelativeContainerEventHandler.super.mouseScrolled(d, e, f, g);
         return false;
     }
 
