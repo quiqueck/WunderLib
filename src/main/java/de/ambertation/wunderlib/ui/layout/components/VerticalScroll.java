@@ -260,18 +260,18 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
 
     @Override
-    public boolean mouseScrolled(double x, double y, double delta, double dir) {
+    public boolean mouseScrolled(double x, double y, double deltaX, double deltaY) {
         boolean didCapture = false;
         if (child != null && relativeBounds.contains(x, y)) {
             didCapture = ContainerEventHandler.super.mouseScrolled(
                     x - relativeBounds.left,
                     y - relativeBounds.top - scrollerOffset(),
-                    delta,
-                    dir
+                    deltaX,
+                    deltaY
             );
         }
         if (!didCapture) {
-            scrollerY = Math.max(0, Math.min(travel, scrollerY)) + delta;
+            scrollerY = Math.max(0, Math.min(travel, scrollerY)) - deltaY;
             return true;
         } else {
             System.out.println("Child did capture scroll");
