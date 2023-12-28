@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.vanilla;
 
-import de.ambertation.wunderlib.configs.ConfigFile;
+import de.ambertation.wunderlib.configs.AbstractConfig;
 import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.components.*;
 
@@ -19,21 +19,21 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class ConfigScreen extends LayoutScreen {
-    protected final List<ConfigFile> configFiles;
+    protected final List<AbstractConfig<?>> configFiles;
     protected final List<OnCheckboxChangeEvent> checkboxListeners;
 
-    public ConfigScreen(Component component, List<ConfigFile> configs) {
+    public ConfigScreen(Component component, List<AbstractConfig<?>> configs) {
         this(EMPTY_SCREEN, component, configs);
     }
 
-    public ConfigScreen(@Nullable Screen parent, Component component, List<ConfigFile> configs) {
+    public ConfigScreen(@Nullable Screen parent, Component component, List<AbstractConfig<?>> configs) {
         this(setScreenOnClose(parent), component, configs);
     }
 
     public ConfigScreen(
             @Nullable Screen parent,
             Component component,
-            List<ConfigFile> configs,
+            List<AbstractConfig<?>> configs,
             int topPadding,
             int bottomPadding,
             int sidePadding
@@ -41,14 +41,14 @@ public class ConfigScreen extends LayoutScreen {
         this(setScreenOnClose(parent), component, configs, topPadding, bottomPadding, sidePadding);
     }
 
-    public ConfigScreen(Runnable onClose, Component component, List<ConfigFile> configs) {
+    public ConfigScreen(Runnable onClose, Component component, List<AbstractConfig<?>> configs) {
         this(onClose, component, configs, 20, 10, 20, 15);
     }
 
     public ConfigScreen(
             @Nullable Runnable onClose,
             Component component,
-            List<ConfigFile> configs,
+            List<AbstractConfig<?>> configs,
             int topPadding,
             int bottomPadding,
             int sidePadding
@@ -59,7 +59,7 @@ public class ConfigScreen extends LayoutScreen {
     public ConfigScreen(
             @Nullable Runnable onClose,
             Component component,
-            List<ConfigFile> configs,
+            List<AbstractConfig<?>> configs,
             int topPadding,
             int bottomPadding,
             int sidePadding,
@@ -85,9 +85,7 @@ public class ConfigScreen extends LayoutScreen {
 
         HorizontalStack buttons = new HorizontalStack(fill(), fixed(20)).setDebugName("buttons");
         buttons.addFiller();
-        buttons.addButton(fit(), fit(), CommonComponents.GUI_DONE).onPress((bt) -> {
-            this.closeScreen();
-        });
+        buttons.addButton(fit(), fit(), CommonComponents.GUI_DONE).onPress((bt) -> this.closeScreen());
 
         VerticalStack all = new VerticalStack(fill(), fill()).setDebugName("all");
         all.add(main);
@@ -97,14 +95,14 @@ public class ConfigScreen extends LayoutScreen {
         return all;
     }
 
-    protected LayoutComponent<?, ?> fromConfigFiles(List<ConfigFile> files) {
-        final List<ConfigFile.Group> groups = ConfigFile.getAllGroups(files);
+    protected LayoutComponent<?, ?> fromConfigFiles(List<AbstractConfig<?>> files) {
+        final List<AbstractConfig.Group> groups = AbstractConfig.getAllGroups(files);
 
         final VerticalStack content = new VerticalStack(fill(), fit())
                 .alignTop()
-                .setDebugName("Config - " + ConfigFile.getAllCategories(files));
+                .setDebugName("Config - " + AbstractConfig.getAllCategories(files));
 
-        for (ConfigFile.Group group : groups) {
+        for (AbstractConfig.Group group : groups) {
             addGroupHeader(content, group);
             content.indent(8).add(fromConfigGroup(group, files));
             addGroupFooter(content, group);
@@ -113,7 +111,7 @@ public class ConfigScreen extends LayoutScreen {
         return content;
     }
 
-    protected void addGroupHeader(VerticalStack content, ConfigFile.Group group) {
+    protected void addGroupHeader(VerticalStack content, AbstractConfig.Group group) {
         final Component text = getGroupTitle(group);
         Style s = text.getStyle().withBold(true);
 
@@ -121,39 +119,39 @@ public class ConfigScreen extends LayoutScreen {
         content.addSpacer(4);
     }
 
-    protected void addGroupFooter(VerticalStack content, ConfigFile.Group group) {
+    protected void addGroupFooter(VerticalStack content, AbstractConfig.Group group) {
         content.addSpacer(8);
     }
 
-    protected LayoutComponent<?, ?> finalizeGroupContent(ConfigFile.Group group, VerticalStack content) {
+    protected LayoutComponent<?, ?> finalizeGroupContent(AbstractConfig.Group group, VerticalStack content) {
         return content.alignLeft();
     }
 
 
-    protected LayoutComponent<?, ?> fromConfigGroup(ConfigFile.Group group, List<ConfigFile> configFiles) {
-        final List<ConfigFile.Value<?, ?>> sortedValues = ConfigFile.getAllVisibleValues(group, configFiles);
+    protected LayoutComponent<?, ?> fromConfigGroup(AbstractConfig.Group group, List<AbstractConfig<?>> configFiles) {
+        final List<AbstractConfig<?>.Value<?, ?>> sortedValues = AbstractConfig.getAllVisibleValues(group, configFiles);
         final VerticalStack content = new VerticalStack(fill(), fit())
                 .setDebugName("Group - " + group.title());
 
-        final List<ConfigFile.Value<?, ?>> toplevelValues = getDependantValues(null, sortedValues);
+        final List<AbstractConfig<?>.Value<?, ?>> toplevelValues = getDependantValues(null, sortedValues);
         fromValues(group, sortedValues, toplevelValues, content);
 
         return finalizeGroupContent(group, content);
     }
 
     private void fromValues(
-            ConfigFile.Group group,
-            List<ConfigFile.Value<?, ?>> allValues,
-            List<ConfigFile.Value<?, ?>> values,
+            AbstractConfig.Group group,
+            List<AbstractConfig<?>.Value<?, ?>> allValues,
+            List<AbstractConfig<?>.Value<?, ?>> values,
             VerticalStack content
     ) {
-        for (ConfigFile.Value<?, ?> value : values) {
+        for (AbstractConfig<?>.Value<?, ?> value : values) {
             final LayoutElement element = fromConfig(group, value);
             if (element != null) {
                 content.add(element.component);
                 content.addSpacer(2);
 
-                final List<ConfigFile.Value<?, ?>> dependantValues = getDependantValues(value, allValues);
+                final List<AbstractConfig<?>.Value<?, ?>> dependantValues = getDependantValues(value, allValues);
                 if (!dependantValues.isEmpty()) {
                     final VerticalStack subContent = new VerticalStack(fill(), fit())
                             .setDebugName("Dependencies - " + value.token.path() + "." + value.token.key());
@@ -171,14 +169,14 @@ public class ConfigScreen extends LayoutScreen {
 
     }
 
-    protected LayoutElement fromConfig(ConfigFile.Group group, ConfigFile.Value<?, ?> value) {
-        if (value instanceof ConfigFile.BooleanValue b) {
+    protected LayoutElement fromConfig(AbstractConfig.Group group, AbstractConfig<?>.Value<?, ?> value) {
+        if (value instanceof AbstractConfig<?>.BooleanValue b) {
             return fromConfig(group, b);
         }
         return null;
     }
 
-    protected LayoutElement fromConfig(ConfigFile.Group group, ConfigFile.BooleanValue value) {
+    protected LayoutElement fromConfig(AbstractConfig.Group group, AbstractConfig<?>.BooleanValue value) {
         Component desc = getValueDescription(value);
         final Checkbox checkBox = new Checkbox(fit(), fit(), getValueTitle(value), value.getRaw(), desc == null)
                 .onChange((cb, b) -> {
@@ -220,20 +218,19 @@ public class ConfigScreen extends LayoutScreen {
         }
     }
 
-    protected <T, R extends ConfigFile.Value<T, R>> Component getGroupTitle(
-            ConfigFile.Group group
+    protected <T, R extends AbstractConfig<?>.Value<T, R>> Component getGroupTitle(
+            AbstractConfig.Group group
     ) {
         return Component.translatable(
-                new StringBuilder("title.config.group.")
-                        .append(group.modID())
-                        .append(".")
-                        .append(group.title())
-                        .toString()
+                "title.config.group." +
+                        group.modID() +
+                        "." +
+                        group.title()
         );
     }
 
-    protected <T, R extends ConfigFile.Value<T, R>> Component getValueDescription(
-            ConfigFile.Value<T, R> option
+    protected <T, R extends AbstractConfig<?>.Value<T, R>> Component getValueDescription(
+            AbstractConfig<?>.Value<T, R> option
     ) {
         StringBuilder sb = new StringBuilder("description.config.");
         if (option.getParentFile() != null) {
@@ -245,8 +242,8 @@ public class ConfigScreen extends LayoutScreen {
         return Component.translatable(key);
     }
 
-    protected <T, R extends ConfigFile.Value<T, R>> Component getValueTitle(
-            ConfigFile.Value<T, R> option
+    protected <T, R extends AbstractConfig<?>.Value<T, R>> Component getValueTitle(
+            AbstractConfig<?>.Value<T, R> option
     ) {
         StringBuilder sb = new StringBuilder("title.config.");
         if (option.getParentFile() != null) {
@@ -258,12 +255,12 @@ public class ConfigScreen extends LayoutScreen {
     }
 
 
-    protected List<ConfigFile.Value<?, ?>> getDependantValues(
-            ConfigFile.Value<?, ?> source,
-            final List<ConfigFile.Value<?, ?>> sortedValues
+    protected List<AbstractConfig<?>.Value<?, ?>> getDependantValues(
+            AbstractConfig<?>.Value<?, ?> source,
+            final List<AbstractConfig<?>.Value<?, ?>> sortedValues
     ) {
-        final List<ConfigFile.Value<?, ?>> dependantValues = new LinkedList<>();
-        for (ConfigFile.Value<?, ?> value : sortedValues) {
+        final List<AbstractConfig<?>.Value<?, ?>> dependantValues = new LinkedList<>();
+        for (AbstractConfig<?>.Value<?, ?> value : sortedValues) {
             if (value.getDependency() == source) {
                 dependantValues.add(value);
             }
@@ -271,7 +268,7 @@ public class ConfigScreen extends LayoutScreen {
         return dependantValues;
     }
 
-    protected void onChange(ConfigFile.Value<?, ?> value, Checkbox cb, boolean newValue) {
+    protected void onChange(AbstractConfig<?>.Value<?, ?> value, Checkbox cb, boolean newValue) {
         checkboxListeners.forEach(l -> l.onChange(value, cb, newValue));
     }
 
@@ -280,6 +277,6 @@ public class ConfigScreen extends LayoutScreen {
 
     @FunctionalInterface
     public interface OnCheckboxChangeEvent {
-        void onChange(ConfigFile.Value<?, ?> value, Checkbox cb, boolean newValue);
+        void onChange(AbstractConfig<?>.Value<?, ?> value, Checkbox cb, boolean newValue);
     }
 }
