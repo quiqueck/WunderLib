@@ -26,6 +26,10 @@ public class ConfigResource extends AbstractConfig<ConfigResource> {
 
     private static Map<String, ConfigResource> CACHED_CONFIGS = new Hashtable<>();
 
+    public static void invalidateCache() {
+        CACHED_CONFIGS.clear();
+    }
+
     public static ConfigResource create(Version.ModVersionProvider versionProvider, String path) {
         return CACHED_CONFIGS.computeIfAbsent(
                 versionProvider.getNamespace() + "." + path,
@@ -43,7 +47,6 @@ public class ConfigResource extends AbstractConfig<ConfigResource> {
         } else {
             this.resourceRoot = merge(this.resourceRoot, root);
         }
-        System.out.println(this.resourceRoot);
     }
 
     private enum MergeStrategy {
@@ -146,5 +149,15 @@ public class ConfigResource extends AbstractConfig<ConfigResource> {
     protected boolean saveRootElement(String root) {
         //Resource configs are not saved anywhere, they are read only
         return true;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("ConfigResource{");
+        sb.append("\n      category='").append(category).append('\'');
+        sb.append(",\n      location='").append(location).append('\'');
+        sb.append(",\n      resourceRoot=").append(resourceRoot);
+        sb.append("\n}");
+        return sb.toString();
     }
 }
