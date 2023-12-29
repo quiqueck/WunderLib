@@ -23,7 +23,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
                                                       .create();
     public final String category;
     public final ResourceLocation location;
-    private final List<C.Value<?, ?>> knownValues = new LinkedList<>();
+    private final List<AbstractConfig<?>.Value<?, ?>> knownValues = new LinkedList<>();
     private JsonObject root;
     private boolean modified;
     private final Version.ModVersionProvider versionProvider;
@@ -48,7 +48,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
     public int getMaxOrder() {
         int highestOrder = 0;
-        for (C.Value<?, ?> v : knownValues) {
+        for (AbstractConfig<?>.Value<?, ?> v : knownValues) {
             if (v.order > highestOrder) {
                 highestOrder = v.order;
             }
@@ -56,7 +56,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         return highestOrder;
     }
 
-    private void registerValue(C.Value<?, ?> v) {
+    private void registerValue(AbstractConfig<C>.Value<?, ?> v) {
         knownValues.remove(v);
         knownValues.add(v);
         v.order = getMaxOrder() + 1;
@@ -175,7 +175,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
      * @return all stored values
      */
     @Environment(EnvType.CLIENT)
-    public List<C.Value<?, ?>> getAllValues() {
+    public List<AbstractConfig<?>.Value<?, ?>> getAllValues() {
         return knownValues;
     }
 
@@ -185,9 +185,9 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
      * @return All visible Values
      */
     @Environment(EnvType.CLIENT)
-    public List<C.Value<?, ?>> getAllVisibleValues() {
-        List<C.Value<?, ?>> values = new ArrayList<>();
-        for (C.Value<?, ?> v : knownValues) {
+    public List<AbstractConfig<?>.Value<?, ?>> getAllVisibleValues() {
+        List<AbstractConfig<?>.Value<?, ?>> values = new ArrayList<>();
+        for (AbstractConfig<?>.Value<?, ?> v : knownValues) {
             if (!v.hiddenInUI) {
                 values.add(v);
             }
@@ -202,9 +202,9 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
      * @return All visible Values in the given group
      */
     @Environment(EnvType.CLIENT)
-    public List<C.Value<?, ?>> getAllVisibleValues(Group group) {
-        List<C.Value<?, ?>> values = new ArrayList<>();
-        for (C.Value<?, ?> v : knownValues) {
+    public List<AbstractConfig<?>.Value<?, ?>> getAllVisibleValues(Group group) {
+        List<AbstractConfig<?>.Value<?, ?>> values = new ArrayList<>();
+        for (AbstractConfig<?>.Value<?, ?> v : knownValues) {
             if (!v.hiddenInUI && v.group == group) {
                 values.add(v);
             }
@@ -246,7 +246,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
     @Environment(EnvType.CLIENT)
     public List<Group> getAllGroups() {
         List<Group> groups = new ArrayList<>();
-        for (C.Value<?, ?> v : knownValues) {
+        for (AbstractConfig<?>.Value<?, ?> v : knownValues) {
             if (v.group != null && !groups.contains(v.group)) {
                 groups.add(v.group);
             }
@@ -287,8 +287,8 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
     //---- Client Code End
 
-    public C.Value<?, ?> getValue(String path, String key) {
-        for (C.Value<?, ?> v : knownValues) {
+    public AbstractConfig<?>.Value<?, ?> getValue(String path, String key) {
+        for (AbstractConfig<?>.Value<?, ?> v : knownValues) {
             if (v.token.path().equals(path) && v.token.key.equals(key)) {
                 return v;
             }
@@ -406,7 +406,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         @Nullable
         public C getParentFile() {
-            return parentFile;
+            return (C) parentFile;
         }
 
         public boolean hasDependency() {
