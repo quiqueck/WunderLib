@@ -3,28 +3,27 @@ package de.ambertation.wunderlib.network;
 import de.ambertation.wunderlib.utils.EnvHelper;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
-import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.loader.api.FabricLoader;
 
 import java.util.LinkedList;
 import java.util.List;
 
 public abstract class ServerBoundPacketHandler<D> {
-    protected ResourceLocation CHANNEL;
+    protected CustomPacketPayload.Type CHANNEL;
     SendToServerAdapter sendToServerAdapter;
     static List<ServerBoundPacketHandler<?>> packetHandlers = new LinkedList<>();
 
     public static <D, T extends ServerBoundPacketHandler<D>> T register(ResourceLocation channel, T packetHandler) {
-        packetHandler.CHANNEL = channel;
+        packetHandler.CHANNEL = new CustomPacketPayload.Type(channel);
         packetHandlers.add(packetHandler);
         packetHandler.onRegister();
 
@@ -37,20 +36,35 @@ public abstract class ServerBoundPacketHandler<D> {
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            ServerPlayNetworking.unregisterReceiver(handler, packetHandler.CHANNEL);
+            ServerPlayNetworking.unregisterReceiver(handler, packetHandler.CHANNEL.id());
         });
 
         return packetHandler;
     }
 
     public void sendToServer(D content) {
-        if (sendToServerAdapter!=null && EnvHelper.isClient()) {
+        if (sendToServerAdapter != null && EnvHelper.isClient()) {
             FriendlyByteBuf buf = PacketByteBufs.create();
             serializeOnClient(buf, content);
-            sendToServerAdapter.sendToServer(CHANNEL, buf);
+            sendToServerAdapter.sendToServer(CHANNEL.id(), buf);
         } else {
             //
         }
+    }
+
+    private void receiveOnServer(
+            CustomPacketPayload payload,
+            ServerPlayNetworking.Context context
+    ) {
+//        receiveOnServer(
+//                context.player().getServer(),
+//                context.player(),
+//                context.responseSender().
+//                context.responseSender()
+//
+//        );
+        System.err.println("ServerBoundPacketHandler.receiveOnServer not implemented");
+        //TODO: 1.21 Network stack rework
     }
 
     void receiveOnServer(
