@@ -4,10 +4,7 @@ import de.ambertation.wunderlib.ui.layout.components.render.ScrollerRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
 
 public class VanillaScrollerRenderer implements ScrollerRenderer {
@@ -20,33 +17,31 @@ public class VanillaScrollerRenderer implements ScrollerRenderer {
 
 
         Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        BufferBuilder bufferBuilder = tesselator.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
 
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         //scroller background
-        bufferBuilder.vertex(b.left, b.bottom(), zIndex).color(0, 0, 0, 255).endVertex();
-        bufferBuilder.vertex(b.right(), b.bottom(), zIndex).color(0, 0, 0, 255).endVertex();
-        bufferBuilder.vertex(b.right(), b.top, zIndex).color(0, 0, 0, 255).endVertex();
-        bufferBuilder.vertex(b.left, b.top, zIndex).color(0, 0, 0, 255).endVertex();
+
+        bufferBuilder.addVertex(b.left, b.bottom(), zIndex).setColor(0, 0, 0, 255);
+        bufferBuilder.addVertex(b.right(), b.bottom(), zIndex).setColor(0, 0, 0, 255);
+        bufferBuilder.addVertex(b.right(), b.top, zIndex).setColor(0, 0, 0, 255);
+        bufferBuilder.addVertex(b.left, b.top, zIndex).setColor(0, 0, 0, 255);
 
         //scroll widget shadow
-        bufferBuilder.vertex(p.left, p.bottom(), zIndex).color(128, 128, 128, 255).endVertex();
-        bufferBuilder.vertex(p.right(), p.bottom(), zIndex).color(128, 128, 128, 255).endVertex();
-        bufferBuilder.vertex(p.right(), p.top, zIndex).color(128, 128, 128, 255).endVertex();
-        bufferBuilder.vertex(p.left, p.top, zIndex).color(128, 128, 128, 255).endVertex();
+        bufferBuilder.addVertex(p.left, p.bottom(), zIndex).setColor(128, 128, 128, 255);
+        bufferBuilder.addVertex(p.right(), p.bottom(), zIndex).setColor(128, 128, 128, 255);
+        bufferBuilder.addVertex(p.right(), p.top, zIndex).setColor(128, 128, 128, 255);
+        bufferBuilder.addVertex(p.left, p.top, zIndex).setColor(128, 128, 128, 255);
 
         //scroll widget
-        bufferBuilder.vertex(p.left, p.bottom() - 1, zIndex)
-                     .color(192, 192, 192, 255)
-                     .endVertex();
-        bufferBuilder.vertex(p.right() - 1, p.bottom() - 1, zIndex)
-                     .color(192, 192, 192, 255)
-                     .endVertex();
-        bufferBuilder.vertex(p.right() - 1, p.top, zIndex).color(192, 192, 192, 255).endVertex();
-        bufferBuilder.vertex(p.left, p.top, zIndex).color(192, 192, 192, 255).endVertex();
+        bufferBuilder.addVertex(p.left, p.bottom() - 1, zIndex)
+                     .setColor(192, 192, 192, 255);
+        bufferBuilder.addVertex(p.right() - 1, p.bottom() - 1, zIndex)
+                     .setColor(192, 192, 192, 255);
+        bufferBuilder.addVertex(p.right() - 1, p.top, zIndex).setColor(192, 192, 192, 255);
+        bufferBuilder.addVertex(p.left, p.top, zIndex).setColor(192, 192, 192, 255);
 
-        tesselator.end();
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
     }
 }

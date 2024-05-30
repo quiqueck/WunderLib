@@ -71,16 +71,18 @@ public class RenderHelper {
     private static void innerFill(Matrix4f transform, int x0, int y0, int x1, int y1, int color) {
         float[] cl = ColorHelper.toFloatArrayRGBA(color);
 
-        BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
+        BufferBuilder bufferBuilder = Tesselator
+                .getInstance()
+                .begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(transform, (float) x0, (float) y1, 0.0F).color(cl[0], cl[1], cl[2], cl[3]).endVertex();
-        bufferBuilder.vertex(transform, (float) x1, (float) y1, 0.0F).color(cl[0], cl[1], cl[2], cl[3]).endVertex();
-        bufferBuilder.vertex(transform, (float) x1, (float) y0, 0.0F).color(cl[0], cl[1], cl[2], cl[3]).endVertex();
-        bufferBuilder.vertex(transform, (float) x0, (float) y0, 0.0F).color(cl[0], cl[1], cl[2], cl[3]).endVertex();
-        BufferUploader.drawWithShader(bufferBuilder.end());
+
+        bufferBuilder.addVertex(transform, (float) x0, (float) y1, 0.0F).setColor(cl[0], cl[1], cl[2], cl[3]);
+        bufferBuilder.addVertex(transform, (float) x1, (float) y1, 0.0F).setColor(cl[0], cl[1], cl[2], cl[3]);
+        bufferBuilder.addVertex(transform, (float) x1, (float) y0, 0.0F).setColor(cl[0], cl[1], cl[2], cl[3]);
+        bufferBuilder.addVertex(transform, (float) x0, (float) y0, 0.0F).setColor(cl[0], cl[1], cl[2], cl[3]);
+        BufferUploader.drawWithShader(bufferBuilder.buildOrThrow());
         RenderSystem.disableBlend();
     }
 

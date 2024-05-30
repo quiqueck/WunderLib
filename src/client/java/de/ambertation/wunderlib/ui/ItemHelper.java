@@ -8,7 +8,6 @@ import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -21,6 +20,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
 import org.joml.Matrix4f;
+import org.joml.Matrix4fStack;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -117,9 +117,9 @@ public class ItemHelper {
         );
         RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
         RenderSystem.disableDepthTest();
-        PoseStack poseStack = RenderSystem.getModelViewStack();
-        poseStack.pushPose();
-        poseStack.setIdentity();
+        Matrix4fStack poseStack = RenderSystem.getModelViewStack();
+        poseStack.pushMatrix();
+        poseStack.identity();
         poseStack.translate(0.0f, 0.0f, -11000.0f);
         RenderSystem.applyModelViewMatrix();
         Lighting.setupFor3DItems();
@@ -135,7 +135,7 @@ public class ItemHelper {
             );
         }
         guiGraphics.flush();
-        poseStack.popPose();
+        poseStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
 
         framebuffer.unbindWrite();
