@@ -19,7 +19,7 @@ public class Version {
             return getModID();
         }
         default ResourceLocation mk(String key) {
-            return new ResourceLocation(getModID(), key);
+            return ResourceLocation.fromNamespaceAndPath(getModID(), key);
         }
     }
 
