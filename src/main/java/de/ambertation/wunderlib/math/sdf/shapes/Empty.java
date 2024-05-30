@@ -1,15 +1,15 @@
 package de.ambertation.wunderlib.math.sdf.shapes;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.util.KeyDispatchDataCodec;
-
 import de.ambertation.wunderlib.math.Bounds;
 import de.ambertation.wunderlib.math.Float3;
 import de.ambertation.wunderlib.math.Transform;
 import de.ambertation.wunderlib.math.sdf.SDF;
 
+import com.mojang.serialization.MapCodec;
+import net.minecraft.util.KeyDispatchDataCodec;
+
 public class Empty extends SDF {
-    public static final Codec<Empty> DIRECT_CODEC = Codec.unit(Empty::new);
+    public static final MapCodec<Empty> DIRECT_CODEC = MapCodec.unit(Empty::new);
     public static final KeyDispatchDataCodec<Empty> CODEC = KeyDispatchDataCodec.of(DIRECT_CODEC);
 
     public Empty() {

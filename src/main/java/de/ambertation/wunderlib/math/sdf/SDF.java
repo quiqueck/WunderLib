@@ -9,6 +9,7 @@ import de.ambertation.wunderlib.math.sdf.interfaces.Transformable;
 import de.ambertation.wunderlib.math.sdf.shapes.*;
 
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.util.KeyDispatchDataCodec;
@@ -313,15 +314,15 @@ public abstract class SDF {
 
 
     //---------------------- SDF REGISTRY ----------------------
-    public static final MappedRegistry<Codec<? extends SDF>> SDF_REGISTRY = FabricRegistryBuilder
-            .<Codec<? extends SDF>>createSimple(null, WunderLib.ID("sdf"))
+    public static final MappedRegistry<MapCodec<? extends SDF>> SDF_REGISTRY = FabricRegistryBuilder
+            .<MapCodec<? extends SDF>>createSimple(null, WunderLib.ID("sdf"))
             .attribute(RegistryAttribute.MODDED)
             .buildAndRegister();
 
     public static final Codec<SDF> CODEC = SDF_REGISTRY.byNameCodec()
                                                        .dispatch((sdf) -> sdf.codec().codec(), Function.identity());
 
-    static void bootstrap(Registry<Codec<? extends SDF>> registry) {
+    static void bootstrap(Registry<MapCodec<? extends SDF>> registry) {
         register(registry, "union", SDFUnion.CODEC);
         register(registry, "intersect", SDFIntersection.CODEC);
         register(registry, "dif", SDFDifference.CODEC);
@@ -334,8 +335,8 @@ public abstract class SDF {
         register(registry, "ellipsoid", Ellipsoid.CODEC);
     }
 
-    static Codec<? extends SDF> register(
-            Registry<Codec<? extends SDF>> registry,
+    static MapCodec<? extends SDF> register(
+            Registry<MapCodec<? extends SDF>> registry,
             String name,
             KeyDispatchDataCodec<? extends SDF> codec
     ) {

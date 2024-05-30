@@ -1,15 +1,15 @@
 package de.ambertation.wunderlib.math.sdf;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.KeyDispatchDataCodec;
-
 import de.ambertation.wunderlib.math.Bounds;
 import de.ambertation.wunderlib.math.Float3;
 import de.ambertation.wunderlib.math.Transform;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.KeyDispatchDataCodec;
+
 public class SDFInvert extends SDFOperation {
-    public static final Codec<SDFInvert> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<SDFInvert> DIRECT_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     SDF.CODEC.fieldOf("sdf").forGetter(b -> b.getFirst())

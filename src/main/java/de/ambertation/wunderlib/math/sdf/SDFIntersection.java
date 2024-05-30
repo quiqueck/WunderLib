@@ -1,14 +1,14 @@
 package de.ambertation.wunderlib.math.sdf;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.KeyDispatchDataCodec;
-
 import de.ambertation.wunderlib.math.Float3;
 import de.ambertation.wunderlib.math.Transform;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.util.KeyDispatchDataCodec;
+
 public class SDFIntersection extends SDFBinaryOperation {
-    public static final Codec<SDFIntersection> DIRECT_CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<SDFIntersection> DIRECT_CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Transform.CODEC.fieldOf("transform").orElse(Transform.IDENTITY).forGetter(o -> o.transform),
                     SDF.CODEC.fieldOf("sdf_a").forGetter(b -> b.getFirst()),
