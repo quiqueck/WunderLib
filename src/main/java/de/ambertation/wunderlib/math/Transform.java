@@ -1,13 +1,13 @@
 package de.ambertation.wunderlib.math;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
 
 public class Transform {
     public static final Transform IDENTITY = new Transform(Float3.ZERO, Float3.IDENTITY, Quaternion.IDENTITY);
-    public static final Codec<Transform> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<Transform> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Float3.CODEC.fieldOf("center").orElse(Float3.ZERO).forGetter(o -> o.center),
                     Float3.CODEC.fieldOf("size").orElse(Float3.IDENTITY).forGetter(o -> o.size),

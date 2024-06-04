@@ -1,5 +1,6 @@
 package de.ambertation.wunderlib.math;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
@@ -10,7 +11,7 @@ public final class Quaternion {
     public static final Quaternion IDENTITY = new Quaternion(1, Float3.ZERO);
     public static final Quaternion ZERO = new Quaternion(0, Float3.ZERO);
 
-    public static final Codec<Quaternion> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<Quaternion> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("w").forGetter(o -> (float) o.w),
                     Codec.FLOAT.fieldOf("i").forGetter(o -> (float) o.v.x),

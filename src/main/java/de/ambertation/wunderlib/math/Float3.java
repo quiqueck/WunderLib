@@ -1,5 +1,6 @@
 package de.ambertation.wunderlib.math;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
@@ -45,7 +46,7 @@ public class Float3 {
     public static final Float3 mYmZ_PLANE = Float3.of(0, -1, -1);
 
 
-    public static final Codec<Float3> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<Float3> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("x").forGetter(o -> (float) o.x),
                     Codec.FLOAT.fieldOf("y").forGetter(o -> (float) o.y),

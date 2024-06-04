@@ -1,5 +1,6 @@
 package de.ambertation.wunderlib.math;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
@@ -14,7 +15,7 @@ public class Float4 {
     public static final Float4 Y_AXIS = Float4.ofDirection(0, 1, 0);
     public static final Float4 Z_AXIS = Float4.ofDirection(0, 0, 1);
 
-    public static final Codec<Float4> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<Float4> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Codec.FLOAT.fieldOf("x").forGetter(o -> (float) o.x),
                     Codec.FLOAT.fieldOf("y").forGetter(o -> (float) o.y),

@@ -4,6 +4,7 @@ import de.ambertation.wunderlib.math.Float3;
 import de.ambertation.wunderlib.math.Transform;
 import de.ambertation.wunderlib.math.sdf.SDF;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;

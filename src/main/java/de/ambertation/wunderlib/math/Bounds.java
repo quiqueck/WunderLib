@@ -4,7 +4,7 @@ import de.ambertation.wunderlib.math.sdf.shapes.Box;
 import de.ambertation.wunderlib.math.sdf.shapes.Ellipsoid;
 import de.ambertation.wunderlib.math.sdf.shapes.Sphere;
 
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.phys.AABB;
 
 public class Bounds {
-    public static final Codec<Bounds> CODEC = RecordCodecBuilder.create(instance -> instance
+    public static final MapCodec<Bounds> CODEC = RecordCodecBuilder.mapCodec(instance -> instance
             .group(
                     Float3.CODEC.fieldOf("min").forGetter(o -> o.min),
                     Float3.CODEC.fieldOf("max").forGetter(o -> o.max)

@@ -8,6 +8,7 @@ import de.ambertation.wunderlib.math.Transform;
 import de.ambertation.wunderlib.math.sdf.interfaces.Transformable;
 import de.ambertation.wunderlib.math.sdf.shapes.*;
 
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.MappedRegistry;
