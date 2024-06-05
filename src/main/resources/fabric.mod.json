@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "wunderlib",
-  "version": "20.30.0",
+  "version": "21.0.0",
   "name": "WunderLib",
   "description": "A UI, Math and Networking Mod",
   "authors": [
