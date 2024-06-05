@@ -2,30 +2,32 @@ package de.ambertation.wunderlib.network;
 
 import de.ambertation.wunderlib.utils.EnvHelper;
 
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-import java.util.LinkedList;
-import java.util.List;
+public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> extends PacketHandler<T> {
+    private static SendToServerAdapter sendToServerAdapter;
 
-public abstract class ServerBoundPacketHandler<D> {
-    protected CustomPacketPayload.Type CHANNEL;
-    SendToServerAdapter sendToServerAdapter;
-    static List<ServerBoundPacketHandler<?>> packetHandlers = new LinkedList<>();
+    static void registerAdapter(SendToServerAdapter adapter) {
+        ServerBoundPacketHandler.sendToServerAdapter = adapter;
+    }
 
-    public static <D, T extends ServerBoundPacketHandler<D>> T register(ResourceLocation channel, T packetHandler) {
-        packetHandler.CHANNEL = new CustomPacketPayload.Type(channel);
-        packetHandlers.add(packetHandler);
-        packetHandler.onRegister();
+    public ServerBoundPacketHandler(
+            ResourceLocation channel,
+            NetworkPayload.NetworkPayloadFactory<T> factory
+    ) {
+        super(channel, factory);
+    }
+
+    public static <T extends ServerBoundNetworkPayload<T>> ServerBoundPacketHandler<T> register(
+            ResourceLocation channel,
+            NetworkPayload.NetworkPayloadFactory<T> factory
+    ) {
+        ServerBoundPacketHandler<T> packetHandler = new ServerBoundPacketHandler<>(channel, factory);
+        PayloadTypeRegistry.playC2S().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayNetworking.registerReceiver(
@@ -42,48 +44,30 @@ public abstract class ServerBoundPacketHandler<D> {
         return packetHandler;
     }
 
-    public void sendToServer(D content) {
-        if (sendToServerAdapter != null && EnvHelper.isClient()) {
-            FriendlyByteBuf buf = PacketByteBufs.create();
-            serializeOnClient(buf, content);
-            sendToServerAdapter.sendToServer(CHANNEL.id(), buf);
+    public void sendToServer(T payload) {
+        if (EnvHelper.isClient() && sendToServerAdapter != null) {
+            payload.prepareOnClient();
+            sendToServerAdapter.sendToServer(payload);
         } else {
             //
         }
     }
 
     private void receiveOnServer(
-            CustomPacketPayload payload,
+            T payload,
             ServerPlayNetworking.Context context
     ) {
-//        receiveOnServer(
-//                context.player().getServer(),
-//                context.player(),
-//                context.responseSender().
-//                context.responseSender()
-//
-//        );
-        System.err.println("ServerBoundPacketHandler.receiveOnServer not implemented");
-        //TODO: 1.21 Network stack rework
+        payload.processOnServer(context.player(), context.responseSender());
+
+        final Runnable runner = () -> payload.processOnGameThread(context.player().getServer(), context.player());
+        final var server = context
+                .player()
+                .getServer();
+        if (server != null) {
+            if (payload.isBlocking()) server.executeBlocking(runner);
+            else server.execute(runner);
+        }
     }
 
-    void receiveOnServer(
-            MinecraftServer server,
-            ServerPlayer player,
-            ServerGamePacketListenerImpl handler,
-            FriendlyByteBuf buf,
-            PacketSender responseSender
-    ) {
-        D content = deserializeOnServer(buf, player, responseSender);
-        server.execute(() -> processOnGameThread(server, player, content));
-    }
 
-    protected abstract void serializeOnClient(FriendlyByteBuf buf, D content);
-
-    protected abstract D deserializeOnServer(FriendlyByteBuf buf, ServerPlayer player, PacketSender responseSender);
-
-    protected abstract void processOnGameThread(MinecraftServer server, ServerPlayer player, D content);
-
-    protected void onRegister() {
-    }
 }
