@@ -10,11 +10,13 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.annotations.ApiStatus;
 
 public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> extends PacketHandler<T> {
     static List<ClientBoundPacketHandler<?>> packetHandlers = new LinkedList<>();
     private static SendToClientAdapter sendToClientAdapter;
 
+    @ApiStatus.Internal
     static void registerAdapter(SendToClientAdapter adapter) {
         ClientBoundPacketHandler.sendToClientAdapter = adapter;
         for (ClientBoundPacketHandler<?> packetHandler : packetHandlers) {

@@ -8,9 +8,12 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import org.jetbrains.annotations.ApiStatus;
+
 public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> extends PacketHandler<T> {
     private static SendToServerAdapter sendToServerAdapter;
 
+    @ApiStatus.Internal
     static void registerAdapter(SendToServerAdapter adapter) {
         ServerBoundPacketHandler.sendToServerAdapter = adapter;
     }
