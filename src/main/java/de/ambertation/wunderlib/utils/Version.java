@@ -7,6 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +28,7 @@ public class Version {
 
     public Version(String version) {
         if ("${version}".equals(version)) version = "0.0.0";
-        this.version = version;
+        this.version = version.trim();
     }
 
     public Version(int major, int minor, int patch) {
@@ -110,6 +111,19 @@ public class Version {
 
     public boolean isLessOrEqualVersion(String v2) {
         return toInt() <= toInt(v2);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof String s) return version.equals(s.trim());
+        if (!(o instanceof Version version1)) return false;
+        return Objects.equals(version, version1.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(version);
     }
 
     @Override

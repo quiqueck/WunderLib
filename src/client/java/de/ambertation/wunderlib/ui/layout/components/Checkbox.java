@@ -49,7 +49,9 @@ public class Checkbox extends AbstractVanillaComponent<net.minecraft.client.gui.
     @Override
     protected net.minecraft.client.gui.components.Checkbox createVanillaComponent() {
         Checkbox self = this;
-        var builder = net.minecraft.client.gui.components.Checkbox.builder(component, Minecraft.getInstance().font);
+        var builder = net.minecraft.client.gui.components.Checkbox.builder(showLabel
+                ? component
+                : Component.empty(), Minecraft.getInstance().font);
         builder.selected(selected);
         builder.pos(0, 0);
         builder.onValueChange((cb, selected) -> {

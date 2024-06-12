@@ -9,6 +9,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,46 +19,58 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class ConfigScreen extends LayoutScreen {
+public class ConfigScreen extends LayoutScreenWithIcon {
     protected final List<AbstractConfig<?>> configFiles;
     protected final List<OnCheckboxChangeEvent> checkboxListeners;
 
-    public ConfigScreen(Component component, List<AbstractConfig<?>> configs) {
-        this(EMPTY_SCREEN, component, configs);
-    }
-
-    public ConfigScreen(@Nullable Screen parent, Component component, List<AbstractConfig<?>> configs) {
-        this(setScreenOnClose(parent), component, configs);
+    public ConfigScreen(
+            Component component,
+            ResourceLocation icon, List<AbstractConfig<?>> configs
+    ) {
+        this(EMPTY_SCREEN, icon, component, configs);
     }
 
     public ConfigScreen(
             @Nullable Screen parent,
+            ResourceLocation icon, Component component, List<AbstractConfig<?>> configs
+    ) {
+        this(setScreenOnClose(parent), icon, component, configs);
+    }
+
+    public ConfigScreen(
+            @Nullable Screen parent,
+            ResourceLocation icon,
             Component component,
             List<AbstractConfig<?>> configs,
             int topPadding,
             int bottomPadding,
             int sidePadding
     ) {
-        this(setScreenOnClose(parent), component, configs, topPadding, bottomPadding, sidePadding);
+        this(setScreenOnClose(parent), icon, component, configs, topPadding, bottomPadding, sidePadding);
     }
 
-    public ConfigScreen(Runnable onClose, Component component, List<AbstractConfig<?>> configs) {
-        this(onClose, component, configs, 20, 10, 20, 15);
+    public ConfigScreen(
+            Runnable onClose,
+            ResourceLocation icon, Component component, List<AbstractConfig<?>> configs
+    ) {
+        this(onClose, icon, component, configs, 20, 10, 20, 15);
     }
 
     public ConfigScreen(
             @Nullable Runnable onClose,
+            ResourceLocation icon,
             Component component,
             List<AbstractConfig<?>> configs,
             int topPadding,
             int bottomPadding,
             int sidePadding
     ) {
-        this(onClose, component, configs, topPadding, bottomPadding, sidePadding, 15);
+        this(onClose, icon, component, configs, topPadding, bottomPadding, sidePadding, 15);
     }
 
     public ConfigScreen(
             @Nullable Runnable onClose,
+            ResourceLocation icon,
             Component component,
             List<AbstractConfig<?>> configs,
             int topPadding,
@@ -65,7 +78,7 @@ public class ConfigScreen extends LayoutScreen {
             int sidePadding,
             int titleSpacing
     ) {
-        super(onClose, component, topPadding, bottomPadding, sidePadding, titleSpacing);
+        super(onClose, icon, component, topPadding, bottomPadding, sidePadding, titleSpacing);
         this.configFiles = configs;
         this.checkboxListeners = new LinkedList<>();
     }
@@ -199,7 +212,7 @@ public class ConfigScreen extends LayoutScreen {
             final VerticalStack descCol = new VerticalStack(fill(), fit())
                     .alignLeft()
                     .setDebugName("Config Labels- " + value.token.path() + "." + value.token.key());
-            descCol.addSpacer(1);
+            descCol.addSpacer(0);
             descCol.addText(fit(), fit(), getValueTitle(value)).alignLeft();
             descCol.addSpacer(2);
             descCol.addMultilineText(fill(), fit(), MultiLineText.parse(desc))

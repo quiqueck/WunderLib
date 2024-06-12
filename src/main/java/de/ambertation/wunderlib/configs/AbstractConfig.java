@@ -451,7 +451,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         protected abstract JsonElement convert(T value);
 
         @NotNull
-        protected abstract T convert(@NotNull String value);
+        protected abstract T parseString(@NotNull String value);
 
         public void set(T value) {
             if (deprecated) throw new IllegalStateException("'" + token.path() + "." +
@@ -460,7 +460,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         }
 
         public boolean valueEquals(String value) {
-            return get().equals(convert(value));
+            return get().equals(parseString(value));
         }
 
         @Override
@@ -512,7 +512,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         }
 
         @Override
-        protected @NotNull Integer convert(String value) {
+        protected @NotNull Integer parseString(String value) {
             try {
                 return Integer.parseInt(value);
             } catch (NumberFormatException ex) {
@@ -553,7 +553,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         }
 
         @Override
-        protected @NotNull Float convert(String value) {
+        protected @NotNull Float parseString(String value) {
             try {
                 return Float.parseFloat(value);
             } catch (NumberFormatException ex) {
@@ -594,7 +594,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         }
 
         @Override
-        protected @NotNull Boolean convert(String value) {
+        protected @NotNull Boolean parseString(String value) {
             try {
                 return Boolean.parseBoolean(value);
             } catch (NumberFormatException ex) {
@@ -658,6 +658,41 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         public BooleanValue hideInUI() {
             return (BooleanValue) super.hideInUI();
+        }
+    }
+
+    public class StringValue extends Value<String, StringValue> {
+        public StringValue(String path, String key, String defaultValue) {
+            super(path, key, defaultValue);
+        }
+
+        protected StringValue(ConfigToken t) {
+            super(t);
+        }
+
+        public StringValue(String path, String key, String defaultValue, boolean isDeprecated) {
+            super(path, key, defaultValue, isDeprecated);
+        }
+
+        protected StringValue(ConfigToken t, boolean isDeprecated) {
+            super(t, isDeprecated);
+        }
+
+        @Override
+        protected String convert(@NotNull JsonElement el) {
+            return el.getAsString();
+        }
+
+        protected @NotNull JsonElement convert(String value) {
+            return new JsonPrimitive(value);
+        }
+
+        protected @NotNull String parseString(String value) {
+            return value;
+        }
+
+        public StringValue hideInUI() {
+            return (StringValue) super.hideInUI();
         }
     }
 }
