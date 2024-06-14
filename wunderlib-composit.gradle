@@ -4,13 +4,19 @@ plugins {
     id 'fabric-loom'
     id 'maven-publish'
 }
-
+java {
+    withSourcesJar()
+}
 sourceSets {
     main {
         java {
             srcDirs += ['src/client/java', 'src/datagen/java']
         }
     }
+}
+
+tasks.sourcesJar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 apply from: "wunderlib.gradle"
