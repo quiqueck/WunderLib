@@ -184,12 +184,88 @@ public class ConfigScreen extends LayoutScreenWithIcon {
 
     protected LayoutElement fromConfig(AbstractConfig.Group group, AbstractConfig<?>.Value<?, ?> value) {
         if (value instanceof AbstractConfig<?>.BooleanValue b) {
-            return fromConfig(group, b);
+            return fromBooleanConfig(group, b);
+        }
+        if (value instanceof AbstractConfig<?>.FloatValue f) {
+            return fromFloatConfig(group, f);
+        }
+        if (value instanceof AbstractConfig<?>.IntValue f) {
+            return fromIntConfig(group, f);
         }
         return null;
     }
 
-    protected LayoutElement fromConfig(AbstractConfig.Group group, AbstractConfig<?>.BooleanValue value) {
+    protected LayoutElement fromIntConfig(AbstractConfig.Group group, AbstractConfig<?>.IntValue value) {
+        Component desc = getValueDescription(value);
+        final VerticalStack stack = new VerticalStack(fill(), fit());
+        final Range<Integer> slider = stack
+                .addRange(fill(), fit(), getValueTitle(value), value.getMin(), value.getMax(), value.getRaw())
+                .onChange((sl, f) -> {
+                    value.set(f);
+                    onChangeIntRange(value, sl, f);
+                })
+                .setDebugName("Config - " + value.token.path() + "." + value.token.key());
+
+        if (value.hasDependency()) {
+            checkboxListeners.add((changedValue, cb, state) -> {
+                if (value.getDependency().equals(changedValue)) {
+                    slider.setEnabled(state);
+                }
+            });
+        }
+
+        if (desc != null) {
+            var indented = new HorizontalStack(fill(), fit())
+                    .setDebugName("Config - " + value.token.path() + "." + value.token.key() + ".descIndent");
+            indented.addSpacer(2);
+            indented.addMultilineText(fill(), fit(), MultiLineText.parse(desc))
+                    .alignLeft()
+                    .setColor(ColorHelper.GRAY);
+
+            stack.addSpacer(2);
+            stack.add(indented);
+            stack.addSpacer(8);
+        }
+
+        return new LayoutElement(stack, 8);
+    }
+
+    protected LayoutElement fromFloatConfig(AbstractConfig.Group group, AbstractConfig<?>.FloatValue value) {
+        Component desc = getValueDescription(value);
+        final VerticalStack stack = new VerticalStack(fill(), fit());
+        final Range<Float> slider = stack
+                .addRange(fill(), fit(), getValueTitle(value), value.getMin(), value.getMax(), value.getRaw())
+                .onChange((sl, f) -> {
+                    value.set(f);
+                    onChangeFloatRange(value, sl, f);
+                })
+                .setDebugName("Config - " + value.token.path() + "." + value.token.key());
+
+        if (value.hasDependency()) {
+            checkboxListeners.add((changedValue, cb, state) -> {
+                if (value.getDependency().equals(changedValue)) {
+                    slider.setEnabled(state);
+                }
+            });
+        }
+
+        if (desc != null) {
+            var indented = new HorizontalStack(fill(), fit())
+                    .setDebugName("Config - " + value.token.path() + "." + value.token.key() + ".descIndent");
+            indented.addSpacer(2);
+            indented.addMultilineText(fill(), fit(), MultiLineText.parse(desc))
+                    .alignLeft()
+                    .setColor(ColorHelper.GRAY);
+
+            stack.addSpacer(2);
+            stack.add(indented);
+            stack.addSpacer(8);
+        }
+
+        return new LayoutElement(stack, 8);
+    }
+
+    protected LayoutElement fromBooleanConfig(AbstractConfig.Group group, AbstractConfig<?>.BooleanValue value) {
         Component desc = getValueDescription(value);
         final Checkbox checkBox = new Checkbox(fit(), fit(), getValueTitle(value), value.getRaw(), desc == null)
                 .onChange((cb, b) -> {
@@ -283,6 +359,14 @@ public class ConfigScreen extends LayoutScreenWithIcon {
 
     protected void onChange(AbstractConfig<?>.Value<?, ?> value, Checkbox cb, boolean newValue) {
         checkboxListeners.forEach(l -> l.onChange(value, cb, newValue));
+    }
+
+    protected void onChangeFloatRange(AbstractConfig<?>.Value<?, ?> value, Range<Float> r, Number newValue) {
+
+    }
+
+    protected void onChangeIntRange(AbstractConfig<?>.Value<?, ?> value, Range<Integer> r, Number newValue) {
+
     }
 
     protected record LayoutElement(LayoutComponent<?, ?> component, int bestIndent) {

@@ -485,6 +485,9 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
     }
 
     public class IntValue extends Value<Integer, IntValue> {
+        private int min = Integer.MIN_VALUE;
+        private int max = Integer.MAX_VALUE;
+
         public IntValue(String path, String key, int defaultValue) {
             super(path, key, defaultValue);
         }
@@ -503,7 +506,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         @Override
         protected Integer convert(@NotNull JsonElement el) {
-            return el.getAsInt();
+            return Math.min(max, Math.max(min, el.getAsInt()));
         }
 
         @Override
@@ -514,7 +517,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         @Override
         protected @NotNull Integer parseString(String value) {
             try {
-                return Integer.parseInt(value);
+                return Math.min(max, Math.max(min, Integer.parseInt(value)));
             } catch (NumberFormatException ex) {
                 return 0;
             }
@@ -523,9 +526,30 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         public IntValue hideInUI() {
             return (IntValue) super.hideInUI();
         }
+
+        public IntValue min(int min) {
+            this.min = min;
+            return this;
+        }
+
+        public int getMin() {
+            return min;
+        }
+
+        public IntValue max(int max) {
+            this.max = max;
+            return this;
+        }
+
+        public int getMax() {
+            return max;
+        }
     }
 
     public class FloatValue extends Value<Float, FloatValue> {
+        private float min = -Float.MAX_VALUE;
+        private float max = Float.MAX_VALUE;
+
         public FloatValue(String path, String key, float defaultValue) {
             super(path, key, defaultValue);
         }
@@ -544,7 +568,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         @Override
         protected Float convert(@NotNull JsonElement el) {
-            return el.getAsFloat();
+            return Math.min(max, Math.max(min, el.getAsFloat()));
         }
 
         @Override
@@ -555,7 +579,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         @Override
         protected @NotNull Float parseString(String value) {
             try {
-                return Float.parseFloat(value);
+                return Math.min(max, Math.max(min, Float.parseFloat(value)));
             } catch (NumberFormatException ex) {
                 return Float.NaN;
             }
@@ -563,6 +587,24 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         public FloatValue hideInUI() {
             return (FloatValue) super.hideInUI();
+        }
+
+        public FloatValue min(float min) {
+            this.min = min;
+            return this;
+        }
+
+        public FloatValue max(float max) {
+            this.max = max;
+            return this;
+        }
+
+        public float getMin() {
+            return min;
+        }
+
+        public float getMax() {
+            return max;
         }
     }
 
