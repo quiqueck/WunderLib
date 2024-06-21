@@ -31,6 +31,14 @@ public class ColorHelper {
         return FastColor.ARGB32.color(0xff, r, g, b);
     }
 
+    public static int color(int r, int g, int b, int a) {
+        return FastColor.ARGB32.color(a, r, g, b);
+    }
+
+    public static int color(float r, float g, float b, float a) {
+        return color((int) (r * 0xff), (int) (g * 0xff), (int) (b * 0xff), (int) (a * 0xff));
+    }
+
     public static int color(String hex) {
         int r = Integer.parseInt(hex.substring(0, 2), 16);
         int g = Integer.parseInt(hex.substring(2, 4), 16);
