@@ -18,7 +18,7 @@ public abstract class PacketHandler<T extends NetworkPayload<T>> {
             @NotNull ResourceLocation channel,
             @NotNull NetworkPayload.NetworkPayloadFactory<T> factory
     ) {
-        this.CHANNEL = CustomPacketPayload.createType(channel.toString());
+        this.CHANNEL = CustomPacketPayload.createType(channel.getNamespace() + "_" + channel.getPath());
 
         this.STREAM_CODEC = CustomPacketPayload.codec(
                 NetworkPayload::write,
