@@ -3,11 +3,13 @@ package de.ambertation.wunderlib.network;
 import de.ambertation.wunderlib.utils.EnvHelper;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import org.jetbrains.annotations.ApiStatus;
@@ -48,10 +50,36 @@ public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> ex
         return packetHandler;
     }
 
-    public void sendToClient(ServerPlayer player, T payload) {
+
+    public static <T extends ClientBoundNetworkPayload<T>> void sendToClient(ServerPlayer player, T payload) {
         if (!EnvHelper.isClient()) {
             payload.prepareOnServer(player);
             ServerPlayNetworking.send(player, payload);
+        } else {
+            //
+        }
+    }
+
+    public static <T extends ClientBoundNetworkPayload<T>> void sendToClient(
+            ServerLevel serverLevel,
+            T payload
+    ) {
+        if (!EnvHelper.isClient()) {
+            sendToClient(serverLevel.players(), payload);
+        } else {
+            //
+        }
+    }
+
+    public static <T extends ClientBoundNetworkPayload<T>> void sendToClient(
+            Collection<ServerPlayer> players,
+            T payload
+    ) {
+        if (!EnvHelper.isClient()) {
+            players.forEach(player -> {
+                payload.prepareOnServer(player);
+                ServerPlayNetworking.send(player, payload);
+            });
         } else {
             //
         }

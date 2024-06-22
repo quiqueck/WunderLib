@@ -47,7 +47,7 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
         return packetHandler;
     }
 
-    public void sendToServer(T payload) {
+    public static <T extends ServerBoundNetworkPayload<T>> void sendToServer(T payload) {
         if (EnvHelper.isClient() && sendToServerAdapter != null) {
             payload.prepareOnClient();
             sendToServerAdapter.sendToServer(payload);

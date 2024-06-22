@@ -1,5 +1,6 @@
 package de.ambertation.wunderlib.network;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 
 import net.fabricmc.api.EnvType;
@@ -17,5 +18,5 @@ public abstract class ClientBoundNetworkPayload<T extends ClientBoundNetworkPayl
     protected abstract void processOnClient(PacketSender responseSender);
 
     @Environment(EnvType.CLIENT)
-    protected abstract void processOnGameThread();
+    protected abstract void processOnGameThread(Minecraft client);
 }

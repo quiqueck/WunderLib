@@ -33,12 +33,13 @@ public class SendToClientImpl implements SendToClientAdapter {
             ClientPlayNetworking.Context context
     ) {
         if (!EnvHelper.isClient()) return;
-        
-        payload.processOnClient(context.responseSender());
-        final Runnable runner = () -> payload.processOnGameThread();
-        final var client = context.client();
 
+        payload.processOnClient(context.responseSender());
+        final var client = context.client();
+        
         if (client != null) {
+            final Runnable runner = () -> payload.processOnGameThread(client);
+
             if (payload.isBlocking()) client.executeBlocking(runner);
             else client.execute(runner);
         }
