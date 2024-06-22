@@ -732,7 +732,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
             super(path, key, defaultValue);
         }
 
-        protected StringValue(ConfigToken t) {
+        protected StringValue(ConfigToken<String> t) {
             super(t);
         }
 
@@ -740,7 +740,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
             super(path, key, defaultValue, isDeprecated);
         }
 
-        protected StringValue(ConfigToken t, boolean isDeprecated) {
+        protected StringValue(ConfigToken<String> t, boolean isDeprecated) {
             super(t, isDeprecated);
         }
 
