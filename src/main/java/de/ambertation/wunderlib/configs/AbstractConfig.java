@@ -24,7 +24,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
                                                       .create();
     public final String category;
     public final ResourceLocation location;
-    private final List<AbstractConfig<?>.Value<?, ?>> knownValues = new LinkedList<>();
+    private final List<C.Value<?, ?>> knownValues = new LinkedList<>();
     private JsonObject root;
     private boolean modified;
     private final Version.ModVersionProvider versionProvider;
@@ -57,7 +57,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         return highestOrder;
     }
 
-    private void registerValue(AbstractConfig<C>.Value<?, ?> v) {
+    private void registerValue(C.Value v) {
         knownValues.remove(v);
         knownValues.add(v);
         v.order = getMaxOrder() + 1;
@@ -176,7 +176,7 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
      * @return all stored values
      */
     @Environment(EnvType.CLIENT)
-    public List<AbstractConfig<?>.Value<?, ?>> getAllValues() {
+    public List<C.Value<?, ?>> getAllValues() {
         return knownValues;
     }
 
