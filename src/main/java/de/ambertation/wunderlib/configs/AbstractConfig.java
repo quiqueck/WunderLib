@@ -4,6 +4,7 @@ package de.ambertation.wunderlib.configs;
 import de.ambertation.wunderlib.WunderLib;
 import de.ambertation.wunderlib.utils.Version;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 import net.fabricmc.api.EnvType;
@@ -331,6 +332,10 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
     }
 
     public abstract class Value<T, R extends Value<T, R>> {
+        public interface AfterChange<C extends AbstractConfig<C>, T, R extends AbstractConfig<C>.Value<T, R>> {
+            void changed(R value);
+        }
+
         @NotNull
         public final ConfigToken<T> token;
         @Nullable
@@ -344,6 +349,8 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
         private int order;
         @Nullable
         private C parentFile;
+        @Nullable
+        private List<AfterChange<C, T, R>> afterChangeNotifications;
 
 
         public Value(String path, String key, T defaultValue) {
@@ -445,6 +452,13 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
             remove();
         }
 
+        public void notifyAfterChange(AfterChange<C, T, R> notification) {
+            if (afterChangeNotifications == null) {
+                afterChangeNotifications = new ArrayList<>();
+            }
+            afterChangeNotifications.add(notification);
+        }
+
         protected abstract T convert(@NotNull JsonElement el);
 
         @NotNull
@@ -457,6 +471,12 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
             if (deprecated) throw new IllegalStateException("'" + token.path() + "." +
                     token.key + "' is deprecated and can no-longer be used");
             setValue(token, convert(value));
+
+            if (afterChangeNotifications != null) {
+                for (AfterChange<C, T, R> n : afterChangeNotifications) {
+                    n.changed((R) this);
+                }
+            }
         }
 
         public boolean valueEquals(String value) {
@@ -543,6 +563,10 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         public int getMax() {
             return max;
+        }
+
+        public int getClamped() {
+            return Math.min(max, Math.max(min, get()));
         }
     }
 
@@ -735,6 +759,45 @@ public abstract class AbstractConfig<C extends AbstractConfig<C>> {
 
         public StringValue hideInUI() {
             return (StringValue) super.hideInUI();
+        }
+    }
+
+    public class BlockPosValue extends Value<BlockPos, BlockPosValue> {
+        public BlockPosValue(String path, String key, BlockPos defaultValue) {
+            super(path, key, defaultValue);
+        }
+
+        public BlockPosValue(String path, String key, BlockPos defaultValue, boolean isDeprecated) {
+            super(path, key, defaultValue, isDeprecated);
+        }
+
+        public BlockPosValue(ConfigToken token) {
+            super(token);
+        }
+
+        public BlockPosValue(ConfigToken token, boolean isDeprecated) {
+            super(token, isDeprecated);
+        }
+
+        @Override
+        protected BlockPos convert(@NotNull JsonElement el) {
+            JsonObject o = el.getAsJsonObject();
+            return new BlockPos(o.get("x").getAsInt(), o.get("y").getAsInt(), o.get("z").getAsInt());
+        }
+
+        @Override
+        protected @NotNull JsonElement convert(BlockPos value) {
+            JsonObject o = new JsonObject();
+            o.addProperty("x", value.getX());
+            o.addProperty("y", value.getY());
+            o.addProperty("z", value.getZ());
+            return o;
+        }
+
+        @Override
+        protected @NotNull BlockPos parseString(@NotNull String value) {
+            //parse value using GSON
+            return convert(new Gson().fromJson(value, JsonObject.class));
         }
     }
 }
