@@ -12,6 +12,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Version {
+    public static final Version ZERO = new Version(0, 0, 0);
+
     public interface ModVersionProvider {
         Version getModVersion();
         String getModID();
@@ -54,7 +56,7 @@ public class Version {
                     patch = matcher.group(4) == null ? 0 : Integer.parseInt(matcher.group(4));
             }
 
-            return FastColor.ARGB32.color(0, major, minor, patch);
+            return FastColor.ARGB32.color(0, major & 0xFF, minor & 0xFF, patch & 0xFF);
         } catch (Exception e) {
             WunderLib.LOGGER.error("Failed to parse Version '" + version + "'.");
             return 0;
