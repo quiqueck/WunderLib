@@ -25,11 +25,9 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
         super(channel, factory);
     }
 
-    public static <T extends ServerBoundNetworkPayload<T>> ServerBoundPacketHandler<T> register(
-            ResourceLocation channel,
-            NetworkPayload.NetworkPayloadFactory<T> factory
+    public static <T extends ServerBoundNetworkPayload<T>> void register(
+            ServerBoundPacketHandler<T> packetHandler
     ) {
-        ServerBoundPacketHandler<T> packetHandler = new ServerBoundPacketHandler<>(channel, factory);
         PayloadTypeRegistry.playC2S().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
@@ -43,7 +41,14 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             ServerPlayNetworking.unregisterReceiver(handler, packetHandler.CHANNEL.id());
         });
+    }
 
+    public static <T extends ServerBoundNetworkPayload<T>> ServerBoundPacketHandler<T> register(
+            ResourceLocation channel,
+            NetworkPayload.NetworkPayloadFactory<T> factory
+    ) {
+        ServerBoundPacketHandler<T> packetHandler = new ServerBoundPacketHandler<>(channel, factory);
+        register(packetHandler);
         return packetHandler;
     }
 
