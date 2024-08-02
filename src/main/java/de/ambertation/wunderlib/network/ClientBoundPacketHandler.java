@@ -34,11 +34,9 @@ public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> ex
         super(channel, factory);
     }
 
-    public static <T extends ClientBoundNetworkPayload<T>> ClientBoundPacketHandler<T> register(
-            ResourceLocation channel,
-            NetworkPayload.NetworkPayloadFactory<T> factory
+    public static <T extends ClientBoundNetworkPayload<T>> void register(
+            ClientBoundPacketHandler<T> packetHandler
     ) {
-        ClientBoundPacketHandler<T> packetHandler = new ClientBoundPacketHandler<>(channel, factory);
         PayloadTypeRegistry.playS2C().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
 
         if (sendToClientAdapter != null) {
@@ -46,10 +44,16 @@ public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> ex
         } else {
             packetHandlers.add(packetHandler);
         }
-
-        return packetHandler;
     }
 
+    public static <T extends ClientBoundNetworkPayload<T>> ClientBoundPacketHandler<T> register(
+            ResourceLocation channel,
+            NetworkPayload.NetworkPayloadFactory<T> factory
+    ) {
+        ClientBoundPacketHandler<T> packetHandler = new ClientBoundPacketHandler<>(channel, factory);
+        register(packetHandler);
+        return packetHandler;
+    }
 
     public static <T extends ClientBoundNetworkPayload<T>> void sendToClient(ServerPlayer player, T payload) {
         if (!EnvHelper.isClient()) {
