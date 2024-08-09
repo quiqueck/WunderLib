@@ -11,6 +11,6 @@ sourceSets {
     }
 }
 
-tasks.sourcesJar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
+//tasks.sourcesJar {
+//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//}
