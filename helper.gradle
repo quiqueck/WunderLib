@@ -94,7 +94,7 @@ modrinth {
     def slurper = new groovy.json.JsonSlurper()
     token = modrinth_token
     //modrinth_id
-    projectId = project.archives_base_name
+    projectId = findProperty('modrinth_id') ?: project.archives_base_name
     versionNumber = project.mod_version
     versionType = project.release_channel
     uploadFile = remapJar
@@ -115,6 +115,7 @@ modrinth {
 }
 
 curseforge {
+    def projectID = findProperty('modrinth_id') ?: project.archives_base_name
     def slurper = new groovy.json.JsonSlurper()
     apiKey = new File(projectDir, "../CURSEFORGE_TOKEN")
     if (apiKey.exists()) {
@@ -153,7 +154,7 @@ curseforge {
             }
         }
         mainArtifact(remapJar) {
-            displayName = "$project.archives_base_name-$project.version $latestVersion"
+            displayName = "$projectID-$project.version $latestVersion"
         }
         afterEvaluate {
             mainArtifact(remapJar.outputs)
@@ -172,11 +173,12 @@ task nextVersion() {
 
     doLast {
         def slurper = new groovy.json.JsonSlurper();
+        def projectID = findProperty('modrinth_id') ?: project.archives_base_name
         def inputFile = rootProject.file('modrinth.json')
         def gameVersions = java.net.URLEncoder.encode(project.modrinth_versions, "UTF-8")
         def json = slurper.parseText('[{ "version_number" : "1.0.-1" }]')
         try {
-            new URL("https://api.modrinth.com/v2/project/${project.archives_base_name}/version?&game_versions=${gameVersions}").withInputStream { i -> inputFile.withOutputStream { it << i } }
+            new URL("https://api.modrinth.com/v2/project/${projectID}/version?&game_versions=${gameVersions}").withInputStream { i -> inputFile.withOutputStream { it << i } }
             json = slurper.parseText(inputFile.text)
         } catch (FileNotFoundException) {
         }
@@ -209,10 +211,11 @@ task nextVersion() {
         def rootFabricFile = rootProject.file("src/main/resources/fabric.mod.json")
         def rootFabricFileJson = slurper.parseText(rootFabricFile.text)
         allprojects.each { proj ->
-            if (proj.name == 'bclib-legacy') {
+            if (proj.path != ':') {
+                println "Ignoring ${proj}"
                 return
             }
-            println "Updating Verion in ${proj}"
+            println "Updating Version in ${proj}"
 
             def fabricFile = proj.file("src/main/resources/fabric.mod.json")
             def fabricJson = slurper.parseText(fabricFile.text)
