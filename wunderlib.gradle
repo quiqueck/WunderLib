@@ -26,8 +26,16 @@ dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings loom.officialMojangMappings()
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
-apply from: "wunderlib-include.gradle"
+
+sourceSets {
+    main {
+        java {
+            srcDirs += ['src/client/java', 'src/datagen/java']
+        }
+    }
+}
 
 
 processResources {
@@ -56,6 +64,36 @@ jar {
     }
 }
 
+
+javadoc {
+    options {
+        source = "21"
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+        memberLevel = JavadocMemberLevel.PROTECTED
+        links("https://docs.oracle.com/en/java/javase/17/docs/api/")
+        // Disable the crazy super-strict doclint tool in Java 8
+        addStringOption("Xdoclint:none", "-quiet")
+        addStringOption("noqualifier", "net.minecraft.*:com.mojang.*:net.fabricmc.*")
+        addBooleanOption("-allow-script-in-comments", true)
+        tags(
+                'apiNote:a:API Note:',
+                'implSpec:a:Implementation Requirements:',
+                'implNote:a:Implementation Note:'
+        )
+    }
+
+
+    allprojects.each {
+        source(it.sourceSets.main.allJava)
+    }
+
+    classpath = files(sourceSets.main.compileClasspath, sourceSets.main.runtimeClasspath)
+    include("**/api/**")
+    include("de/ambertation/**")
+    failOnError true
+}
+
 configurations {
     dev {
         canBeResolved = false
@@ -63,30 +101,12 @@ configurations {
     }
 }
 
+task javadocJar(type: Jar, dependsOn: [javadoc]) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
 artifacts {
     dev jar
+    archives sourcesJar
+    archives javadocJar
 }
-
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
-}
-
