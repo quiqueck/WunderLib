@@ -18,8 +18,8 @@ repositories {
 }
 
 loom {
-
 }
+
 print("wunderlib.gradle")
 
 dependencies {
@@ -52,9 +52,6 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
 }
 
@@ -105,6 +102,7 @@ task javadocJar(type: Jar, dependsOn: [javadoc]) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
 }
+
 artifacts {
     dev jar
     archives sourcesJar

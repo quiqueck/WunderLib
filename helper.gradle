@@ -273,20 +273,6 @@ publishing {
         mavenJava(MavenPublication) {
             def githubName = findProperty('github_base_name') ?: project.archives_base_name
             artifactId = project.archives_base_name
-//            // Publish the remapped JAR as the main artifact
-//            artifact tasks.remapJar {
-//                archiveClassifier.set(null) // Ensure it's the main artifact without a classifier
-//            }
-//
-//            // Publish the sources JAR with a 'sources' classifier
-//            artifact tasks.remapSourcesJar {
-//                archiveClassifier.set('sources')
-//            }
-//
-//            // Publish the Javadoc JAR with a 'javadoc' classifier
-//            artifact tasks.javadocJar {
-//                archiveClassifier.set('javadoc')
-//            }
             // add all the jars that should be included when publishing to maven
             artifact(remapJar) {
                 builtBy remapJar
