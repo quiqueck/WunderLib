@@ -4,23 +4,17 @@ import de.ambertation.wunderlib.WunderLib;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.platform.GlConst;
 import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderBuffers;
+import net.minecraft.client.gui.render.state.GuiRenderState;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
-
-import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 
 import java.io.File;
 import java.util.stream.Stream;
@@ -82,89 +76,147 @@ public class ItemHelper {
             float scale,
             @NotNull File file
     ) {
-        RenderSystem.recordRenderCall(() -> {
-            var framebuffer = createRenderContext((int) (16 * scale), (int) (16 * scale));
-            renderToFramebuffer(stack, overlayText, scale, framebuffer);
-            write(framebuffer, file);
-        });
+        executeRender(stack, overlayText, scale, file);
     }
 
-    // Method to create a framebuffer and render context
-    private static RenderTarget createRenderContext(int width, int height) {
-        RenderTarget framebuffer = new TextureTarget(width, height, true, Minecraft.ON_OSX);
-        framebuffer.setClearColor(1.0F, 1.0F, 1.0F, 0.0F);
+    private static void executeRender(ItemStack stack, String overlayText, float scale, File file) {
+        // Calculate size based on scale - standard item is 16x16
+        int size = (int) (16 * scale);
 
-        return framebuffer;
+        // Create a render target for our item
+        RenderTarget framebuffer = new TextureTarget("item_render", size, size, true);
+
+        try {
+            renderItemToFramebuffer(stack, overlayText, scale, framebuffer);
+            writeFramebufferToFile(framebuffer, file);
+        } finally {
+            // Clean up the framebuffer
+            framebuffer.destroyBuffers();
+        }
     }
 
-    // Method to render the scene into the specified framebuffer
-    private static void renderToFramebuffer(ItemStack stack, String text, float scale, RenderTarget framebuffer) {
+    private static void renderItemToFramebuffer(ItemStack stack, String text, float scale, RenderTarget framebuffer) {
         Minecraft minecraft = Minecraft.getInstance();
 
-        RenderSystem.viewport(0, 0, framebuffer.viewWidth, framebuffer.viewHeight);
-        // Set up rendering context
-        framebuffer.bindWrite(true);
+        // Setup lighting for 3D items like in the GUI
+        minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
 
-        RenderBuffers renderBuffers = minecraft.renderBuffers();
-        RenderSystem.clear(GlConst.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);
-        Matrix4f matrix4f = new Matrix4f().setOrtho(
-                0.0f,
-                framebuffer.viewWidth / scale,
-                framebuffer.viewHeight / scale,
-                0.0f,
-                1000.0f,
-                21000.0f
-        );
-        RenderSystem.setProjectionMatrix(matrix4f, VertexSorting.ORTHOGRAPHIC_Z);
-        RenderSystem.disableDepthTest();
-        Matrix4fStack poseStack = RenderSystem.getModelViewStack();
-        poseStack.pushMatrix();
-        poseStack.identity();
-        poseStack.translate(0.0f, 0.0f, -11000.0f);
-        RenderSystem.applyModelViewMatrix();
-        Lighting.setupFor3DItems();
+        // Create render state and graphics context like in Gui class
+        GuiRenderState guiRenderState = new GuiRenderState();
+        GuiGraphics guiGraphics = new GuiGraphics(minecraft, guiRenderState);
 
-        MultiBufferSource.BufferSource bufferSource = renderBuffers.bufferSource();
-        GuiGraphics guiGraphics = new GuiGraphics(minecraft, bufferSource);
+        // Clear background to transparent (let the rendering pipeline handle framebuffer clearing)
+        guiGraphics.fill(RenderPipelines.GUI, 0, 0, (int) (16 * scale), (int) (16 * scale), 0x00000000);
+
+        // Move to next stratum for item rendering
+        guiGraphics.nextStratum();
+
+        // Apply scaling transformation
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().scale(scale, scale);
+
+        // Render the item at (0,0) - this will be scaled by our transformation
         guiGraphics.renderFakeItem(stack, 0, 0);
+
+        // Render text overlay if needed (like count or custom text)
         if (stack.getCount() > 1 && text == null) text = String.valueOf(stack.getCount());
         if (text != null) {
-            guiGraphics.renderItemDecorations(
-                    Minecraft.getInstance().font,
-                    stack, 0, 0, text
-            );
+            guiGraphics.renderItemDecorations(minecraft.font, stack, 0, 0, text);
         }
-        guiGraphics.flush();
-        poseStack.popMatrix();
-        RenderSystem.applyModelViewMatrix();
 
-        framebuffer.unbindWrite();
+        // Restore transformation
+        guiGraphics.pose().popMatrix();
 
-        // Bind the main framebuffer again
-        minecraft.getMainRenderTarget().bindWrite(true);
+        // Process any deferred rendering operations (like tooltips)
+        guiGraphics.renderDeferredTooltip();
     }
 
-    // Same as Screenshots#takeScreenshot but this version
-    // will keep the alpha channel
-    private static NativeImage takeScreenshot(RenderTarget renderTarget) {
-        NativeImage nativeImage = new NativeImage(renderTarget.width, renderTarget.height, false);
-        RenderSystem.bindTexture(renderTarget.getColorTextureId());
-        nativeImage.downloadTexture(0, false);
-        nativeImage.flipY();
-        return nativeImage;
+    /**
+     * Write the framebuffer contents to a file using the Screenshot API
+     */
+    private static void writeFramebufferToFile(RenderTarget framebuffer, File file) {
+        try {
+            // Use the Screenshot API to capture the framebuffer contents
+            Screenshot.takeScreenshot(
+                    framebuffer, nativeImage -> {
+                        Util.ioPool().execute(() -> {
+                            try {
+                                // The NativeImage already contains exactly what we rendered
+                                nativeImage.writeToFile(file);
+                                WunderLib.LOGGER.info("Successfully saved item render to: " + file.getAbsolutePath());
+                            } catch (Exception exception) {
+                                WunderLib.LOGGER.warn("Couldn't save item render", exception);
+                            } finally {
+                                nativeImage.close();
+                            }
+                        });
+                    }
+            );
+        } catch (Exception e) {
+            WunderLib.LOGGER.error("Failed to capture item render", e);
+        }
     }
 
-    private static void write(RenderTarget framebuffer, File file2) {
-        NativeImage img = takeScreenshot(framebuffer);
+    /**
+     * Render an item within an existing GUI context (most reliable method)
+     * Based on the renderSlot method from Gui class
+     */
+    public static void renderToExistingContext(
+            GuiGraphics guiGraphics,
+            ItemStack stack,
+            @Nullable String overlayText,
+            float scale,
+            int x, int y
+    ) {
+        if (stack.isEmpty()) {
+            return;
+        }
 
-        Util.ioPool().execute(() -> {
-            try {
-                img.writeToFile(file2);
-            } catch (Exception exception) {
-                WunderLib.LOGGER.warn("Couldn't save screenshot", exception);
-            } finally {
-                img.close();
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(x, y);
+        guiGraphics.pose().scale(scale, scale);
+
+        // Render the item using the same method as the hotbar
+        guiGraphics.renderFakeItem(stack, 0, 0);
+
+        // Render decorations (count, durability bar, cooldown overlay)
+        String text = overlayText;
+        if (stack.getCount() > 1 && text == null) text = String.valueOf(stack.getCount());
+        if (text != null) {
+            guiGraphics.renderItemDecorations(Minecraft.getInstance().font, stack, 0, 0, text);
+        }
+
+        guiGraphics.pose().popMatrix();
+    }
+
+    /**
+     * Alternative method that renders to a specific area within an existing framebuffer
+     * Useful for creating item grids or inventories
+     */
+    public static void renderItemGrid(
+            GuiGraphics guiGraphics,
+            ItemStack[] items,
+            int startX, int startY,
+            int itemSize, int spacing,
+            int columns
+    ) {
+        for (int i = 0; i < items.length; i++) {
+            if (!items[i].isEmpty()) {
+                int col = i % columns;
+                int row = i / columns;
+                int x = startX + col * (itemSize + spacing);
+                int y = startY + row * (itemSize + spacing);
+
+                float scale = itemSize / 16.0f; // 16 is the standard item size
+                renderToExistingContext(guiGraphics, items[i], null, scale, x, y);
             }
-        });
+        }
+    }
+
+    /**
+     * Utility method to render a single item at standard size (16x16)
+     */
+    public static void renderStandardItem(GuiGraphics guiGraphics, ItemStack stack, int x, int y) {
+        renderToExistingContext(guiGraphics, stack, null, 1.0f, x, y);
     }
 }

@@ -5,8 +5,6 @@ import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
@@ -84,19 +82,37 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
         return height.calculatedSize();
     }
 
-    protected final void setClippingRect(Rectangle clippingRect) {
+    /**
+     * Set clipping rectangle using the new GuiGraphics scissor system
+     */
+    protected final void setClippingRect(GuiGraphics guiGraphics, Rectangle clippingRect) {
         if (clippingRect == null) {
-            RenderSystem.disableScissor();
+            guiGraphics.disableScissor();
             return;
         }
-        final double uiScale = Minecraft.getInstance().getWindow().getGuiScale();
-        final int windowHeight = Minecraft.getInstance().getWindow().getHeight();
-        RenderSystem.enableScissor(
-                (int) (clippingRect.left * uiScale),
-                (int) (windowHeight - (clippingRect.bottom()) * uiScale),
-                (int) (clippingRect.width * uiScale),
-                (int) ((clippingRect.height) * uiScale)
+
+        // The GuiGraphics.enableScissor method in 1.21.6 expects screen coordinates
+        // and handles the transformation internally, but we may still need to account for UI scaling
+        // depending on the specific implementation
+
+        // TODO: Check if we need to apply UI scaling (this depends on how the Rectangle coordinates are defined)
+        // If clippingRect is already in screen coordinates, use directly:
+        guiGraphics.enableScissor(
+                clippingRect.left,
+                clippingRect.top,
+                clippingRect.right(),
+                clippingRect.bottom()
         );
+
+        /*
+        final double uiScale = Minecraft.getInstance().getWindow().getGuiScale();
+        guiGraphics.enableScissor(
+                (int)(clippingRect.left * uiScale),
+                (int)(clippingRect.top * uiScale),
+                (int)(clippingRect.right() * uiScale),
+                (int)(clippingRect.bottom() * uiScale)
+        );
+        */
     }
 
     public void render(
@@ -109,13 +125,17 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     ) {
         Rectangle r = relativeBounds.movedBy(parentBounds.left, parentBounds.top);
         Rectangle clip = r.intersect(clipRect);
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(relativeBounds.left, relativeBounds.top, 0);
+
+        // Use the new matrix system
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(relativeBounds.left, relativeBounds.top);
+
         //if (r.overlaps(clip))
         {
             renderInBounds(guiGraphics, mouseX - relativeBounds.left, mouseY - relativeBounds.top, deltaTicks, r, clip);
         }
-        guiGraphics.pose().popPose();
+
+        guiGraphics.pose().popMatrix();
     }
 
     protected void renderInBounds(
@@ -127,9 +147,9 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
             Rectangle clipRect
     ) {
         if (renderer != null) {
-            setClippingRect(clipRect);
+            setClippingRect(guiGraphics, clipRect);
             renderer.renderInBounds(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
-            setClippingRect(null);
+            setClippingRect(guiGraphics, null);
         }
     }
 
@@ -146,7 +166,6 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
                     width.calculatedSize() + "x" + height.calculatedSize() +
                     ")";
         }
-
     }
 
     public L alignTop() {

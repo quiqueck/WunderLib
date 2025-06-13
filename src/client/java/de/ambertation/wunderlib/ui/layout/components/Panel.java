@@ -1,6 +1,5 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-
 import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEventHandler;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.vanilla.LayoutScreen;
@@ -118,8 +117,18 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
         if (child != null) {
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(bounds.left, bounds.top, zIndex);
+            guiGraphics.pose().pushMatrix();
+
+            // For 2D UI rendering, we only need x,y translation
+            // Z-index is handled through the stratum system in 1.21.6
+            guiGraphics.pose().translate(bounds.left, bounds.top);
+
+            // Handle z-index using the new stratum system if needed
+            if (zIndex != 0) {
+                // Move to next stratum to ensure proper layering
+                guiGraphics.nextStratum();
+            }
+
             child.render(
                     guiGraphics,
                     inputEnabled ? mouseX - bounds.left : -1000,
@@ -128,7 +137,8 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
                     bounds,
                     bounds
             );
-            guiGraphics.pose().popPose();
+
+            guiGraphics.pose().popMatrix();
         }
     }
 

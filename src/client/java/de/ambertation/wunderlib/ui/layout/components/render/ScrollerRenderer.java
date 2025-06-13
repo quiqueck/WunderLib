@@ -3,6 +3,8 @@ package de.ambertation.wunderlib.ui.layout.components.render;
 
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
+import net.minecraft.client.gui.GuiGraphics;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
@@ -37,5 +39,11 @@ public interface ScrollerRenderer {
         );
     }
 
-    void renderScrollBar(Rectangle renderBounds, int pickerOffset, int pickerSize, float zIndex);
+    void renderScrollBar(
+            GuiGraphics guiGraphics,
+            Rectangle renderBounds,
+            int pickerOffset,
+            int pickerSize,
+            float zIndex
+    );
 }

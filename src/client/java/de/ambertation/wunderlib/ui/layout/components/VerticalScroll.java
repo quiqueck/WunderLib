@@ -135,7 +135,9 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
     @Override
     public void updateScreenBounds(Panel parentpanel, int worldX, int worldY) {
         super.updateScreenBounds(parentpanel, worldX, worldY);
-        child.updateScreenBounds(parentpanel, screenBounds.left, screenBounds.top);
+        if (child != null) {
+            child.updateScreenBounds(parentpanel, screenBounds.left, screenBounds.top);
+        }
     }
 
     @Override
@@ -151,18 +153,20 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
         if (showScrollBar()) {
             if (child != null) {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(0, scrollerOffset(), 0);
-                setClippingRect(clipRect);
+                guiGraphics.pose().pushMatrix();
+                guiGraphics.pose().translate(0, scrollerOffset());
+
+                setClippingRect(guiGraphics, clipRect);
                 child.render(
                         guiGraphics, mouseX, mouseY - scrollerOffset(), deltaTicks,
                         renderBounds.movedBy(0, scrollerOffset(), scrollerWidth(), 0),
                         clipRect
                 );
-                setClippingRect(null);
-                guiGraphics.pose().popPose();
+                setClippingRect(guiGraphics, null);
+
+                guiGraphics.pose().popMatrix();
             }
-            scrollerRenderer.renderScrollBar(renderBounds, saveScrollerY(), scrollerHeight, getZIndex());
+            scrollerRenderer.renderScrollBar(guiGraphics, renderBounds, saveScrollerY(), scrollerHeight, getZIndex());
         } else {
             if (child != null) {
                 child.render(guiGraphics, mouseX, mouseY, deltaTicks, renderBounds, clipRect);
@@ -194,7 +198,7 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
     }
 
     public boolean showScrollBar() {
-        return child.relativeBounds.height > relativeBounds.height;
+        return child != null && child.relativeBounds.height > relativeBounds.height;
     }
 
     @Override
