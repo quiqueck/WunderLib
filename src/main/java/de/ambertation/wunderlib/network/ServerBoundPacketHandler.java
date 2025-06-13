@@ -39,7 +39,7 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
         });
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            ServerPlayNetworking.unregisterReceiver(handler, packetHandler.CHANNEL.id());
+            // ServerPlayNetworking.unregisterReceiver(handler, packetHandler.CHANNEL.id());
         });
     }
 
@@ -76,6 +76,4 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
             else server.execute(runner);
         }
     }
-
-
 }

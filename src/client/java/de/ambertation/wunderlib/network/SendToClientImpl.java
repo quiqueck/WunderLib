@@ -24,7 +24,7 @@ public class SendToClientImpl implements SendToClientAdapter {
         });
 
         ClientPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
-            ClientPlayNetworking.unregisterReceiver(packetHandler.CHANNEL.id());
+            //ClientPlayNetworking.unregisterReceiver(packetHandler.CHANNEL.id());
         });
     }
 
@@ -36,7 +36,7 @@ public class SendToClientImpl implements SendToClientAdapter {
 
         payload.processOnClient(context.responseSender());
         final var client = context.client();
-        
+
         if (client != null) {
             final Runnable runner = () -> payload.processOnGameThread(client);
 
