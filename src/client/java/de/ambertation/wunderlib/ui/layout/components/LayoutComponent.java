@@ -11,6 +11,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+import org.joml.Vector2f;
+
 @Environment(EnvType.CLIENT)
 public abstract class LayoutComponent<R extends ComponentRenderer, L extends LayoutComponent<R, L>> implements ComponentWithBounds, GuiEventListener {
     protected final R renderer;
@@ -86,33 +88,43 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
      * Set clipping rectangle using the new GuiGraphics scissor system
      */
     protected final void setClippingRect(GuiGraphics guiGraphics, Rectangle clippingRect) {
+
         if (clippingRect == null) {
             guiGraphics.disableScissor();
             return;
         }
 
+//        guiGraphics.renderOutline(
+//                0,
+//                0,
+//                renderBounds.width,
+//                renderBounds.height,
+//                0xFF00FF00
+//        );
+
         // The GuiGraphics.enableScissor method in 1.21.6 expects screen coordinates
-        // and handles the transformation internally, but we may still need to account for UI scaling
-        // depending on the specific implementation
+        // and handles the transformation internally, so we need to transform the clipping rectangle
+        // from the component's local coordinates to screen coordinates.
 
-        // TODO: Check if we need to apply UI scaling (this depends on how the Rectangle coordinates are defined)
-        // If clippingRect is already in screen coordinates, use directly:
-        guiGraphics.enableScissor(
-                clippingRect.left,
-                clippingRect.top,
-                clippingRect.right(),
-                clippingRect.bottom()
+        guiGraphics.pose().pushMatrix();
+        var pMin = new Vector2f(
+                (float) clippingRect.left,
+                (float) clippingRect.top
         );
-
-        /*
-        final double uiScale = Minecraft.getInstance().getWindow().getGuiScale();
-        guiGraphics.enableScissor(
-                (int)(clippingRect.left * uiScale),
-                (int)(clippingRect.top * uiScale),
-                (int)(clippingRect.right() * uiScale),
-                (int)(clippingRect.bottom() * uiScale)
+        var pMax = new Vector2f(
+                (float) clippingRect.right(),
+                (float) clippingRect.bottom()
         );
-        */
+        guiGraphics.pose().invert();
+        guiGraphics.pose().transformPosition(pMin);
+        guiGraphics.pose().transformPosition(pMax);
+        guiGraphics.pose().popMatrix();
+        guiGraphics.enableScissor(
+                (int) (pMin.x),
+                (int) (pMin.y),
+                (int) (pMax.x),
+                (int) (pMax.y)
+        );
     }
 
     public void render(

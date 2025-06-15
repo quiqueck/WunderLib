@@ -23,6 +23,7 @@ public abstract class LayoutScreen extends Screen {
     protected static final Runnable EMPTY_SCREEN = () -> {
         Minecraft.getInstance().setScreen(null);
     };
+
     public interface OverlayProvider {
         @NotNull
         Panel getOverlay();
@@ -96,12 +97,14 @@ public abstract class LayoutScreen extends Screen {
     protected abstract LayoutComponent<?, ?> initContent();
 
     protected void openLink(String uri) {
-        ConfirmLinkScreen cls = new ConfirmLinkScreen(bl -> {
-            if (bl) {
-                Util.getPlatform().openUri(uri);
-            }
-            this.minecraft.setScreen(this);
-        }, uri, true);
+        ConfirmLinkScreen cls = new ConfirmLinkScreen(
+                bl -> {
+                    if (bl) {
+                        Util.getPlatform().openUri(uri);
+                    }
+                    this.minecraft.setScreen(this);
+                }, uri, true
+        );
 
         Minecraft.getInstance().setScreen(cls);
     }
