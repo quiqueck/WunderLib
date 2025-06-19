@@ -1,7 +1,5 @@
 package de.ambertation.wunderlib.network;
 
-import de.ambertation.wunderlib.utils.EnvHelper;
-
 import net.minecraft.resources.ResourceLocation;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -53,7 +51,7 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
     }
 
     public static <T extends ServerBoundNetworkPayload<T>> void sendToServer(T payload) {
-        if (EnvHelper.isClient() && sendToServerAdapter != null) {
+        if (/*EnvHelper.isClient() &&*/ sendToServerAdapter != null) {
             payload.prepareOnClient();
             sendToServerAdapter.sendToServer(payload);
         } else {
