@@ -153,7 +153,9 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
         if (showScrollBar()) {
             if (child != null) {
-                guiGraphics.pose().pushMatrix();
+                // The new Matrix System has a max stack depth of 15,
+                // We need to use it sparingly!
+                //guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(0, scrollerOffset());
 
                 setClippingRect(guiGraphics, clipRect);
@@ -164,7 +166,8 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
                 );
                 setClippingRect(guiGraphics, null);
 
-                guiGraphics.pose().popMatrix();
+                guiGraphics.pose().translate(0, -scrollerOffset());
+                //guiGraphics.pose().popMatrix();
             }
             scrollerRenderer.renderScrollBar(guiGraphics, renderBounds, saveScrollerY(), scrollerHeight, getZIndex());
         } else {

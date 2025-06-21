@@ -22,9 +22,10 @@ public interface ScrollerRenderer {
     }
 
     default Rectangle getScrollerBounds(Rectangle renderBounds) {
+        // relative top the current bounds
         return new Rectangle(
-                renderBounds.right() - this.scrollerWidth(),
-                renderBounds.top,
+                renderBounds.right() - this.scrollerWidth() - renderBounds.left,
+                0,
                 this.scrollerWidth(),
                 renderBounds.height
         );
