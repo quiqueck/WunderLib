@@ -146,7 +146,7 @@ public abstract class LayoutScreen extends Screen {
     }
 
     public void renderBackgroundLayer(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        renderBackground(guiGraphics, mouseX, mouseY, delta);
+       
     }
 
 
