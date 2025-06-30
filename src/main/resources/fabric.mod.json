@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "wunderlib",
-  "version": "21.6.2",
+  "version": "21.7.0",
   "name": "WunderLib",
   "description": "A UI, Math and Networking Library",
   "authors": [
@@ -23,9 +23,7 @@
   "depends": {
     "fabricloader": ">=0.16.0",
     "fabric-api": ">=0.126.0",
-    "minecraft": [
-      "1.21.6"
-    ],
+    "minecraft": ["1.21.6", "1.21.7"],
     "java": ">=21"
   },
   "custom": {
