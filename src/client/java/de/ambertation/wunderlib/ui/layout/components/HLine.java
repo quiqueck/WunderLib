@@ -6,7 +6,7 @@ import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -28,7 +28,7 @@ public class HLine extends CustomRenderComponent {
 
     @Override
     protected void customRender(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int x,
             int y,
             float deltaTicks,

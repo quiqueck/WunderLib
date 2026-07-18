@@ -5,7 +5,7 @@ import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 
 import net.fabricmc.api.EnvType;
@@ -85,9 +85,9 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     }
 
     /**
-     * Set clipping rectangle using the new GuiGraphics scissor system
+     * Set clipping rectangle using the new GuiGraphicsExtractor scissor system
      */
-    protected final void setClippingRect(GuiGraphics guiGraphics, Rectangle clippingRect) {
+    protected final void setClippingRect(GuiGraphicsExtractor guiGraphics, Rectangle clippingRect) {
 
         if (clippingRect == null) {
             guiGraphics.disableScissor();
@@ -102,7 +102,7 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
 //                0xFF00FF00
 //        );
 
-        // The GuiGraphics.enableScissor method in 1.21.6 expects screen coordinates
+        // The GuiGraphicsExtractor.enableScissor method in 1.21.6 expects screen coordinates
         // and handles the transformation internally, so we need to transform the clipping rectangle
         // from the component's local coordinates to screen coordinates.
 
@@ -128,7 +128,7 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     }
 
     public void render(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -153,7 +153,7 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
     }
 
     protected void renderInBounds(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,

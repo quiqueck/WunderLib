@@ -3,6 +3,9 @@ package de.ambertation.wunderlib.ui.layout.components;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public abstract class AbstractVanillaComponent<C extends AbstractWidget, V extends AbstractVanillaComponent<C, V>> extends LayoutComponent<AbstractVanillaComponentRenderer<C, V>, V> {
     protected C vanillaComponent;
@@ -70,27 +73,33 @@ public abstract class AbstractVanillaComponent<C extends AbstractWidget, V exten
             vanillaComponent.mouseMoved(x - relativeBounds.left, y - relativeBounds.top);
     }
 
+    private MouseButtonEvent relativize(MouseButtonEvent event) {
+        return new MouseButtonEvent(
+                event.x() - relativeBounds.left,
+                event.y() - relativeBounds.top,
+                event.buttonInfo()
+        );
+    }
+
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (vanillaComponent != null && enabled)
-            return vanillaComponent.mouseClicked(x - relativeBounds.left, y - relativeBounds.top, button);
+            return vanillaComponent.mouseClicked(relativize(event), doubleClick);
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double x, double y, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (vanillaComponent != null && enabled)
-            return vanillaComponent.mouseReleased(x - relativeBounds.left, y - relativeBounds.top, button);
+            return vanillaComponent.mouseReleased(relativize(event));
         return false;
     }
 
     @Override
-    public boolean mouseDragged(double x, double y, int button, double x2, double y2) {
+    public boolean mouseDragged(MouseButtonEvent event, double x2, double y2) {
         if (vanillaComponent != null && enabled)
             return vanillaComponent.mouseDragged(
-                    x - relativeBounds.left,
-                    y - relativeBounds.top,
-                    button,
+                    relativize(event),
                     x2 - relativeBounds.left,
                     y2 - relativeBounds.top
             );
@@ -105,23 +114,23 @@ public abstract class AbstractVanillaComponent<C extends AbstractWidget, V exten
     }
 
     @Override
-    public boolean keyPressed(int i, int j, int k) {
+    public boolean keyPressed(KeyEvent event) {
         if (vanillaComponent != null && enabled)
-            return vanillaComponent.keyPressed(i, j, k);
+            return vanillaComponent.keyPressed(event);
         return false;
     }
 
     @Override
-    public boolean keyReleased(int i, int j, int k) {
+    public boolean keyReleased(KeyEvent event) {
         if (vanillaComponent != null && enabled)
-            return vanillaComponent.keyReleased(i, j, k);
+            return vanillaComponent.keyReleased(event);
         return false;
     }
 
     @Override
-    public boolean charTyped(char c, int i) {
+    public boolean charTyped(CharacterEvent event) {
         if (vanillaComponent != null && enabled)
-            return vanillaComponent.charTyped(c, i);
+            return vanillaComponent.charTyped(event);
         return false;
     }
 

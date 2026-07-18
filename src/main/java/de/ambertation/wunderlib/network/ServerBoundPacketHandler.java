@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.network;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -17,7 +17,7 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
     }
 
     public ServerBoundPacketHandler(
-            ResourceLocation channel,
+            Identifier channel,
             NetworkPayload.NetworkPayloadFactory<T> factory
     ) {
         super(channel, factory);
@@ -26,7 +26,7 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
     public static <T extends ServerBoundNetworkPayload<T>> void register(
             ServerBoundPacketHandler<T> packetHandler
     ) {
-        PayloadTypeRegistry.playC2S().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
 
         ServerPlayConnectionEvents.INIT.register((handler, server) -> {
             ServerPlayNetworking.registerReceiver(
@@ -42,7 +42,7 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
     }
 
     public static <T extends ServerBoundNetworkPayload<T>> ServerBoundPacketHandler<T> register(
-            ResourceLocation channel,
+            Identifier channel,
             NetworkPayload.NetworkPayloadFactory<T> factory
     ) {
         ServerBoundPacketHandler<T> packetHandler = new ServerBoundPacketHandler<>(channel, factory);
@@ -65,10 +65,8 @@ public class ServerBoundPacketHandler<T extends ServerBoundNetworkPayload<T>> ex
     ) {
         payload.processOnServer(context.player(), context.responseSender());
 
-        final Runnable runner = () -> payload.processOnGameThread(context.player().getServer(), context.player());
-        final var server = context
-                .player()
-                .getServer();
+        final Runnable runner = () -> payload.processOnGameThread(context.server(), context.player());
+        final var server = context.server();
         if (server != null) {
             if (payload.isBlocking()) server.executeBlocking(runner);
             else server.execute(runner);

@@ -4,6 +4,7 @@ import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,27 +15,34 @@ import java.util.Optional;
 public interface RelativeContainerEventHandler extends ContainerEventHandler {
     Rectangle getInputBounds();
 
+    /**
+     * Creates a copy of the given mouse event with its position translated by (-dx, -dy).
+     */
+    static MouseButtonEvent relativize(MouseButtonEvent event, double dx, double dy) {
+        return new MouseButtonEvent(event.x() - dx, event.y() - dy, event.buttonInfo());
+    }
+
     default Optional<GuiEventListener> getChildAt(double d, double e) {
         Rectangle r = getInputBounds();
         return ContainerEventHandler.super.getChildAt(d, e);
     }
 
-    default boolean mouseClicked(double d, double e, int i) {
+    default boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (getFocused() != null) {
-            //getFocused().mouseClicked(d, e, i);
+            //getFocused().mouseClicked(event, doubleClick);
         }
         Rectangle r = getInputBounds();
-        return ContainerEventHandler.super.mouseClicked(d - r.left, e - r.top, i);
+        return ContainerEventHandler.super.mouseClicked(relativize(event, r.left, r.top), doubleClick);
     }
 
-    default boolean mouseReleased(double d, double e, int i) {
+    default boolean mouseReleased(MouseButtonEvent event) {
         Rectangle r = getInputBounds();
-        return ContainerEventHandler.super.mouseReleased(d - r.left, e - r.top, i);
+        return ContainerEventHandler.super.mouseReleased(relativize(event, r.left, r.top));
     }
 
-    default boolean mouseDragged(double d, double e, int i, double f, double g) {
+    default boolean mouseDragged(MouseButtonEvent event, double f, double g) {
         Rectangle r = getInputBounds();
-        return ContainerEventHandler.super.mouseDragged(d - r.left, e - r.top, i, f - r.left, g - r.top);
+        return ContainerEventHandler.super.mouseDragged(relativize(event, r.left, r.top), f - r.left, g - r.top);
     }
 
     default boolean mouseScrolled(double d, double e, double f, double g) {

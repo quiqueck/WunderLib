@@ -4,11 +4,12 @@ import de.ambertation.wunderlib.ui.layout.components.input.RelativeContainerEven
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.vanilla.LayoutScreen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -115,7 +116,7 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float deltaTicks) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float deltaTicks) {
         if (child != null) {
             guiGraphics.pose().pushMatrix();
 
@@ -148,24 +149,24 @@ public class Panel implements ComponentWithBounds, RelativeContainerEventHandler
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (inputEnabled)
-            return RelativeContainerEventHandler.super.mouseClicked(d, e, i);
+            return RelativeContainerEventHandler.super.mouseClicked(event, doubleClick);
 
         return false;
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
+    public boolean mouseDragged(MouseButtonEvent event, double f, double g) {
         if (inputEnabled)
-            return RelativeContainerEventHandler.super.mouseDragged(d, e, i, f, g);
+            return RelativeContainerEventHandler.super.mouseDragged(event, f, g);
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (inputEnabled)
-            return RelativeContainerEventHandler.super.mouseReleased(d, e, i);
+            return RelativeContainerEventHandler.super.mouseReleased(event);
         return false;
     }
 

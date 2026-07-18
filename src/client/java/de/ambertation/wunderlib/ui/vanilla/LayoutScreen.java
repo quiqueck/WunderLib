@@ -4,9 +4,9 @@ import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.components.*;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
@@ -145,15 +145,15 @@ public abstract class LayoutScreen extends Screen {
         return cols;
     }
 
-    public void renderBackgroundLayer(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+    public void renderBackgroundLayer(GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY, float delta) {
        
     }
 
 
     @Override
-    public void render(GuiGraphics guiGraphics, int i, int j, float f) {
+    public void extractRenderState(GuiGraphicsExtractor guiGraphics, int i, int j, float f) {
         renderBackgroundLayer(guiGraphics, i, j, f);
-        super.render(guiGraphics, i, j, f);
+        super.extractRenderState(guiGraphics, i, j, f);
 
 //        guiGraphics.drawString(font, "HelloHello", 10, 10, ColorHelper.WHITE);
 //        guiGraphics.drawManaged(() -> {

@@ -1,6 +1,7 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -40,8 +41,9 @@ public class Input extends AbstractVanillaComponent<EditBox, Input> {
                 component
         );
         if (responder != null) eb.setResponder(responder);
-        if (filter != null) eb.setFilter(filter);
-        if (formatter != null) eb.setFormatter(formatter);
+        // NOTE: EditBox#setFilter was removed in 26.1 with no direct replacement,
+        // so the input filter is no longer enforced on the vanilla component.
+        if (formatter != null) eb.addFormatter(formatter::apply);
         eb.setValue(initialValue);
         eb.setBordered(true);
         eb.setEditable(true);
@@ -57,13 +59,14 @@ public class Input extends AbstractVanillaComponent<EditBox, Input> {
 
     public Input setFormatter(BiFunction<String, Integer, FormattedCharSequence> formatter) {
         this.formatter = formatter;
-        if (vanillaComponent != null) vanillaComponent.setFormatter(formatter);
+        if (vanillaComponent != null) vanillaComponent.addFormatter(formatter::apply);
         return this;
     }
 
     public Input setFilter(Predicate<String> filter) {
         this.filter = filter;
-        if (vanillaComponent != null) vanillaComponent.setFilter(filter);
+        // NOTE: EditBox#setFilter was removed in 26.1 with no direct replacement.
+        // The filter is retained here for API compatibility but is not applied to the vanilla component.
         return this;
     }
 
@@ -90,8 +93,8 @@ public class Input extends AbstractVanillaComponent<EditBox, Input> {
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
-        return super.mouseClicked(x, y, button);
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override

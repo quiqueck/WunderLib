@@ -4,7 +4,7 @@ import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -32,20 +32,20 @@ public class Item extends CustomRenderComponent {
 
     @Override
     protected void customRender(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int x,
             int y,
             float deltaTicks,
             Rectangle bounds,
             Rectangle clipRect
     ) {
-        guiGraphics.renderFakeItem(
+        guiGraphics.fakeItem(
                 itemStack,
                 bounds.left,
                 bounds.top
         );
         if (decoration != null) {
-            guiGraphics.renderItemDecorations(
+            guiGraphics.itemDecorations(
                     Minecraft.getInstance().font,
                     itemStack,
                     bounds.left,
@@ -53,7 +53,7 @@ public class Item extends CustomRenderComponent {
                     decoration
             );
         } else if (itemStack.getCount() > 1) {
-            guiGraphics.renderItemDecorations(
+            guiGraphics.itemDecorations(
                     Minecraft.getInstance().font,
                     itemStack,
                     bounds.left,

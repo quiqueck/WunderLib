@@ -4,8 +4,9 @@ import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Size;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.resources.Identifier;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -19,7 +20,7 @@ public class ImageButton extends Image {
 
     @Environment(EnvType.CLIENT)
     public interface OnTooltip {
-        void onTooltip(ImageButton button, GuiGraphics guiGraphics, int mouseX, int mouseY);
+        void onTooltip(ImageButton button, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
     }
 
     @Environment(EnvType.CLIENT)
@@ -30,7 +31,7 @@ public class ImageButton extends Image {
     public ImageButton(
             Value width,
             Value height,
-            ResourceLocation location
+            Identifier location
     ) {
         super(width, height, location);
         this.onPress = NO_ACTION;
@@ -40,7 +41,7 @@ public class ImageButton extends Image {
     public ImageButton(
             Value width,
             Value height,
-            ResourceLocation location,
+            Identifier location,
             Size resourceSize
     ) {
         super(width, height, location, resourceSize);
@@ -92,17 +93,17 @@ public class ImageButton extends Image {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int i) {
-        if (getRelativeBounds().contains(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        if (getRelativeBounds().contains(event.x(), event.y())) {
             onPress.onPress(this);
             return true;
         }
-        return super.mouseClicked(mouseX, mouseY, i);
+        return super.mouseClicked(event, doubleClick);
     }
 
     @Override
     protected void customRender(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,

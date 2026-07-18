@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.network;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -26,7 +26,7 @@ public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> ex
     }
 
     public ClientBoundPacketHandler(
-            ResourceLocation channel,
+            Identifier channel,
             NetworkPayload.NetworkPayloadFactory<T> factory
     ) {
         super(channel, factory);
@@ -35,7 +35,7 @@ public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> ex
     public static <T extends ClientBoundNetworkPayload<T>> void register(
             ClientBoundPacketHandler<T> packetHandler
     ) {
-        PayloadTypeRegistry.playS2C().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(packetHandler.CHANNEL, packetHandler.STREAM_CODEC);
 
         if (sendToClientAdapter != null) {
             sendToClientAdapter.setupConnectionHandler(packetHandler);
@@ -45,7 +45,7 @@ public class ClientBoundPacketHandler<T extends ClientBoundNetworkPayload<T>> ex
     }
 
     public static <T extends ClientBoundNetworkPayload<T>> ClientBoundPacketHandler<T> register(
-            ResourceLocation channel,
+            Identifier channel,
             NetworkPayload.NetworkPayloadFactory<T> factory
     ) {
         ClientBoundPacketHandler<T> packetHandler = new ClientBoundPacketHandler<>(channel, factory);

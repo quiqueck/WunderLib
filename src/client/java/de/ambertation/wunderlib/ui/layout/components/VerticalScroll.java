@@ -7,9 +7,10 @@ import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 import de.ambertation.wunderlib.ui.vanilla.VanillaScrollerRenderer;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.ContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.MouseButtonEvent;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -142,7 +143,7 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
     @Override
     protected void renderInBounds(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -216,7 +217,9 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
     }
 
     @Override
-    public boolean mouseClicked(double x, double y, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+        double x = event.x();
+        double y = event.y();
         Rectangle scroller = scrollerRenderer.getScrollerBounds(relativeBounds);
         Rectangle picker = scrollerRenderer.getPickerBounds(scroller, saveScrollerY(), scrollerHeight);
         if (picker.contains((int) x, (int) y)) {
@@ -228,27 +231,36 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
         if (child != null && relativeBounds.contains(x, y))
             return ContainerEventHandler.super.mouseClicked(
-                    x - relativeBounds.left,
-                    y - relativeBounds.top - scrollerOffset(),
-                    button
+                    new MouseButtonEvent(
+                            x - relativeBounds.left,
+                            y - relativeBounds.top - scrollerOffset(),
+                            event.buttonInfo()
+                    ),
+                    doubleClick
             );
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double x, double y, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
+        double x = event.x();
+        double y = event.y();
         mouseDown = false;
         if (child != null && relativeBounds.contains(x, y))
             return ContainerEventHandler.super.mouseReleased(
-                    x - relativeBounds.left,
-                    y - relativeBounds.top - scrollerOffset(),
-                    button
+                    new MouseButtonEvent(
+                            x - relativeBounds.left,
+                            y - relativeBounds.top - scrollerOffset(),
+                            event.buttonInfo()
+                    )
             );
         return false;
     }
 
     @Override
-    public boolean mouseDragged(double x, double y, int button, double x2, double y2) {
+    public boolean mouseDragged(MouseButtonEvent event, double x2, double y2) {
+        double x = event.x();
+        double y = event.y();
         if (mouseDown) {
             int delta = (int) y - mouseDownY;
             scrollerY = scrollerDownY + delta;
@@ -256,9 +268,11 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
         }
         if (child != null && relativeBounds.contains(x, y))
             return ContainerEventHandler.super.mouseDragged(
-                    x - relativeBounds.left,
-                    y - relativeBounds.top - scrollerOffset(),
-                    button,
+                    new MouseButtonEvent(
+                            x - relativeBounds.left,
+                            y - relativeBounds.top - scrollerOffset(),
+                            event.buttonInfo()
+                    ),
                     x2,
                     y2
             );

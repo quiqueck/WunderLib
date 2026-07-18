@@ -5,7 +5,7 @@ import de.ambertation.wunderlib.ui.layout.components.AbstractVanillaComponentRen
 import de.ambertation.wunderlib.ui.layout.components.Button;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,7 +18,7 @@ public class ButtonRenderer extends AbstractVanillaComponentRenderer<net.minecra
 
     @Override
     public void renderInBounds(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -67,7 +67,7 @@ public class ButtonRenderer extends AbstractVanillaComponentRenderer<net.minecra
         }
     }
 
-    private void drawMoving(GuiGraphics guiGraphics, Rectangle bounds, int pos) {
+    private void drawMoving(GuiGraphicsExtractor guiGraphics, Rectangle bounds, int pos) {
         int bh = bounds.width + bounds.height;
         pos = pos % (2 * bh);
         int x, y;

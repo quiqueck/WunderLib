@@ -5,11 +5,11 @@ import de.ambertation.wunderlib.WunderLib;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiRenderState;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.state.gui.GuiRenderState;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
@@ -103,7 +103,9 @@ public class ItemHelper {
 
         // Create render state and graphics context like in Gui class
         GuiRenderState guiRenderState = new GuiRenderState();
-        GuiGraphics guiGraphics = new GuiGraphics(minecraft, guiRenderState);
+        GuiGraphicsExtractor guiGraphics = new GuiGraphicsExtractor(
+                minecraft, guiRenderState, framebuffer.width, framebuffer.height
+        );
 
         // Clear background to transparent (let the rendering pipeline handle framebuffer clearing)
         guiGraphics.fill(RenderPipelines.GUI, 0, 0, (int) (16 * scale), (int) (16 * scale), 0x00000000);
@@ -116,19 +118,19 @@ public class ItemHelper {
         guiGraphics.pose().scale(scale, scale);
 
         // Render the item at (0,0) - this will be scaled by our transformation
-        guiGraphics.renderFakeItem(stack, 0, 0);
+        guiGraphics.fakeItem(stack, 0, 0);
 
         // Render text overlay if needed (like count or custom text)
         if (stack.getCount() > 1 && text == null) text = String.valueOf(stack.getCount());
         if (text != null) {
-            guiGraphics.renderItemDecorations(minecraft.font, stack, 0, 0, text);
+            guiGraphics.itemDecorations(minecraft.font, stack, 0, 0, text);
         }
 
         // Restore transformation
         guiGraphics.pose().popMatrix();
 
         // Process any deferred rendering operations (like tooltips)
-        guiGraphics.renderDeferredTooltip();
+        guiGraphics.extractDeferredElements(0, 0, 0);
     }
 
     /**
@@ -162,7 +164,7 @@ public class ItemHelper {
      * Based on the renderSlot method from Gui class
      */
     public static void renderToExistingContext(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             ItemStack stack,
             @Nullable String overlayText,
             float scale,
@@ -177,13 +179,13 @@ public class ItemHelper {
         guiGraphics.pose().scale(scale, scale);
 
         // Render the item using the same method as the hotbar
-        guiGraphics.renderFakeItem(stack, 0, 0);
+        guiGraphics.fakeItem(stack, 0, 0);
 
         // Render decorations (count, durability bar, cooldown overlay)
         String text = overlayText;
         if (stack.getCount() > 1 && text == null) text = String.valueOf(stack.getCount());
         if (text != null) {
-            guiGraphics.renderItemDecorations(Minecraft.getInstance().font, stack, 0, 0, text);
+            guiGraphics.itemDecorations(Minecraft.getInstance().font, stack, 0, 0, text);
         }
 
         guiGraphics.pose().popMatrix();
@@ -194,7 +196,7 @@ public class ItemHelper {
      * Useful for creating item grids or inventories
      */
     public static void renderItemGrid(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             ItemStack[] items,
             int startX, int startY,
             int itemSize, int spacing,
@@ -216,7 +218,7 @@ public class ItemHelper {
     /**
      * Utility method to render a single item at standard size (16x16)
      */
-    public static void renderStandardItem(GuiGraphics guiGraphics, ItemStack stack, int x, int y) {
+    public static void renderStandardItem(GuiGraphicsExtractor guiGraphics, ItemStack stack, int x, int y) {
         renderToExistingContext(guiGraphics, stack, null, 1.0f, x, y);
     }
 }

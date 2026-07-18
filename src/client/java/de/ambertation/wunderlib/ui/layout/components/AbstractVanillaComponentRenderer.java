@@ -4,7 +4,7 @@ import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 
 import net.fabricmc.api.EnvType;
@@ -20,7 +20,7 @@ public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extend
 
     @Override
     public void renderInBounds(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -32,7 +32,7 @@ public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extend
                 if (!linkedComponent.enabled) {
                     linkedComponent.vanillaComponent.setAlpha(linkedComponent.alpha / 2);
                 }
-                linkedComponent.vanillaComponent.render(guiGraphics, mouseX, mouseY, deltaTicks);
+                linkedComponent.vanillaComponent.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks);
                 if (!linkedComponent.enabled) {
                     linkedComponent.vanillaComponent.setAlpha(linkedComponent.alpha);
                 }
