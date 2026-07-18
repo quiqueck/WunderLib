@@ -13,8 +13,8 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-    maven { url "https://maven.fabricmc.net/" }
-    maven { url 'https://jitpack.io' }
+    maven { url = "https://maven.fabricmc.net/" }
+    maven { url = 'https://jitpack.io' }
 }
 
 loom {
@@ -87,7 +87,7 @@ javadoc {
     classpath = files(sourceSets.main.compileClasspath, sourceSets.main.runtimeClasspath)
     include("**/api/**")
     include("de/ambertation/**")
-    failOnError true
+    failOnError = true
 }
 
 configurations {
@@ -104,6 +104,6 @@ task javadocJar(type: Jar, dependsOn: [javadoc]) {
 
 artifacts {
     dev jar
-    archives sourcesJar
-    archives javadocJar
 }
+
+tasks.assemble.dependsOn(sourcesJar, javadocJar)
