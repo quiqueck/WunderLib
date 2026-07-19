@@ -78,6 +78,15 @@ public class DropDown<T> extends Button {
     public DropDown<T> addOption(Component title, T value, @Nullable Consumer<T> callback) {
         final var component = new Text(Value.fit(), Value.fixed(20), title) {
             @Override
+            public boolean isMouseOver(double d, double e) {
+                // Text.isMouseOver() returns false so plain labels never capture clicks.
+                // A dropdown row is clickable, so it must report hover consistently with
+                // mouseClicked below, otherwise ContainerEventHandler.getChildAt (1.21.6+)
+                // never routes the click here and the menu becomes unselectable.
+                return this.relativeBounds.contains(d, e);
+            }
+
+            @Override
             public boolean mouseClicked(double d, double e, int i) {
                 if (this.relativeBounds.contains(d, e)) {
                     playDownSound(Minecraft.getInstance().getSoundManager());
