@@ -1,33 +1,4 @@
-buildscript {
-    dependencies {}
-
-    repositories {
-        gradlePluginPortal()
-    }
-}
-sourceCompatibility = JavaVersion.VERSION_21
-targetCompatibility = JavaVersion.VERSION_21
-
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
-repositories {
-    maven { url "https://maven.fabricmc.net/" }
-    maven { url 'https://jitpack.io' }
-}
-
-loom {
-}
-
-print("wunderlib.gradle")
-
-dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-}
+apply from: "common-fabric-project.gradle"
 
 sourceSets {
     main {
@@ -36,31 +7,6 @@ sourceSets {
         }
     }
 }
-
-
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-    it.options.release = 21
-}
-
-java {
-    withSourcesJar()
-}
-
-jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
-}
-
 
 javadoc {
     options {
@@ -91,6 +37,9 @@ javadoc {
     failOnError true
 }
 
+// Exposes the remapped jar to sibling projects that still include this
+// library the old way (project(path: ':wunderlib', configuration: 'dev')),
+// e.g. BCLib's bclib.gradle. Keep until those repos migrate to includeBuild.
 configurations {
     dev {
         canBeResolved = false
