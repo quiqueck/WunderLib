@@ -1,9 +1,12 @@
 apply from: "common-fabric-project.gradle"
 
-sourceSets {
-    main {
-        java {
-            srcDirs += ['src/client/java', 'src/datagen/java']
+loom {
+    splitEnvironmentSourceSets()
+
+    mods {
+        wunderlib {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
         }
     }
 }
@@ -30,8 +33,12 @@ javadoc {
     allprojects.each {
         source(it.sourceSets.main.allJava)
     }
+    source(sourceSets.client.allJava)
 
-    classpath = files(sourceSets.main.compileClasspath, sourceSets.main.runtimeClasspath)
+    classpath = files(
+            sourceSets.main.compileClasspath, sourceSets.main.runtimeClasspath,
+            sourceSets.client.compileClasspath, sourceSets.client.runtimeClasspath
+    )
     include("**/api/**")
     include("de/ambertation/**")
     failOnError true

@@ -79,14 +79,42 @@ public class Version {
         this(String.format(Locale.ROOT, "%d.%d.%d", major, minor, patch));
     }
 
+    /** Number of bits reserved for each of the three version components. */
+    private static final int COMPONENT_BITS = 16;
+    /** Bit mask for a single version component. */
+    private static final long COMPONENT_MASK = (1L << COMPONENT_BITS) - 1;
+    /** Largest value a single version component can hold without being clamped. */
+    public static final int MAX_COMPONENT = (int) COMPONENT_MASK;
+
     /**
-     * Converts a version string to an integer representation.
-     * The version components are encoded into the RGB channels of a 32-bit integer.
-     * 
-     * @param version The version string to convert
-     * @return An integer representation of the version
+     * Clamps a single version component into the representable range.
+     * <p>
+     * Components are packed into {@value #COMPONENT_BITS} bits each, so anything outside
+     * {@code [0, }{@link #MAX_COMPONENT}{@code ]} cannot be represented. Clamping (rather than
+     * masking) keeps the ordering of {@link #toLong()} monotonic: an out-of-range component
+     * saturates at the maximum instead of wrapping around to a small value.
+     *
+     * @param value The raw component value
+     * @return The component, clamped to {@code [0, }{@link #MAX_COMPONENT}{@code ]}
      */
-    private static int toInt(String version) {
+    private static long clampComponent(int value) {
+        if (value < 0) return 0;
+        return Math.min(value, MAX_COMPONENT);
+    }
+
+    /**
+     * Converts a version string to a long representation.
+     * <p>
+     * The three components are packed into {@value #COMPONENT_BITS} bits each
+     * ({@code major << 32 | minor << 16 | patch}), so the numeric value orders identically to
+     * the semantic version. This replaces the former 8-bit-per-component packing, which
+     * overflowed for any component above 255 (e.g. the {@code 26.200.x} / {@code 26.300.x}
+     * mod versions) and made newer versions compare as older.
+     *
+     * @param version The version string to convert
+     * @return A long representation of the version
+     */
+    private static long toLong(String version) {
         if (version == null || version.isEmpty()) return 0;
 
         try {
@@ -105,7 +133,9 @@ public class Version {
                     patch = matcher.group(4) == null ? 0 : Integer.parseInt(matcher.group(4));
             }
 
-            return ColorUtilARGB32.color(0, major, minor, patch);
+            return (clampComponent(major) << (2 * COMPONENT_BITS))
+                    | (clampComponent(minor) << COMPONENT_BITS)
+                    | clampComponent(patch);
         } catch (Exception e) {
             WunderLib.LOGGER.error("Failed to parse Version '" + version + "'.");
             return 0;
@@ -113,52 +143,52 @@ public class Version {
     }
 
     /**
-     * Extracts the major version component from an integer representation.
-     * 
-     * @param version The integer representation of the version
+     * Extracts the major version component from a long representation.
+     *
+     * @param version The long representation of the version
      * @return The major version number
      */
-    public static int major(int version) {
-        return ColorUtilARGB32.red(version);
+    public static int major(long version) {
+        return (int) ((version >>> (2 * COMPONENT_BITS)) & COMPONENT_MASK);
     }
 
     /**
-     * Extracts the minor version component from an integer representation.
-     * 
-     * @param version The integer representation of the version
+     * Extracts the minor version component from a long representation.
+     *
+     * @param version The long representation of the version
      * @return The minor version number
      */
-    public static int minor(int version) {
-        return ColorUtilARGB32.green(version);
+    public static int minor(long version) {
+        return (int) ((version >>> COMPONENT_BITS) & COMPONENT_MASK);
     }
 
     /**
-     * Extracts the patch version component from an integer representation.
-     * 
-     * @param version The integer representation of the version
+     * Extracts the patch version component from a long representation.
+     *
+     * @param version The long representation of the version
      * @return The patch version number
      */
-    public static int patch(int version) {
-        return ColorUtilARGB32.blue(version);
+    public static int patch(long version) {
+        return (int) (version & COMPONENT_MASK);
     }
 
     /**
-     * Creates a Version object from an integer representation.
-     * 
-     * @param version The integer representation of the version
+     * Creates a Version object from a long representation.
+     *
+     * @param version The long representation of the version
      * @return A Version object
      */
-    public static Version fromInt(int version) {
+    public static Version fromLong(long version) {
         return new Version(major(version), minor(version), patch(version));
     }
 
     /**
-     * Converts this Version object to an integer representation.
-     * 
-     * @return An integer representation of this version
+     * Converts this Version object to a long representation.
+     *
+     * @return A long representation of this version
      */
-    public int toInt() {
-        return toInt(version);
+    public long toLong() {
+        return toLong(version);
     }
 
     /**
@@ -168,7 +198,7 @@ public class Version {
      * @return True if this version is larger, false otherwise
      */
     public boolean isLargerThan(Version v2) {
-        return toInt() > v2.toInt();
+        return toLong() > v2.toLong();
     }
 
     /**
@@ -178,7 +208,7 @@ public class Version {
      * @return True if this version is larger or equal, false otherwise
      */
     public boolean isLargerOrEqualVersion(Version v2) {
-        return toInt() >= v2.toInt();
+        return toLong() >= v2.toLong();
     }
 
     /**
@@ -188,7 +218,7 @@ public class Version {
      * @return True if this version is larger, false otherwise
      */
     public boolean isLargerThan(String v2) {
-        return toInt() > toInt(v2);
+        return toLong() > toLong(v2);
     }
 
     /**
@@ -198,7 +228,7 @@ public class Version {
      * @return True if this version is larger or equal, false otherwise
      */
     public boolean isLargerOrEqualVersion(String v2) {
-        return toInt() >= toInt(v2);
+        return toLong() >= toLong(v2);
     }
 
     /**
@@ -208,7 +238,7 @@ public class Version {
      * @return True if this version is less, false otherwise
      */
     public boolean isLessThan(Version v2) {
-        return toInt() < v2.toInt();
+        return toLong() < v2.toLong();
     }
 
     /**
@@ -218,7 +248,7 @@ public class Version {
      * @return True if this version is less or equal, false otherwise
      */
     public boolean isLessOrEqualVersion(Version v2) {
-        return toInt() <= v2.toInt();
+        return toLong() <= v2.toLong();
     }
 
     /**
@@ -228,7 +258,7 @@ public class Version {
      * @return True if this version is less, false otherwise
      */
     public boolean isLessThan(String v2) {
-        return toInt() < toInt(v2);
+        return toLong() < toLong(v2);
     }
 
     /**
@@ -238,7 +268,7 @@ public class Version {
      * @return True if this version is less or equal, false otherwise
      */
     public boolean isLessOrEqualVersion(String v2) {
-        return toInt() <= toInt(v2);
+        return toLong() <= toLong(v2);
     }
 
     /**

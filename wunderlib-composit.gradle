@@ -5,13 +5,6 @@ plugins {
 java {
     withSourcesJar()
 }
-sourceSets {
-    main {
-        java {
-            srcDirs += ['src/client/java', 'src/datagen/java']
-        }
-    }
-}
 
 tasks.sourcesJar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
