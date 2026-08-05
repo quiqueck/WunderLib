@@ -316,7 +316,7 @@ public abstract class SDF {
 
     //---------------------- SDF REGISTRY ----------------------
     public static final MappedRegistry<MapCodec<? extends SDF>> SDF_REGISTRY = FabricRegistryBuilder
-            .<MapCodec<? extends SDF>>createSimple(null, WunderLib.ID("sdf"))
+            .<MapCodec<? extends SDF>>create(null, WunderLib.ID("sdf"))
             .attribute(RegistryAttribute.MODDED)
             .buildAndRegister();
 

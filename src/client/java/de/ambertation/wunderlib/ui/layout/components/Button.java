@@ -3,7 +3,7 @@ package de.ambertation.wunderlib.ui.layout.components;
 import de.ambertation.wunderlib.ui.layout.components.render.ButtonRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.network.chat.Component;
 
@@ -19,7 +19,7 @@ public class Button extends AbstractVanillaComponent<net.minecraft.client.gui.co
 
     @Environment(EnvType.CLIENT)
     public interface OnTooltip {
-        void onTooltip(Button button, GuiGraphics guiGraphics, int mouseX, int mouseY);
+        void onTooltip(Button button, GuiGraphicsExtractor guiGraphics, int mouseX, int mouseY);
     }
 
     @Environment(EnvType.CLIENT)

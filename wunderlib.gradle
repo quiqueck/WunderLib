@@ -1,19 +1,8 @@
 apply from: "common-fabric-project.gradle"
 
-loom {
-    splitEnvironmentSourceSets()
-
-    mods {
-        wunderlib {
-            sourceSet sourceSets.main
-            sourceSet sourceSets.client
-        }
-    }
-}
-
 javadoc {
     options {
-        source = "21"
+        source = "25"
         encoding = "UTF-8"
         charSet = "UTF-8"
         memberLevel = JavadocMemberLevel.PROTECTED
@@ -32,8 +21,8 @@ javadoc {
 
     allprojects.each {
         source(it.sourceSets.main.allJava)
+        source(it.sourceSets.client.allJava)
     }
-    source(sourceSets.client.allJava)
 
     classpath = files(
             sourceSets.main.compileClasspath, sourceSets.main.runtimeClasspath,
@@ -41,12 +30,12 @@ javadoc {
     )
     include("**/api/**")
     include("de/ambertation/**")
-    failOnError true
+    failOnError = true
 }
 
-// Exposes the remapped jar to sibling projects that still include this
-// library the old way (project(path: ':wunderlib', configuration: 'dev')),
-// e.g. BCLib's bclib.gradle. Keep until those repos migrate to includeBuild.
+// Exposes the jar to sibling projects that include this library the old way
+// (project(path: ':wunderlib', configuration: 'dev')), e.g. BCLib's
+// bclib.gradle on other Minecraft versions. Keep until nothing needs it.
 configurations {
     dev {
         canBeResolved = false
@@ -61,6 +50,6 @@ task javadocJar(type: Jar, dependsOn: [javadoc]) {
 
 artifacts {
     dev jar
-    archives sourcesJar
-    archives javadocJar
 }
+
+tasks.assemble.dependsOn(sourcesJar, javadocJar)

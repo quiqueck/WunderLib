@@ -2,17 +2,32 @@ package de.ambertation.wunderlib.ui;
 
 import de.ambertation.wunderlib.WunderLib;
 
+import com.mojang.blaze3d.ProjectionType;
+import com.mojang.blaze3d.buffers.GpuBuffer;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
-import net.minecraft.Util;
+import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.systems.CommandEncoder;
+import com.mojang.blaze3d.systems.GpuDevice;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.textures.GpuTexture;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Projection;
+import net.minecraft.client.renderer.ProjectionMatrixBuffer;
+import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -95,63 +110,152 @@ public class ItemHelper {
         }
     }
 
+    /**
+     * Renders an item directly into an offscreen GPU texture (the given {@link RenderTarget}'s own
+     * color/depth texture views), bypassing {@link GuiGraphicsExtractor}/{@code GuiRenderState} entirely.
+     * <p>
+     * {@code GuiRenderer.draw()} (the only class that actually draws a {@code GuiRenderState}) is
+     * hard-coded to the main window's render target and offers no redirect - so building up a
+     * {@code GuiRenderState} via {@link GuiGraphicsExtractor} and hoping it lands in our framebuffer
+     * (the previous, broken approach) can never work. Instead this follows vanilla's own pattern for
+     * "render 3D content into a private offscreen texture" (see
+     * {@code net.minecraft.client.gui.render.pip.PictureInPictureRenderer}/{@code OversizedItemRenderer},
+     * and - the closest match for a single standard-size item icon -
+     * {@code net.minecraft.client.gui.render.GuiItemAtlas#drawToSlot}): redirect
+     * {@link RenderSystem#outputColorTextureOverride}/{@link RenderSystem#outputDepthTextureOverride} to
+     * this framebuffer's own texture views, set up a matching orthographic projection, resolve the item
+     * via {@link net.minecraft.client.renderer.item.ItemModelResolver} and submit it via
+     * {@link SubmitNodeStorage}/{@link FeatureRenderDispatcher}, flush, then restore the overrides.
+     */
     private static void renderItemToFramebuffer(ItemStack stack, String text, float scale, RenderTarget framebuffer) {
         Minecraft minecraft = Minecraft.getInstance();
+        int size = framebuffer.width;
 
-        // Setup lighting for 3D items like in the GUI
-        minecraft.gameRenderer.getLighting().setupFor(Lighting.Entry.ITEMS_3D);
+        GpuDevice device = RenderSystem.getDevice();
+        // Clear to fully transparent (alpha channel 0) and a fresh depth buffer
+        device.createCommandEncoder().clearColorAndDepthTextures(
+                framebuffer.getColorTexture(), 0, framebuffer.getDepthTexture(), 1.0
+        );
 
-        // Create render state and graphics context like in Gui class
-        GuiRenderState guiRenderState = new GuiRenderState();
-        GuiGraphics guiGraphics = new GuiGraphics(minecraft, guiRenderState);
+        Projection projection = new Projection();
+        // invertY=true -> (0,0) is top-left and Y grows downward, matching normal GUI pixel space
+        projection.setupOrtho(-1000.0f, 1000.0f, size, size, true);
+        ProjectionMatrixBuffer projectionMatrixBuffer = new ProjectionMatrixBuffer("wunderlib_item_render");
 
-        // Clear background to transparent (let the rendering pipeline handle framebuffer clearing)
-        guiGraphics.fill(RenderPipelines.GUI, 0, 0, (int) (16 * scale), (int) (16 * scale), 0x00000000);
+        try {
+            RenderSystem.setProjectionMatrix(projectionMatrixBuffer.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
 
-        // Move to next stratum for item rendering
-        guiGraphics.nextStratum();
+            // Redirect all rendering below to our own offscreen texture instead of the main window
+            RenderSystem.outputColorTextureOverride = framebuffer.getColorTextureView();
+            RenderSystem.outputDepthTextureOverride = framebuffer.getDepthTextureView();
 
-        // Apply scaling transformation
-        guiGraphics.pose().pushMatrix();
-        guiGraphics.pose().scale(scale, scale);
+            MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
 
-        // Render the item at (0,0) - this will be scaled by our transformation
-        guiGraphics.renderFakeItem(stack, 0, 0);
+            // Resolve the item's render state the same way GuiGraphicsExtractor#fakeItem does
+            // (owner=null, level may be null when no world is loaded - the item model resolver tolerates that)
+            TrackingItemStackRenderState itemStackRenderState = new TrackingItemStackRenderState();
+            minecraft.getItemModelResolver()
+                    .updateForTopItem(itemStackRenderState, stack, ItemDisplayContext.GUI, minecraft.level, null, 0);
 
-        // Render text overlay if needed (like count or custom text)
-        if (stack.getCount() > 1 && text == null) text = String.valueOf(stack.getCount());
-        if (text != null) {
-            guiGraphics.renderItemDecorations(minecraft.font, stack, 0, 0, text);
+            Lighting.Entry lighting = itemStackRenderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
+            minecraft.gameRenderer.getLighting().setupFor(lighting);
+
+            // Same transform GuiItemAtlas#drawToSlot uses to render one standard item icon into a
+            // size x size square: center + flip Y (model space is Y-up, our projection is Y-down)
+            PoseStack itemPose = new PoseStack();
+            itemPose.translate(size / 2.0f, size / 2.0f, 0.0f);
+            itemPose.scale(size, -size, size);
+
+            FeatureRenderDispatcher featureRenderDispatcher = minecraft.gameRenderer.getFeatureRenderDispatcher();
+            SubmitNodeStorage submitNodeStorage = featureRenderDispatcher.getSubmitNodeStorage();
+            itemStackRenderState.submit(itemPose, submitNodeStorage, 15728880 /* full brightness */, OverlayTexture.NO_OVERLAY, 0);
+            featureRenderDispatcher.renderAllFeatures();
+
+            // Decoration overlay: only the stack-count/custom text is reimplemented here (drawn directly
+            // via Font#drawInBatch into the same bufferSource/projection - RenderType's render-pass setup
+            // also honors RenderSystem.outputColorTextureOverride, so this lands in our texture too). The
+            // durability bar and cooldown overlay from GuiGraphicsExtractor#itemDecorations are NOT
+            // reimplemented: they only ever get built into a GuiRenderState, which nothing but the
+            // (bypassed) GuiRenderer.draw() ever consumes, and re-deriving them here as raw colored quads
+            // outside that pipeline would need a hand-rolled RenderPass for little practical benefit for
+            // an icon-rendering utility (stacks rendered via renderAll() always have count 1, so the bar
+            // is never populated to begin with; see the report for details).
+            String amount = text;
+            if (stack.getCount() > 1 && amount == null) amount = String.valueOf(stack.getCount());
+            if (amount != null) {
+                PoseStack textPose = new PoseStack();
+                textPose.scale(scale, scale, 1.0f);
+                float textX = 19 - 2 - minecraft.font.width(amount);
+                float textY = 6 + 3;
+                minecraft.font.drawInBatch(
+                        amount, textX, textY, -1, true,
+                        textPose.last().pose(), bufferSource,
+                        Font.DisplayMode.NORMAL, 0, 15728880
+                );
+            }
+
+            // Flush all buffered draws (item submission + text) into the overridden target
+            bufferSource.endBatch();
+        } finally {
+            RenderSystem.outputColorTextureOverride = null;
+            RenderSystem.outputDepthTextureOverride = null;
+            projectionMatrixBuffer.close();
         }
-
-        // Restore transformation
-        guiGraphics.pose().popMatrix();
-
-        // Process any deferred rendering operations (like tooltips)
-        guiGraphics.renderDeferredTooltip();
     }
 
     /**
-     * Write the framebuffer contents to a file using the Screenshot API
+     * Write the framebuffer's color texture to a PNG file, preserving its real alpha channel.
+     * <p>
+     * This deliberately does NOT use {@link Screenshot#takeScreenshot}: that method's pixel
+     * conversion unconditionally does {@code argb | 0xFF000000} (see its decompiled source),
+     * forcing every pixel fully opaque - correct for a window screenshot (which has no meaningful
+     * alpha) but it silently discards the transparency we specifically render for here. This is a
+     * hand-rolled copy of the same GPU texture-to-buffer readback {@code Screenshot.takeScreenshot}
+     * uses internally, minus that alpha-forcing step.
      */
     private static void writeFramebufferToFile(RenderTarget framebuffer, File file) {
         try {
-            // Use the Screenshot API to capture the framebuffer contents
-            Screenshot.takeScreenshot(
-                    framebuffer, nativeImage -> {
-                        Util.ioPool().execute(() -> {
-                            try {
-                                // The NativeImage already contains exactly what we rendered
-                                nativeImage.writeToFile(file);
-                                WunderLib.LOGGER.info("Successfully saved item render to: " + file.getAbsolutePath());
-                            } catch (Exception exception) {
-                                WunderLib.LOGGER.warn("Couldn't save item render", exception);
-                            } finally {
-                                nativeImage.close();
-                            }
-                        });
-                    }
+            int width = framebuffer.width;
+            int height = framebuffer.height;
+            GpuTexture sourceTexture = framebuffer.getColorTexture();
+            if (sourceTexture == null) {
+                throw new IllegalStateException("Tried to capture item render of an incomplete framebuffer");
+            }
+
+            GpuDevice device = RenderSystem.getDevice();
+            GpuBuffer buffer = device.createBuffer(
+                    () -> "WunderLib item render readback", 9, (long) width * height * sourceTexture.getFormat().pixelSize()
             );
+            CommandEncoder commandEncoder = device.createCommandEncoder();
+            commandEncoder.copyTextureToBuffer(sourceTexture, buffer, 0L, () -> {
+                try {
+                    NativeImage image;
+                    try (GpuBuffer.MappedView read = commandEncoder.mapBuffer(buffer, true, false)) {
+                        image = new NativeImage(width, height, false);
+                        for (int y = 0; y < height; y++) {
+                            for (int x = 0; x < width; x++) {
+                                int argb = read.data().getInt((x + y * width) * sourceTexture.getFormat().pixelSize());
+                                // No "| 0xFF000000" here - keep the real (possibly 0) alpha value.
+                                image.setPixelABGR(x, height - y - 1, argb);
+                            }
+                        }
+                    }
+
+                    Util.ioPool().execute(() -> {
+                        try {
+                            file.getParentFile().mkdirs();
+                            image.writeToFile(file);
+                            WunderLib.LOGGER.info("Successfully saved item render to: " + file.getAbsolutePath());
+                        } catch (Exception exception) {
+                            WunderLib.LOGGER.warn("Couldn't save item render", exception);
+                        } finally {
+                            image.close();
+                        }
+                    });
+                } finally {
+                    buffer.close();
+                }
+            }, 0);
         } catch (Exception e) {
             WunderLib.LOGGER.error("Failed to capture item render", e);
         }
@@ -162,7 +266,7 @@ public class ItemHelper {
      * Based on the renderSlot method from Gui class
      */
     public static void renderToExistingContext(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             ItemStack stack,
             @Nullable String overlayText,
             float scale,
@@ -177,13 +281,13 @@ public class ItemHelper {
         guiGraphics.pose().scale(scale, scale);
 
         // Render the item using the same method as the hotbar
-        guiGraphics.renderFakeItem(stack, 0, 0);
+        guiGraphics.fakeItem(stack, 0, 0);
 
         // Render decorations (count, durability bar, cooldown overlay)
         String text = overlayText;
         if (stack.getCount() > 1 && text == null) text = String.valueOf(stack.getCount());
         if (text != null) {
-            guiGraphics.renderItemDecorations(Minecraft.getInstance().font, stack, 0, 0, text);
+            guiGraphics.itemDecorations(Minecraft.getInstance().font, stack, 0, 0, text);
         }
 
         guiGraphics.pose().popMatrix();
@@ -194,7 +298,7 @@ public class ItemHelper {
      * Useful for creating item grids or inventories
      */
     public static void renderItemGrid(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             ItemStack[] items,
             int startX, int startY,
             int itemSize, int spacing,
@@ -216,7 +320,7 @@ public class ItemHelper {
     /**
      * Utility method to render a single item at standard size (16x16)
      */
-    public static void renderStandardItem(GuiGraphics guiGraphics, ItemStack stack, int x, int y) {
+    public static void renderStandardItem(GuiGraphicsExtractor guiGraphics, ItemStack stack, int x, int y) {
         renderToExistingContext(guiGraphics, stack, null, 1.0f, x, y);
     }
 }

@@ -3,7 +3,7 @@ package de.ambertation.wunderlib.network;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.function.Function;
@@ -20,13 +20,13 @@ import java.util.function.Function;
  * @param <P> the message's payload type
  */
 public final class ClientBoundMessage<P> implements MessageKey<P> {
-    final ResourceLocation id;
+    final Identifier id;
     final StreamCodec<RegistryFriendlyByteBuf, P> codec;
     final Function<ServerPlayer, P> prepare;
     final CustomPacketPayload.Type<Envelope<P>> type;
 
     ClientBoundMessage(
-            ResourceLocation id,
+            Identifier id,
             StreamCodec<RegistryFriendlyByteBuf, P> codec,
             Function<ServerPlayer, P> prepare,
             CustomPacketPayload.Type<Envelope<P>> type
@@ -38,7 +38,7 @@ public final class ClientBoundMessage<P> implements MessageKey<P> {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return id;
     }
 }

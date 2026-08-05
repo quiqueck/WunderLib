@@ -7,8 +7,9 @@ import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 
 import net.fabricmc.api.EnvType;
@@ -25,7 +26,7 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
 
         @Override
         public void renderInBounds(
-                GuiGraphics guiGraphics,
+                GuiGraphicsExtractor guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,
@@ -195,7 +196,7 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
 
     @Override
     protected void renderInBounds(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -248,16 +249,16 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
     }
 
     @Override
-    public boolean mouseClicked(double d, double e, int i) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
         if (visible)
-            return RelativeContainerEventHandler.super.mouseClicked(d, e, i);
+            return RelativeContainerEventHandler.super.mouseClicked(event, doubleClick);
         return false;
     }
 
     @Override
-    public boolean mouseReleased(double d, double e, int i) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (visible)
-            return RelativeContainerEventHandler.super.mouseReleased(d, e, i);
+            return RelativeContainerEventHandler.super.mouseReleased(event);
         return false;
     }
 
@@ -269,9 +270,9 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
     }
 
     @Override
-    public boolean mouseDragged(double d, double e, int i, double f, double g) {
+    public boolean mouseDragged(MouseButtonEvent event, double f, double g) {
         if (visible)
-            return RelativeContainerEventHandler.super.mouseDragged(d, e, i, f, g);
+            return RelativeContainerEventHandler.super.mouseDragged(event, f, g);
         return false;
     }
 

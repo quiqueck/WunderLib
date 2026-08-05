@@ -5,7 +5,7 @@ import de.ambertation.wunderlib.WunderLib;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 
@@ -53,7 +53,7 @@ public final class NetworkRegistry {
      * namespace into the path this way keeps every registered id's own namespace out of the resulting type's
      * path, avoiding an invalid-character crash at registration.
      */
-    private static <P> CustomPacketPayload.Type<Envelope<P>> typeFor(ResourceLocation id) {
+    private static <P> CustomPacketPayload.Type<Envelope<P>> typeFor(Identifier id) {
         return CustomPacketPayload.createType(id.getNamespace() + "_" + id.getPath());
     }
 
@@ -72,19 +72,19 @@ public final class NetworkRegistry {
      * any number of them.
      */
     public static <P> ServerBoundMessage<P> registerServerBound(
-            ResourceLocation id,
+            Identifier id,
             StreamCodec<RegistryFriendlyByteBuf, P> codec
     ) {
         CustomPacketPayload.Type<Envelope<P>> type = typeFor(id);
         ServerBoundMessage<P> key = new ServerBoundMessage<>(id, codec, type);
 
-        PayloadTypeRegistry.playC2S().register(type, envelopeCodec(codec, type));
+        PayloadTypeRegistry.serverboundPlay().register(type, envelopeCodec(codec, type));
 
         ServerPlayConnectionEvents.INIT.register((handler, initServer) ->
                 ServerPlayNetworking.registerReceiver(handler, type, (envelope, context) -> {
                     ServerMessageContext ctx = new ServerMessageContext(
                             context.player(),
-                            context.player().getServer(),
+                            context.server(),
                             context.responseSender()
                     );
                     dispatchServerHandlers(key, envelope.payload, ctx);
@@ -100,7 +100,7 @@ public final class NetworkRegistry {
      * ExecutionPhase.GAME_THREAD, handle)}.
      */
     public static <P> ServerBoundMessage<P> registerServerBound(
-            ResourceLocation id,
+            Identifier id,
             StreamCodec<RegistryFriendlyByteBuf, P> codec,
             BiConsumer<P, ServerMessageContext> handle
     ) {
@@ -145,7 +145,7 @@ public final class NetworkRegistry {
      * {@link #sendToClient(ServerPlayer, ClientBoundMessage, Object)} with an explicit payload.
      */
     public static <P> ClientBoundMessage<P> registerClientBound(
-            ResourceLocation id,
+            Identifier id,
             StreamCodec<RegistryFriendlyByteBuf, P> codec
     ) {
         return registerClientBound(id, codec, null);
@@ -157,14 +157,14 @@ public final class NetworkRegistry {
      * should compute what to send rather than the caller supplying it directly.
      */
     public static <P> ClientBoundMessage<P> registerClientBound(
-            ResourceLocation id,
+            Identifier id,
             StreamCodec<RegistryFriendlyByteBuf, P> codec,
             Function<ServerPlayer, P> prepare
     ) {
         CustomPacketPayload.Type<Envelope<P>> type = typeFor(id);
         ClientBoundMessage<P> key = new ClientBoundMessage<>(id, codec, prepare, type);
 
-        PayloadTypeRegistry.playS2C().register(type, envelopeCodec(codec, type));
+        PayloadTypeRegistry.clientboundPlay().register(type, envelopeCodec(codec, type));
 
         if (sendToClientAdapter != null) {
             sendToClientAdapter.registerReceiver(key);

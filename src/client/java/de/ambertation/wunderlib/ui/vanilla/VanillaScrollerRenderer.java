@@ -3,18 +3,18 @@ package de.ambertation.wunderlib.ui.vanilla;
 import de.ambertation.wunderlib.ui.layout.components.render.ScrollerRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 
 public class VanillaScrollerRenderer implements ScrollerRenderer {
     public static final VanillaScrollerRenderer DEFAULT = new VanillaScrollerRenderer();
 
     @Override
-    public void renderScrollBar(GuiGraphics guiGraphics, Rectangle b, int pickerOffset, int pickerSize, float zIndex) {
+    public void renderScrollBar(GuiGraphicsExtractor guiGraphics, Rectangle b, int pickerOffset, int pickerSize, float zIndex) {
         b = this.getScrollerBounds(b);
         Rectangle p = this.getPickerBounds(b, pickerOffset, pickerSize);
 
-        // Use the new GuiGraphics fill method with RenderPipelines
+        // Use the new GuiGraphicsExtractor fill method with RenderPipelines
         // This is much simpler than the old BufferBuilder approach
 
         // Scroller background (black)

@@ -3,16 +3,16 @@ package de.ambertation.wunderlib.ui.layout.components.render;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Size;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class RenderHelper {
-    public static void outline(GuiGraphics guiGraphics, int x0, int y0, int x1, int y1, int color) {
+    public static void outline(GuiGraphicsExtractor guiGraphics, int x0, int y0, int x1, int y1, int color) {
         outline(guiGraphics, x0, y0, x1, y1, color, color);
     }
 
-    public static void outline(GuiGraphics guiGraphics, int x0, int y0, int x1, int y1, int color1, int color2) {
+    public static void outline(GuiGraphicsExtractor guiGraphics, int x0, int y0, int x1, int y1, int color1, int color2) {
         int n;
         if (x1 < x0) {
             n = x0;
@@ -34,7 +34,7 @@ public class RenderHelper {
         innerVLine(guiGraphics, x1, y0 + 1, y1 - 1, color2);
     }
 
-    public static void hLine(GuiGraphics guiGraphics, int x0, int x1, int y, int color) {
+    public static void hLine(GuiGraphicsExtractor guiGraphics, int x0, int x1, int y, int color) {
         if (x1 < x0) {
             int m = x0;
             x0 = x1;
@@ -44,11 +44,11 @@ public class RenderHelper {
         innerHLine(guiGraphics, x0, x1, y, color);
     }
 
-    protected static void innerHLine(GuiGraphics guiGraphics, int x0, int x1, int y, int color) {
+    protected static void innerHLine(GuiGraphicsExtractor guiGraphics, int x0, int x1, int y, int color) {
         guiGraphics.fill(RenderPipelines.GUI, x0, y, x1 + 1, y + 1, color);
     }
 
-    public static void vLine(GuiGraphics guiGraphics, int x, int y0, int y1, int color) {
+    public static void vLine(GuiGraphicsExtractor guiGraphics, int x, int y0, int y1, int color) {
         if (y1 < y0) {
             int m = y0;
             y0 = y1;
@@ -57,23 +57,23 @@ public class RenderHelper {
         innerVLine(guiGraphics, x, y0, y1, color);
     }
 
-    protected static void innerVLine(GuiGraphics guiGraphics, int x, int y0, int y1, int color) {
+    protected static void innerVLine(GuiGraphicsExtractor guiGraphics, int x, int y0, int y1, int color) {
         guiGraphics.fill(RenderPipelines.GUI, x, y0, x + 1, y1 + 1, color);
     }
 
     /**
      * Alternative implementation using the new submit system if you need more control
      */
-    private static void innerFillAdvanced(GuiGraphics guiGraphics, int x0, int y0, int x1, int y1, int color) {
+    private static void innerFillAdvanced(GuiGraphicsExtractor guiGraphics, int x0, int y0, int x1, int y1, int color) {
         // This approach uses the new render state submission system
         // You would need to create a custom ColoredRectangleRenderState if needed
         guiGraphics.fill(RenderPipelines.GUI, x0, y0, x1, y1, color);
     }
 
     public static void renderImage(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int left, int top,
-            ResourceLocation location,
+            Identifier location,
             Size resourceSize, Rectangle uvRect,
             float alpha
     ) {
@@ -81,17 +81,17 @@ public class RenderHelper {
     }
 
     public static void renderImage(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int left, int top,
             int width, int height,
-            ResourceLocation location,
+            Identifier location,
             Size resourceSize, Rectangle uvRect,
             float alpha
     ) {
         // In 1.21.6, color/alpha setting is handled differently
         // We can either use the color parameter in blit methods or use setColor if available
 
-        // Method 1: Using the color parameter (if your GuiGraphics supports it)
+        // Method 1: Using the color parameter (if your GuiGraphicsExtractor supports it)
         int alphaColor = (int) (alpha * 255) << 24 | 0xFFFFFF; // Alpha in upper 8 bits, RGB as white
 
         // Try to use the color-enabled blit method
@@ -122,10 +122,10 @@ public class RenderHelper {
      * Alternative image rendering method using the new pipeline system
      */
     public static void renderImageWithPipeline(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int left, int top,
             int width, int height,
-            ResourceLocation location,
+            Identifier location,
             Size resourceSize, Rectangle uvRect,
             float alpha
     ) {

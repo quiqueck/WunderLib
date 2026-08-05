@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.network;
 
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * Identifies a registered network message and its direction. Obtained from
@@ -10,5 +10,5 @@ import net.minecraft.resources.ResourceLocation;
  * @param <P> the message's payload type
  */
 public sealed interface MessageKey<P> permits ServerBoundMessage, ClientBoundMessage {
-    ResourceLocation id();
+    Identifier id();
 }

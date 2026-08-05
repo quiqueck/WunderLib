@@ -8,7 +8,7 @@ import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -140,7 +140,7 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
 
         @Override
         public void renderInBounds(
-                GuiGraphics guiGraphics,
+                GuiGraphicsExtractor guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,
@@ -152,32 +152,49 @@ public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRe
                 if (linkedComponent.vAlign == Alignment.MIN) top = 0;
                 if (linkedComponent.vAlign == Alignment.CENTER) top /= 2;
 
+                int lineHeight = getLineHeight(linkedComponent.text);
+                // MultiLineLabel no longer exposes renderCentered/renderLeftAligned in 26.1,
+                // so we draw each pre-split line ourselves.
                 if (linkedComponent.hAlign == Alignment.CENTER) {
-                    linkedComponent.multiLineLabel.renderCentered(
-                            guiGraphics, bounds.width / 2, top,
-                            getLineHeight(linkedComponent.text),
-                            linkedComponent.color
-                    );
+                    int lineY = top;
+                    for (LineWithWidth textWithWidth : linkedComponent.lines) {
+                        guiGraphics.text(
+                                getFont(),
+                                textWithWidth.text(),
+                                bounds.width / 2 - textWithWidth.width() / 2,
+                                lineY,
+                                linkedComponent.color,
+                                true
+                        );
+                        lineY += lineHeight;
+                    }
                 } else if (linkedComponent.hAlign == Alignment.MAX) {
                     int lineY = 0;
-                    int lineHeight = getLineHeight(linkedComponent.text);
 
                     for (Iterator<LineWithWidth> iter = linkedComponent.lines.iterator(); iter.hasNext(); lineY += lineHeight) {
                         LineWithWidth textWithWidth = iter.next();
-                        guiGraphics.drawString(
+                        guiGraphics.text(
                                 getFont(),
                                 textWithWidth.text(),
                                 linkedComponent.width.calculatedSize() - textWithWidth.width(),
                                 lineY,
-                                linkedComponent.color
+                                linkedComponent.color,
+                                true
                         );
                     }
                 } else {
-                    linkedComponent.multiLineLabel.renderLeftAligned(
-                            guiGraphics, 0, top,
-                            getLineHeight(linkedComponent.text),
-                            linkedComponent.color
-                    );
+                    int lineY = top;
+                    for (LineWithWidth textWithWidth : linkedComponent.lines) {
+                        guiGraphics.text(
+                                getFont(),
+                                textWithWidth.text(),
+                                0,
+                                lineY,
+                                linkedComponent.color,
+                                true
+                        );
+                        lineY += lineHeight;
+                    }
                 }
             }
         }

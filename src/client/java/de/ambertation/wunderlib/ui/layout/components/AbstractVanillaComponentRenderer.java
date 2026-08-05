@@ -4,7 +4,7 @@ import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 
 import net.fabricmc.api.EnvType;
@@ -20,7 +20,7 @@ public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extend
 
     @Override
     public void renderInBounds(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int mouseX,
             int mouseY,
             float deltaTicks,
@@ -32,7 +32,23 @@ public class AbstractVanillaComponentRenderer<C extends AbstractWidget, V extend
                 if (!linkedComponent.enabled) {
                     linkedComponent.vanillaComponent.setAlpha(linkedComponent.alpha / 2);
                 }
-                linkedComponent.vanillaComponent.render(guiGraphics, mouseX, mouseY, deltaTicks);
+                // AbstractWidget.extractRenderState() hit-tests hover via
+                // guiGraphics.containsPointInScissor(), which compares against the scissor
+                // stack in absolute screen space, while the vanilla component's own x/y stay
+                // at (0, 0) so the local-space mouse handlers (mouseClicked/isMouseOver/...)
+                // keep working. extractRenderState also draws using getX()/getY() combined
+                // with whatever pose is currently active, and by this point the pose has
+                // already been translated to this component's absolute screen position - so
+                // we can't just move the widget to absolute coords (that double-translates
+                // the draw). Instead we temporarily cancel the pose translation and use
+                // absolute coords for both the widget position and the mouse, matching
+                // vanilla's own assumption that pose is screen space and getX()/getY() are
+                // absolute; then we restore both afterwards.
+                guiGraphics.pose().translate(-bounds.left, -bounds.top);
+                linkedComponent.vanillaComponent.setPosition(bounds.left, bounds.top);
+                linkedComponent.vanillaComponent.extractRenderState(guiGraphics, bounds.left + mouseX, bounds.top + mouseY, deltaTicks);
+                linkedComponent.vanillaComponent.setPosition(0, 0);
+                guiGraphics.pose().translate(bounds.left, bounds.top);
                 if (!linkedComponent.enabled) {
                     linkedComponent.vanillaComponent.setAlpha(linkedComponent.alpha);
                 }

@@ -4,7 +4,7 @@ import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -20,7 +20,7 @@ public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> 
     }
 
     protected abstract void customRender(
-            GuiGraphics guiGraphics,
+            GuiGraphicsExtractor guiGraphics,
             int x,
             int y,
             float deltaTicks,
@@ -33,7 +33,7 @@ public abstract class CustomRenderComponent<C extends CustomRenderComponent<C>> 
 
         @Override
         public void renderInBounds(
-                GuiGraphics guiGraphics,
+                GuiGraphicsExtractor guiGraphics,
                 int mouseX,
                 int mouseY,
                 float deltaTicks,

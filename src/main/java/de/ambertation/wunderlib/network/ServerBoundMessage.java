@@ -3,7 +3,7 @@ package de.ambertation.wunderlib.network;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 /**
  * A client-to-server message. Handlers are attached separately, any number of them, via
@@ -15,12 +15,12 @@ import net.minecraft.resources.ResourceLocation;
  * @param <P> the message's payload type
  */
 public final class ServerBoundMessage<P> implements MessageKey<P> {
-    final ResourceLocation id;
+    final Identifier id;
     final StreamCodec<RegistryFriendlyByteBuf, P> codec;
     final CustomPacketPayload.Type<Envelope<P>> type;
 
     ServerBoundMessage(
-            ResourceLocation id,
+            Identifier id,
             StreamCodec<RegistryFriendlyByteBuf, P> codec,
             CustomPacketPayload.Type<Envelope<P>> type
     ) {
@@ -30,7 +30,7 @@ public final class ServerBoundMessage<P> implements MessageKey<P> {
     }
 
     @Override
-    public ResourceLocation id() {
+    public Identifier id() {
         return id;
     }
 }
