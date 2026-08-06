@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public abstract class LayoutScreen extends Screen {
     protected static final Runnable EMPTY_SCREEN = () -> {
-        Minecraft.getInstance().setScreen(null);
+        Minecraft.getInstance().gui.setScreen(null);
     };
 
     public interface OverlayProvider {
@@ -102,11 +102,11 @@ public abstract class LayoutScreen extends Screen {
                     if (bl) {
                         Util.getPlatform().openUri(uri);
                     }
-                    this.minecraft.setScreen(this);
+                    this.minecraft.gui.setScreen(this);
                 }, uri, true
         );
 
-        Minecraft.getInstance().setScreen(cls);
+        Minecraft.getInstance().gui.setScreen(cls);
     }
 
     @Override
@@ -172,7 +172,7 @@ public abstract class LayoutScreen extends Screen {
     protected static Runnable setScreenOnClose(Screen screen) {
         if (screen == null) return EMPTY_SCREEN;
         return () -> {
-            Minecraft.getInstance().setScreen(screen);
+            Minecraft.getInstance().gui.setScreen(screen);
         };
     }
 
@@ -185,7 +185,7 @@ public abstract class LayoutScreen extends Screen {
         if (this.onClose != null) {
             this.onClose.run();
         } else {
-            Minecraft.getInstance().setScreen(null);
+            Minecraft.getInstance().gui.setScreen(null);
         }
     }
 

@@ -2,8 +2,10 @@ package de.ambertation.wunderlib.ui;
 
 import de.ambertation.wunderlib.WunderLib;
 
+import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
 import com.mojang.blaze3d.buffers.GpuBuffer;
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
@@ -18,7 +20,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Projection;
 import net.minecraft.client.renderer.ProjectionMatrixBuffer;
 import net.minecraft.client.renderer.SubmitNodeStorage;
@@ -26,6 +27,7 @@ import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -35,8 +37,13 @@ import java.io.File;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4f;
+import org.joml.Vector4fc;
 
 public class ItemHelper {
+    /** Fully transparent clear color (matches vanilla's {@code GuiRenderer.CLEAR_COLOR}). */
+    private static final Vector4fc CLEAR_COLOR = new Vector4f(0);
+
     private ItemHelper() {
     }
 
@@ -98,8 +105,9 @@ public class ItemHelper {
         // Calculate size based on scale - standard item is 16x16
         int size = (int) (16 * scale);
 
-        // Create a render target for our item
-        RenderTarget framebuffer = new TextureTarget("item_render", size, size, true);
+        // Create a render target for our item (useDepth=true; 26.2's TextureTarget takes the color
+        // format explicitly and derives the depth format itself)
+        RenderTarget framebuffer = new TextureTarget("item_render", size, size, true, GpuFormat.RGBA8_UNORM);
 
         try {
             renderItemToFramebuffer(stack, overlayText, scale, framebuffer);
@@ -124,17 +132,23 @@ public class ItemHelper {
      * {@code net.minecraft.client.gui.render.GuiItemAtlas#drawToSlot}): redirect
      * {@link RenderSystem#outputColorTextureOverride}/{@link RenderSystem#outputDepthTextureOverride} to
      * this framebuffer's own texture views, set up a matching orthographic projection, resolve the item
-     * via {@link net.minecraft.client.renderer.item.ItemModelResolver} and submit it via
-     * {@link SubmitNodeStorage}/{@link FeatureRenderDispatcher}, flush, then restore the overrides.
+     * via {@link net.minecraft.client.renderer.item.ItemModelResolver}, submit it (and the overlay text)
+     * into a private {@link SubmitNodeStorage}, then run {@link FeatureRenderDispatcher#renderAllFeatures}
+     * and restore the overrides.
+     * <p>
+     * The override redirect is still how vanilla 26.2 does this - {@code GuiItemAtlas} sets both
+     * overrides around its own {@code renderAllFeatures} call. (26.3 replaced that with an explicit
+     * {@code RenderPass} built against the target's views, and moved {@code renderAllFeatures} to a
+     * static taking that pass; neither exists here.)
      */
     private static void renderItemToFramebuffer(ItemStack stack, String text, float scale, RenderTarget framebuffer) {
         Minecraft minecraft = Minecraft.getInstance();
         int size = framebuffer.width;
 
         GpuDevice device = RenderSystem.getDevice();
-        // Clear to fully transparent (alpha channel 0) and a fresh depth buffer
+        // Clear to fully transparent (alpha channel 0) and a fresh depth buffer (reversed-Z: far == 0.0)
         device.createCommandEncoder().clearColorAndDepthTextures(
-                framebuffer.getColorTexture(), 0, framebuffer.getDepthTexture(), 1.0
+                framebuffer.getColorTexture(), CLEAR_COLOR, framebuffer.getDepthTexture(), 0.0
         );
 
         Projection projection = new Projection();
@@ -149,8 +163,6 @@ public class ItemHelper {
             RenderSystem.outputColorTextureOverride = framebuffer.getColorTextureView();
             RenderSystem.outputDepthTextureOverride = framebuffer.getDepthTextureView();
 
-            MultiBufferSource.BufferSource bufferSource = minecraft.renderBuffers().bufferSource();
-
             // Resolve the item's render state the same way GuiGraphicsExtractor#fakeItem does
             // (owner=null, level may be null when no world is loaded - the item model resolver tolerates that)
             TrackingItemStackRenderState itemStackRenderState = new TrackingItemStackRenderState();
@@ -158,7 +170,7 @@ public class ItemHelper {
                     .updateForTopItem(itemStackRenderState, stack, ItemDisplayContext.GUI, minecraft.level, null, 0);
 
             Lighting.Entry lighting = itemStackRenderState.usesBlockLight() ? Lighting.Entry.ITEMS_3D : Lighting.Entry.ITEMS_FLAT;
-            minecraft.gameRenderer.getLighting().setupFor(lighting);
+            minecraft.gameRenderer.lighting().setupFor(lighting);
 
             // Same transform GuiItemAtlas#drawToSlot uses to render one standard item icon into a
             // size x size square: center + flip Y (model space is Y-up, our projection is Y-down)
@@ -166,20 +178,18 @@ public class ItemHelper {
             itemPose.translate(size / 2.0f, size / 2.0f, 0.0f);
             itemPose.scale(size, -size, size);
 
-            FeatureRenderDispatcher featureRenderDispatcher = minecraft.gameRenderer.getFeatureRenderDispatcher();
-            SubmitNodeStorage submitNodeStorage = featureRenderDispatcher.getSubmitNodeStorage();
+            FeatureRenderDispatcher featureRenderDispatcher = minecraft.gameRenderer.featureRenderDispatcher();
+            SubmitNodeStorage submitNodeStorage = new SubmitNodeStorage();
             itemStackRenderState.submit(itemPose, submitNodeStorage, 15728880 /* full brightness */, OverlayTexture.NO_OVERLAY, 0);
-            featureRenderDispatcher.renderAllFeatures();
 
-            // Decoration overlay: only the stack-count/custom text is reimplemented here (drawn directly
-            // via Font#drawInBatch into the same bufferSource/projection - RenderType's render-pass setup
-            // also honors RenderSystem.outputColorTextureOverride, so this lands in our texture too). The
+            // Decoration overlay: only the stack-count/custom text is reimplemented here (submitted as a
+            // text node into the same SubmitNodeStorage, so it is drawn by the same pass below). The
             // durability bar and cooldown overlay from GuiGraphicsExtractor#itemDecorations are NOT
             // reimplemented: they only ever get built into a GuiRenderState, which nothing but the
             // (bypassed) GuiRenderer.draw() ever consumes, and re-deriving them here as raw colored quads
-            // outside that pipeline would need a hand-rolled RenderPass for little practical benefit for
-            // an icon-rendering utility (stacks rendered via renderAll() always have count 1, so the bar
-            // is never populated to begin with; see the report for details).
+            // outside that pipeline would need a hand-rolled render pipeline for little practical benefit
+            // for an icon-rendering utility (stacks rendered via renderAll() always have count 1, so the
+            // bar is never populated to begin with; see the report for details).
             String amount = text;
             if (stack.getCount() > 1 && amount == null) amount = String.valueOf(stack.getCount());
             if (amount != null) {
@@ -187,15 +197,16 @@ public class ItemHelper {
                 textPose.scale(scale, scale, 1.0f);
                 float textX = 19 - 2 - minecraft.font.width(amount);
                 float textY = 6 + 3;
-                minecraft.font.drawInBatch(
-                        amount, textX, textY, -1, true,
-                        textPose.last().pose(), bufferSource,
-                        Font.DisplayMode.NORMAL, 0, 15728880
+                submitNodeStorage.submitText(
+                        textPose, textX, textY,
+                        Component.literal(amount).getVisualOrderText(),
+                        true, Font.DisplayMode.NORMAL,
+                        15728880, -1, 0, 0
                 );
             }
 
-            // Flush all buffered draws (item submission + text) into the overridden target
-            bufferSource.endBatch();
+            // Execute everything that was submitted; the overrides above send it to our own texture
+            featureRenderDispatcher.renderAllFeatures(submitNodeStorage);
         } finally {
             RenderSystem.outputColorTextureOverride = null;
             RenderSystem.outputDepthTextureOverride = null;
@@ -224,17 +235,17 @@ public class ItemHelper {
 
             GpuDevice device = RenderSystem.getDevice();
             GpuBuffer buffer = device.createBuffer(
-                    () -> "WunderLib item render readback", 9, (long) width * height * sourceTexture.getFormat().pixelSize()
+                    () -> "WunderLib item render readback", 9, (long) width * height * sourceTexture.getFormat().blockSize()
             );
             CommandEncoder commandEncoder = device.createCommandEncoder();
             commandEncoder.copyTextureToBuffer(sourceTexture, buffer, 0L, () -> {
                 try {
                     NativeImage image;
-                    try (GpuBuffer.MappedView read = commandEncoder.mapBuffer(buffer, true, false)) {
+                    try (GpuBufferSlice.MappedView read = buffer.map(true, false)) {
                         image = new NativeImage(width, height, false);
                         for (int y = 0; y < height; y++) {
                             for (int x = 0; x < width; x++) {
-                                int argb = read.data().getInt((x + y * width) * sourceTexture.getFormat().pixelSize());
+                                int argb = read.data().getInt((x + y * width) * sourceTexture.getFormat().blockSize());
                                 // No "| 0xFF000000" here - keep the real (possibly 0) alpha value.
                                 image.setPixelABGR(x, height - y - 1, argb);
                             }
