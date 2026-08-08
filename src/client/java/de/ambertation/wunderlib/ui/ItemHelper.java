@@ -2,19 +2,20 @@ package de.ambertation.wunderlib.ui;
 
 import de.ambertation.wunderlib.WunderLib;
 
-import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.ProjectionType;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.CommandEncoder;
-import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTexture;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.GpuFormat;
+import com.mojang.renderpearl.api.buffers.GpuBuffer;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
+import com.mojang.renderpearl.api.commands.CommandEncoder;
+import com.mojang.renderpearl.api.commands.RenderPass;
+import com.mojang.renderpearl.api.device.GpuDevice;
+import com.mojang.renderpearl.api.textures.GpuTexture;
 import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -34,6 +35,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
 import java.io.File;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -105,9 +108,10 @@ public class ItemHelper {
         // Calculate size based on scale - standard item is 16x16
         int size = (int) (16 * scale);
 
-        // Create a render target for our item (useDepth=true; 26.2's TextureTarget takes the color
-        // format explicitly and derives the depth format itself)
-        RenderTarget framebuffer = new TextureTarget("item_render", size, size, true, GpuFormat.RGBA8_UNORM);
+        // Create a render target for our item
+        RenderTarget framebuffer = new TextureTarget(
+                "item_render", size, size, GpuFormat.RGBA8_UNORM, GpuFormat.D32_FLOAT
+        );
 
         try {
             renderItemToFramebuffer(stack, overlayText, scale, framebuffer);
@@ -129,17 +133,11 @@ public class ItemHelper {
      * "render 3D content into a private offscreen texture" (see
      * {@code net.minecraft.client.gui.render.pip.PictureInPictureRenderer}/{@code OversizedItemRenderer},
      * and - the closest match for a single standard-size item icon -
-     * {@code net.minecraft.client.gui.render.GuiItemAtlas#drawToSlot}): redirect
-     * {@link RenderSystem#outputColorTextureOverride}/{@link RenderSystem#outputDepthTextureOverride} to
-     * this framebuffer's own texture views, set up a matching orthographic projection, resolve the item
-     * via {@link net.minecraft.client.renderer.item.ItemModelResolver}, submit it (and the overlay text)
-     * into a private {@link SubmitNodeStorage}, then run {@link FeatureRenderDispatcher#renderAllFeatures}
-     * and restore the overrides.
-     * <p>
-     * The override redirect is still how vanilla 26.2 does this - {@code GuiItemAtlas} sets both
-     * overrides around its own {@code renderAllFeatures} call. (26.3 replaced that with an explicit
-     * {@code RenderPass} built against the target's views, and moved {@code renderAllFeatures} to a
-     * static taking that pass; neither exists here.)
+     * {@code net.minecraft.client.gui.render.GuiItemAtlas#drawToSlot}): set up a matching orthographic
+     * projection, resolve the item via {@link net.minecraft.client.renderer.item.ItemModelResolver},
+     * submit it (and the overlay text) into a private {@link SubmitNodeStorage}, then execute the
+     * resulting {@link FeatureRenderDispatcher.PreparedFrame} inside a {@link RenderPass} created
+     * directly against this framebuffer's own texture views.
      */
     private static void renderItemToFramebuffer(ItemStack stack, String text, float scale, RenderTarget framebuffer) {
         Minecraft minecraft = Minecraft.getInstance();
@@ -158,10 +156,6 @@ public class ItemHelper {
 
         try {
             RenderSystem.setProjectionMatrix(projectionMatrixBuffer.getBuffer(projection), ProjectionType.ORTHOGRAPHIC);
-
-            // Redirect all rendering below to our own offscreen texture instead of the main window
-            RenderSystem.outputColorTextureOverride = framebuffer.getColorTextureView();
-            RenderSystem.outputDepthTextureOverride = framebuffer.getDepthTextureView();
 
             // Resolve the item's render state the same way GuiGraphicsExtractor#fakeItem does
             // (owner=null, level may be null when no world is loaded - the item model resolver tolerates that)
@@ -183,8 +177,8 @@ public class ItemHelper {
             itemStackRenderState.submit(itemPose, submitNodeStorage, 15728880 /* full brightness */, OverlayTexture.NO_OVERLAY, 0);
 
             // Decoration overlay: only the stack-count/custom text is reimplemented here (submitted as a
-            // text node into the same SubmitNodeStorage, so it is drawn by the same pass below). The
-            // durability bar and cooldown overlay from GuiGraphicsExtractor#itemDecorations are NOT
+            // text node into the same SubmitNodeStorage, so it is drawn by the same render pass below).
+            // The durability bar and cooldown overlay from GuiGraphicsExtractor#itemDecorations are NOT
             // reimplemented: they only ever get built into a GuiRenderState, which nothing but the
             // (bypassed) GuiRenderer.draw() ever consumes, and re-deriving them here as raw colored quads
             // outside that pipeline would need a hand-rolled render pipeline for little practical benefit
@@ -205,11 +199,19 @@ public class ItemHelper {
                 );
             }
 
-            // Execute everything that was submitted; the overrides above send it to our own texture
-            featureRenderDispatcher.renderAllFeatures(submitNodeStorage);
+            // Execute everything that was submitted straight into our own offscreen texture views
+            try (
+                    FeatureRenderDispatcher.PreparedFrame frame = featureRenderDispatcher.prepareFrame(submitNodeStorage);
+                    RenderPass renderPass = device.createCommandEncoder().createRenderPass(
+                            () -> "WunderLib item render",
+                            framebuffer.getColorTextureView(), Optional.empty(),
+                            framebuffer.getDepthTextureView(), OptionalDouble.empty()
+                    )
+            ) {
+                RenderSystem.bindDefaultUniforms(renderPass);
+                FeatureRenderDispatcher.renderAllFeatures(renderPass, frame);
+            }
         } finally {
-            RenderSystem.outputColorTextureOverride = null;
-            RenderSystem.outputDepthTextureOverride = null;
             projectionMatrixBuffer.close();
         }
     }
