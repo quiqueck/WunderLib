@@ -1,7 +1,7 @@
 package de.ambertation.wunderlib.ui.vanilla;
 
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.configs.AbstractConfig;
-import de.ambertation.wunderlib.ui.ColorHelper;
 import de.ambertation.wunderlib.ui.layout.components.*;
 
 import net.minecraft.client.gui.screens.Screen;
@@ -116,6 +116,8 @@ public class ConfigScreen extends LayoutScreenWithIcon {
                 .setDebugName("Config - " + AbstractConfig.getAllCategories(files));
 
         for (AbstractConfig.Group group : groups) {
+            // don't render a header for a group whose values are all hidden
+            if (AbstractConfig.getAllVisibleValues(group, files).isEmpty()) continue;
             addGroupHeader(content, group);
             content.indent(8).add(fromConfigGroup(group, files));
             addGroupFooter(content, group);
@@ -220,7 +222,7 @@ public class ConfigScreen extends LayoutScreenWithIcon {
             indented.addSpacer(2);
             indented.addMultilineText(fill(), fit(), MultiLineText.parse(desc))
                     .alignLeft()
-                    .setColor(ColorHelper.GRAY);
+                    .setColor(ColorUtilARGB32.GRAY);
 
             stack.addSpacer(2);
             stack.add(indented);
@@ -255,7 +257,7 @@ public class ConfigScreen extends LayoutScreenWithIcon {
             indented.addSpacer(2);
             indented.addMultilineText(fill(), fit(), MultiLineText.parse(desc))
                     .alignLeft()
-                    .setColor(ColorHelper.GRAY);
+                    .setColor(ColorUtilARGB32.GRAY);
 
             stack.addSpacer(2);
             stack.add(indented);
@@ -293,7 +295,7 @@ public class ConfigScreen extends LayoutScreenWithIcon {
             descCol.addSpacer(2);
             descCol.addMultilineText(fill(), fit(), MultiLineText.parse(desc))
                    .alignLeft()
-                   .setColor(ColorHelper.GRAY);
+                   .setColor(ColorUtilARGB32.GRAY);
             descCol.addSpacer(4);
 
             final HorizontalStack row = new HorizontalStack(fill(), fit())

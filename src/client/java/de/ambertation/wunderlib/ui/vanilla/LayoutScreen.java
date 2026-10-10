@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.vanilla;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.components.*;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
@@ -121,7 +121,7 @@ public abstract class LayoutScreen extends Screen {
 
     protected LayoutComponent<?, ?> createTitle() {
         var text = new Text(fit(), fit(), title).centerHorizontal()
-                                                .setColor(ColorHelper.WHITE)
+                                                .setColor(ColorUtilARGB32.WHITE)
                                                 .setDebugName("title");
         return text;
     }
@@ -155,17 +155,17 @@ public abstract class LayoutScreen extends Screen {
         renderBackgroundLayer(guiGraphics, i, j, f);
         super.render(guiGraphics, i, j, f);
 
-//        guiGraphics.drawString(font, "HelloHello", 10, 10, ColorHelper.WHITE);
+//        guiGraphics.drawString(font, "HelloHello", 10, 10, ColorUtilARGB32.WHITE);
 //        guiGraphics.drawManaged(() -> {
 //            TooltipRenderUtil.renderTooltipBackground(guiGraphics, 0, 0, 20, 100, 400);
 //
 //        });
 //        guiGraphics.pose().pushPose();
 //        guiGraphics.pose().translate(0, 0, 400);
-//        guiGraphics.fill(20, 0, 40, 100, ColorHelper.BLUE);
-//        guiGraphics.drawString(font, "WorldWorld", 10, 30, ColorHelper.WHITE);
+//        guiGraphics.fill(20, 0, 40, 100, ColorUtilARGB32.BLUE);
+//        guiGraphics.drawString(font, "WorldWorld", 10, 30, ColorUtilARGB32.WHITE);
 //        guiGraphics.pose().popPose();
-////        guiGraphics.fill(0, 0, 20, 100, ColorHelper.RED);
+////        guiGraphics.fill(0, 0, 20, 100, ColorUtilARGB32.RED);
 
     }
 

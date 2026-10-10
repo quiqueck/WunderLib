@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 import de.ambertation.wunderlib.ui.vanilla.LayoutScreen;
 
@@ -159,7 +159,7 @@ public class DropDown<T> extends Button {
                 }
             };
             Container backdrop = new Container(Value.fill(), Value.fill());
-            backdrop.setBackgroundColor(ColorHelper.CONTAINER_BACKGROUND);
+            backdrop.setBackgroundColor(ColorUtilARGB32.CONTAINER_BACKGROUND);
             panel.setChild(backdrop).setZIndex(parentPanel.getZIndex() + 50);
 
             //height calculation
@@ -174,8 +174,8 @@ public class DropDown<T> extends Button {
                     Value.fixed(height + 2 * PADDING),
                     VerticalScroll.create(items)
             );
-            contentContainer.setOutlineColor(ColorHelper.OVERLAY_BORDER);
-            contentContainer.setBackgroundColor(ColorHelper.OVERLAY_BACKGROUND);
+            contentContainer.setOutlineColor(ColorUtilARGB32.OVERLAY_BORDER);
+            contentContainer.setBackgroundColor(ColorUtilARGB32.OVERLAY_BACKGROUND);
             contentContainer.setPadding(PADDING + 4, PADDING, PADDING, PADDING);
 
             backdrop.addChild(screenBounds.left + 10, screenBounds.bottom(), contentContainer);

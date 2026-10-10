@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.components.render.RenderHelper;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class HLine extends CustomRenderComponent {
-    private int color = ColorHelper.DEFAULT_TEXT;
+    private int color = ColorUtilARGB32.DEFAULT_TEXT;
 
     public HLine(Value width, Value height) {
         super(width, height);

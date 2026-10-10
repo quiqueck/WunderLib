@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components.render;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.components.AbstractVanillaComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.components.Button;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
@@ -30,7 +30,7 @@ public class ButtonRenderer extends AbstractVanillaComponentRenderer<net.minecra
         deltaSum2 += deltaTicks * 0.032;
         deltaSum3 += deltaTicks * 0.028;
         if (getLinkedComponent() != null && getLinkedComponent().isGlowing()) {
-            RenderHelper.outline(guiGraphics, 0, 0, bounds.width, bounds.height, ColorHelper.YELLOW);
+            RenderHelper.outline(guiGraphics, 0, 0, bounds.width, bounds.height, ColorUtilARGB32.YELLOW);
             int len = 2 * bounds.width + 2 * bounds.height;
 
             deltaSum = deltaSum - (int) deltaSum;
@@ -90,6 +90,6 @@ public class ButtonRenderer extends AbstractVanillaComponentRenderer<net.minecra
             x = 0;
             y = 2 * bh - pos;
         }
-        guiGraphics.fill(x, y, x + 1, y + 1, ColorHelper.WHITE);
+        guiGraphics.fill(x, y, x + 1, y + 1, ColorUtilARGB32.WHITE);
     }
 }

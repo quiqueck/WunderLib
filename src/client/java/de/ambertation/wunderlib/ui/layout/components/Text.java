@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
 import de.ambertation.wunderlib.ui.layout.values.Alignment;
@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
 
 public class Text extends LayoutComponent<Text.TextRenderer, Text> {
     net.minecraft.network.chat.Component text;
-    int color = ColorHelper.DEFAULT_TEXT;
+    int color = ColorUtilARGB32.DEFAULT_TEXT;
 
     public Text(
             Value width,

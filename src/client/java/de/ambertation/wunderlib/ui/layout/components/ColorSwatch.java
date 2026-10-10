@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.components.render.RenderHelper;
 import de.ambertation.wunderlib.ui.layout.values.Rectangle;
 import de.ambertation.wunderlib.ui.layout.values.Value;
@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 @Environment(EnvType.CLIENT)
 public class ColorSwatch extends CustomRenderComponent<ColorSwatch> {
     private int color;
-    private int borderColor = ColorHelper.BLACK;
+    private int borderColor = ColorUtilARGB32.BLACK;
     private boolean offsetInner = false;
 
     public ColorSwatch(Value width, Value height, int color) {
