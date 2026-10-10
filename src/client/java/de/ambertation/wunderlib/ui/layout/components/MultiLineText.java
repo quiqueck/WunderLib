@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.LineWithWidth;
 import de.ambertation.wunderlib.ui.layout.components.render.ComponentRenderer;
 import de.ambertation.wunderlib.ui.layout.components.render.TextProvider;
@@ -21,7 +21,7 @@ import java.util.List;
 
 public class MultiLineText extends LayoutComponent<MultiLineText.MultiLineTextRenderer, MultiLineText> {
     net.minecraft.network.chat.Component text;
-    int color = ColorHelper.DEFAULT_TEXT;
+    int color = ColorUtilARGB32.DEFAULT_TEXT;
     protected MultiLineLabel multiLineLabel;
     int bufferedContentWidth = 0;
     List<LineWithWidth> lines = List.of();
