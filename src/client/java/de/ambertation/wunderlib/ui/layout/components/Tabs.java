@@ -1,6 +1,6 @@
 package de.ambertation.wunderlib.ui.layout.components;
 
-import de.ambertation.wunderlib.ui.ColorHelper;
+import de.ambertation.wunderlib.utils.ColorUtilARGB32;
 import de.ambertation.wunderlib.ui.layout.values.Value;
 
 import net.minecraft.network.chat.Component;
@@ -38,7 +38,7 @@ public class Tabs extends AbstractVerticalStack<Tabs> {
         this.add(buttons);
         this.add(content);
 
-        setBackgroundColor(ColorHelper.CONTAINER_BACKGROUND);
+        setBackgroundColor(ColorUtilARGB32.CONTAINER_BACKGROUND);
         setPadding(4);
     }
 

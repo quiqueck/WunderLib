@@ -226,6 +226,11 @@ task nextVersion() {
         } catch (FileNotFoundException) {
         }
         println(json)
+        // Nothing published for these game versions yet (first release on a new
+        // Minecraft version): Modrinth answers with an empty list rather than a 404.
+        if (json.isEmpty()) {
+            json = slurper.parseText('[{ "version_number" : "1.0.-1" }]')
+        }
         def version = json[0].version_number
 
         //increment patch version

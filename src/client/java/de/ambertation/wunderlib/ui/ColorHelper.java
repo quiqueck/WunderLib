@@ -1,137 +1,77 @@
 package de.ambertation.wunderlib.ui;
 
 import de.ambertation.wunderlib.utils.ColorUtilARGB32;
-import net.minecraft.network.chat.TextColor;
 
+/**
+ * @deprecated Use {@link ColorUtilARGB32}, which also works on a dedicated server.
+ */
+@Deprecated(forRemoval = true)
 public class ColorHelper {
-    public static final int BLACK = TextColor.BLACK.getValue() | 0xFF000000;
-    public static final int DARK_BLUE = TextColor.DARK_BLUE.getValue() | 0xFF000000;
-    public static final int DARK_GREEN = TextColor.DARK_GREEN.getValue() | 0xFF000000;
-    public static final int DARK_AQUA = TextColor.DARK_AQUA.getValue() | 0xFF000000;
-    public static final int DARK_RED = TextColor.DARK_RED.getValue() | 0xFF000000;
-    public static final int DARK_PURPLE = TextColor.DARK_PURPLE.getValue() | 0xFF000000;
-    public static final int GOLD = TextColor.GOLD.getValue() | 0xFF000000;
-    public static final int GRAY = TextColor.GRAY.getValue() | 0xFF000000;
-    public static final int DARK_GRAY = TextColor.DARK_GRAY.getValue() | 0xFF000000;
-    public static final int BLUE = TextColor.BLUE.getValue() | 0xFF000000;
-    public static final int GREEN = TextColor.GREEN.getValue() | 0xFF000000;
-    public static final int AQUA = TextColor.AQUA.getValue() | 0xFF000000;
-    public static final int RED = TextColor.RED.getValue() | 0xFF000000;
-    public static final int LIGHT_PURPLE = TextColor.LIGHT_PURPLE.getValue() | 0xFF000000;
-    public static final int YELLOW = TextColor.YELLOW.getValue() | 0xFF000000;
-    public static final int WHITE = TextColor.WHITE.getValue() | 0xFF000000;
-    public static final int DEFAULT_TEXT = WHITE;
-
-    public static final int SCREEN_BACKGROUND = 0xFF343444;
-    public static final int CONTAINER_BACKGROUND = 0x77000000;
-    public static final int OVERLAY_BACKGROUND = 0x97000000;
-    public static final int OVERLAY_BORDER = 0xFF555566;
+    public static final int BLACK = ColorUtilARGB32.BLACK;
+    public static final int DARK_BLUE = ColorUtilARGB32.DARK_BLUE;
+    public static final int DARK_GREEN = ColorUtilARGB32.DARK_GREEN;
+    public static final int DARK_AQUA = ColorUtilARGB32.DARK_AQUA;
+    public static final int DARK_RED = ColorUtilARGB32.DARK_RED;
+    public static final int DARK_PURPLE = ColorUtilARGB32.DARK_PURPLE;
+    public static final int GOLD = ColorUtilARGB32.GOLD;
+    public static final int GRAY = ColorUtilARGB32.GRAY;
+    public static final int DARK_GRAY = ColorUtilARGB32.DARK_GRAY;
+    public static final int BLUE = ColorUtilARGB32.BLUE;
+    public static final int GREEN = ColorUtilARGB32.GREEN;
+    public static final int AQUA = ColorUtilARGB32.AQUA;
+    public static final int RED = ColorUtilARGB32.RED;
+    public static final int LIGHT_PURPLE = ColorUtilARGB32.LIGHT_PURPLE;
+    public static final int YELLOW = ColorUtilARGB32.YELLOW;
+    public static final int WHITE = ColorUtilARGB32.WHITE;
+    public static final int DEFAULT_TEXT = ColorUtilARGB32.DEFAULT_TEXT;
+    public static final int SCREEN_BACKGROUND = ColorUtilARGB32.SCREEN_BACKGROUND;
+    public static final int CONTAINER_BACKGROUND = ColorUtilARGB32.CONTAINER_BACKGROUND;
+    public static final int OVERLAY_BACKGROUND = ColorUtilARGB32.OVERLAY_BACKGROUND;
+    public static final int OVERLAY_BORDER = ColorUtilARGB32.OVERLAY_BORDER;
 
     public static int color(int r, int g, int b) {
-        return ColorUtilARGB32.color(0xff, r, g, b);
+        return ColorUtilARGB32.color(r, g, b);
     }
 
+    /**
+     * Note the argument order: {@link ColorUtilARGB32#color(int, int, int, int)} takes alpha first.
+     */
     public static int color(int r, int g, int b, int a) {
         return ColorUtilARGB32.color(a, r, g, b);
     }
 
+    /**
+     * Note the argument order: {@link ColorUtilARGB32#color(float, float, float, float)} takes alpha first.
+     */
     public static int color(float r, float g, float b, float a) {
-        return color((int) (r * 0xff), (int) (g * 0xff), (int) (b * 0xff), (int) (a * 0xff));
+        return ColorUtilARGB32.color(a, r, g, b);
     }
 
     public static int color(String hex) {
-        int r = Integer.parseInt(hex.substring(0, 2), 16);
-        int g = Integer.parseInt(hex.substring(2, 4), 16);
-        int b = Integer.parseInt(hex.substring(4, 6), 16);
-        return color(r, g, b);
+        return ColorUtilARGB32.color(hex);
     }
 
     public static int[] toIntTGBA(int color) {
-        return new int[]{
-                ColorUtilARGB32.red(color),
-                ColorUtilARGB32.green(color),
-                ColorUtilARGB32.blue(color),
-                ColorUtilARGB32.alpha(color)
-        };
+        return ColorUtilARGB32.toIntArrayRGBA(color);
     }
 
     public static float[] toFloatArrayRGBA(int color) {
-        return new float[]{
-                ((float) ColorUtilARGB32.red(color) / 0xFF),
-                ((float) ColorUtilARGB32.green(color) / 0xFF),
-                ((float) ColorUtilARGB32.blue(color) / 0xFF),
-                ((float) ColorUtilARGB32.alpha(color) / 0xFF),
-        };
+        return ColorUtilARGB32.toFloatArrayRGBA(color);
     }
 
     public static String toRGBHex(int color) {
-        return "#"
-                + Integer.toHexString(ColorUtilARGB32.red(color))
-                + Integer.toHexString(ColorUtilARGB32.green(color))
-                + Integer.toHexString(ColorUtilARGB32.blue(color));
+        return ColorUtilARGB32.toRGBHex(color);
     }
 
     public static boolean validHexColor(String hexColor) {
-        if (hexColor == null || hexColor.isBlank()) return false;
-        try {
-            parseHex(hexColor);
-        } catch (NumberFormatException ex) {
-            return false;
-        }
-
-        return true;
+        return ColorUtilARGB32.validHexColor(hexColor);
     }
 
     public static int parseHex(String hexColor) {
-        if (hexColor.startsWith("#")) hexColor = hexColor.substring(1);
-        if (hexColor.startsWith("0x")) hexColor = hexColor.substring(2);
-        int len = hexColor.length();
-        if (len != 6 && len != 8 && len != 3 && len != 4) {
-            return -1;
-        }
-
-        int color, shift;
-        if (len == 3) {
-            hexColor = ""
-                    + hexColor.charAt(0) + hexColor.charAt(0)
-                    + hexColor.charAt(1) + hexColor.charAt(1)
-                    + hexColor.charAt(2) + hexColor.charAt(2);
-            len = 6;
-        } else if (len == 4) {
-            hexColor = ""
-                    + hexColor.charAt(0) + hexColor.charAt(0)
-                    + hexColor.charAt(1) + hexColor.charAt(1)
-                    + hexColor.charAt(2) + hexColor.charAt(2)
-                    + hexColor.charAt(3) + hexColor.charAt(3);
-            len = 8;
-        }
-
-        if (len == 6) {
-            color = 0xFF000000;
-            shift = 16;
-        } else {
-            color = 0;
-            shift = 24;
-        }
-
-        try {
-            String[] splited = hexColor.split("(?<=\\G.{2})");
-            for (String digit : splited) {
-                color |= Integer.valueOf(digit, 16) << shift;
-                shift -= 8;
-            }
-        } catch (NumberFormatException ex) {
-            return -1;
-        }
-
-        return color;
+        return ColorUtilARGB32.parseHex(hexColor);
     }
 
     public static int blendColors(float t, int c1, int c2) {
-        int r = (int) (t * ColorUtilARGB32.red(c2) + (1 - t) * ColorUtilARGB32.red(c1));
-        int g = (int) (t * ColorUtilARGB32.green(c2) + (1 - t) * ColorUtilARGB32.green(c1));
-        int b = (int) (t * ColorUtilARGB32.blue(c2) + (1 - t) * ColorUtilARGB32.blue(c1));
-        int a = (int) (t * ColorUtilARGB32.alpha(c2) + (1 - t) * ColorUtilARGB32.alpha(c1));
-        return ColorUtilARGB32.color(a, r, g, b);
+        return ColorUtilARGB32.lerp(c1, c2, t);
     }
 }
