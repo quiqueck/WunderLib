@@ -77,20 +77,30 @@ public class VerticalScroll<RS extends ScrollerRenderer> extends LayoutComponent
 
     @Override
     protected int updateContainerWidth(int containerWidth) {
-        int myWidth = width.calculateOrFill(containerWidth);
+        return applyCalculatedWidth(width.calculateOrFill(containerWidth));
+    }
+
+    @Override
+    protected int applyCalculatedWidth(int myWidth) {
+        width.setCalculatedSize(myWidth);
         if (child != null) {
             child.width.calculateOrFill(myWidth - scrollerWidth());
-            child.updateContainerWidth(child.width.calculatedSize());
+            child.applyCalculatedWidth(child.width.calculatedSize());
         }
         return myWidth;
     }
 
     @Override
     protected int updateContainerHeight(int containerHeight) {
-        int myHeight = height.calculateOrFill(containerHeight);
+        return applyCalculatedHeight(height.calculateOrFill(containerHeight));
+    }
+
+    @Override
+    protected int applyCalculatedHeight(int myHeight) {
+        height.setCalculatedSize(myHeight);
         if (child != null) {
             child.height.calculateOrFill(myHeight);
-            child.updateContainerHeight(child.height.calculatedSize());
+            child.applyCalculatedHeight(child.height.calculatedSize());
         }
         return myHeight;
     }

@@ -16,24 +16,34 @@ public class AbstractVerticalStack<S extends AbstractVerticalStack<S>> extends A
 
     @Override
     protected int updateContainerWidth(int containerWidth) {
-        int myWidth = width.calculateOrFill(containerWidth);
+        return applyCalculatedWidth(width.calculateOrFill(containerWidth));
+    }
+
+    @Override
+    protected int applyCalculatedWidth(int myWidth) {
+        width.setCalculatedSize(myWidth);
         components.stream().forEach(c -> c.width.calculateOrFill(myWidth));
         for (LayoutComponent<?, ?> c : components) {
-            c.updateContainerWidth(c.width.calculatedSize());
+            c.applyCalculatedWidth(c.width.calculatedSize());
         }
         return myWidth;
     }
 
     @Override
     public int updateContainerHeight(int containerHeight) {
-        int myHeight = height.calculateOrFill(containerHeight);
+        return applyCalculatedHeight(height.calculateOrFill(containerHeight));
+    }
+
+    @Override
+    protected int applyCalculatedHeight(int myHeight) {
+        height.setCalculatedSize(myHeight);
         int fixedHeight = components.stream().map(c -> c.height.calculate(myHeight)).reduce(0, Integer::sum);
 
         int freeHeight = Math.max(0, myHeight - fixedHeight);
         fillHeight(myHeight, freeHeight);
 
         for (LayoutComponent<?, ?> c : components) {
-            c.updateContainerHeight(c.height.calculatedSize());
+            c.applyCalculatedHeight(c.height.calculatedSize());
         }
 
         return myHeight;

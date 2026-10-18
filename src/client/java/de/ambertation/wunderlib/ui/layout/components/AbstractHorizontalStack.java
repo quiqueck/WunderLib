@@ -16,14 +16,19 @@ public class AbstractHorizontalStack<S extends AbstractHorizontalStack<S>> exten
 
     @Override
     public int updateContainerWidth(int containerWidth) {
-        int myWidth = width.calculateOrFill(containerWidth);
+        return applyCalculatedWidth(width.calculateOrFill(containerWidth));
+    }
+
+    @Override
+    protected int applyCalculatedWidth(int myWidth) {
+        width.setCalculatedSize(myWidth);
         int fixedWidth = components.stream().map(c -> c.width.calculate(myWidth)).reduce(0, Integer::sum);
 
         int freeWidth = Math.max(0, myWidth - fixedWidth);
         fillWidth(myWidth, freeWidth);
 
         for (LayoutComponent<?, ?> c : components) {
-            c.updateContainerWidth(c.width.calculatedSize());
+            c.applyCalculatedWidth(c.width.calculatedSize());
         }
 
         return myWidth;
@@ -31,10 +36,15 @@ public class AbstractHorizontalStack<S extends AbstractHorizontalStack<S>> exten
 
     @Override
     protected int updateContainerHeight(int containerHeight) {
-        int myHeight = height.calculateOrFill(containerHeight);
+        return applyCalculatedHeight(height.calculateOrFill(containerHeight));
+    }
+
+    @Override
+    protected int applyCalculatedHeight(int myHeight) {
+        height.setCalculatedSize(myHeight);
         components.stream().forEach(c -> c.height.calculateOrFill(myHeight));
         for (LayoutComponent<?, ?> c : components) {
-            c.updateContainerHeight(c.height.calculatedSize());
+            c.applyCalculatedHeight(c.height.calculatedSize());
         }
         return myHeight;
     }

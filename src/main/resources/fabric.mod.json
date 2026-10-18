@@ -1,7 +1,7 @@
 {
     "schemaVersion": 1,
     "id": "wunderlib",
-    "version": "26.201.1",
+    "version": "26.201.2",
     "name": "WunderLib",
     "description": "A UI, Math and Networking Library",
     "authors": [
