@@ -28,7 +28,7 @@ body:
     attributes:
       label: WunderLib
       description: What version of WunderLib are you running?
-      placeholder: 26.301.1
+      placeholder: 26.301.2
     validations:
       required: true
   - type: input

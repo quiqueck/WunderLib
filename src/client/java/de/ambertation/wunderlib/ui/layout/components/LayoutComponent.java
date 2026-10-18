@@ -44,6 +44,24 @@ public abstract class LayoutComponent<R extends ComponentRenderer, L extends Lay
         return height.setCalculatedSize(containerHeight);
     }
 
+    /**
+     * Called by a parent layout once it has resolved the final width of this component.
+     * In contrast to {@link #updateContainerWidth(int)}, the passed value must not be
+     * resolved against {@link #width} again (otherwise relative sizes would be applied twice).
+     */
+    protected int applyCalculatedWidth(int calculatedWidth) {
+        return updateContainerWidth(calculatedWidth);
+    }
+
+    /**
+     * Called by a parent layout once it has resolved the final height of this component.
+     * In contrast to {@link #updateContainerHeight(int)}, the passed value must not be
+     * resolved against {@link #height} again (otherwise relative sizes would be applied twice).
+     */
+    protected int applyCalculatedHeight(int calculatedHeight) {
+        return updateContainerHeight(calculatedHeight);
+    }
+
     void setRelativeBounds(int left, int top) {
         relativeBounds = new Rectangle(left, top, width.calculatedSize(), height.calculatedSize());
         onBoundsChanged();
