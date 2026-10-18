@@ -1,33 +1,33 @@
 {
-  "schemaVersion": 1,
-  "id": "wunderlib",
-  "version": "1.1.5",
-  "name": "WunderLib",
-  "description": "Another Utility Library",
-  "authors": [
-    "Quiqueck"
-  ],
-  "contact": {
-    "homepage": "https://github.com/quiqueck/wunderlib",
-    "issues": "https://github.com/quiqueck/wunderlib/issues",
-    "sources": "https://github.com/quiqueck/wunderlib"
-  },
-  "license": "MIT",
-  "icon": "assets/wunderlib/icon.png",
-  "environment": "*",
-  "depends": {
-    "fabricloader": ">=0.14.21",
-    "fabric": ">=0.83.0",
-    "minecraft": [
-      "1.20",
-      "1.20.1"
-    ]
-  },
-  "custom": {
-    "modmenu": {
-      "badges": [
-        "library"
-      ]
+    "schemaVersion": 1,
+    "id": "wunderlib",
+    "version": "1.1.5",
+    "name": "WunderLib",
+    "description": "Another Utility Library",
+    "authors": [
+        "Quiqueck"
+    ],
+    "contact": {
+        "homepage": "https://github.com/quiqueck/wunderlib",
+        "issues": "https://github.com/quiqueck/wunderlib/issues",
+        "sources": "https://github.com/quiqueck/wunderlib"
+    },
+    "license": "MIT",
+    "icon": "assets/wunderlib/icon.png",
+    "environment": "*",
+    "depends": {
+        "fabricloader": ">=0.14.21",
+        "fabric": ">=0.83.0",
+        "minecraft": [
+            "1.20",
+            "1.20.1"
+        ]
+    },
+    "custom": {
+        "modmenu": {
+            "badges": [
+                "library"
+            ]
+        }
     }
-  }
 }

@@ -5,10 +5,10 @@ buildscript {
         gradlePluginPortal()
     }
 }
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_17
+java.targetCompatibility = JavaVersion.VERSION_17
 
-archivesBaseName = project.archives_base_name
+base.archivesName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
@@ -52,7 +52,7 @@ java {
 
 jar {
     from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
+        rename { "${it}_${project.archives_base_name}" }
     }
 }
 
@@ -63,30 +63,28 @@ configurations {
     }
 }
 
+javadoc {
+    options {
+        source = "17"
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+        memberLevel = JavadocMemberLevel.PROTECTED
+        links("https://docs.oracle.com/en/java/javase/17/docs/api/")
+        addStringOption("Xdoclint:none", "-quiet")
+        addStringOption("noqualifier", "net.minecraft.*:com.mojang.*:net.fabricmc.*")
+    }
+    failOnError false
+}
+
+// Published next to the remapped jar by common-publish-maven.gradle.
+task javadocJar(type: Jar, dependsOn: [javadoc]) {
+    archiveClassifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 artifacts {
     dev jar
 }
 
-// configure the maven publication
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            // add all the jars that should be included when publishing to maven
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-        // Notice: This block does NOT have the same function as the block in the top level.
-        // The repositories here will be used for publishing your artifact, not for
-        // retrieving dependencies.
-    }
-}
-
+// Gradle 9 dropped the `archives` configuration - build the extra jars with assemble instead.
+tasks.assemble.dependsOn(sourcesJar, javadocJar)
