@@ -175,20 +175,30 @@ public class Container extends LayoutComponent<Container.ContainerRenderer, Cont
 
     @Override
     protected int updateContainerWidth(int containerWidth) {
-        int myWidth = width.calculateOrFill(containerWidth);
+        return applyCalculatedWidth(width.calculateOrFill(containerWidth));
+    }
+
+    @Override
+    protected int applyCalculatedWidth(int myWidth) {
+        width.setCalculatedSize(myWidth);
         for (var child : children) {
             child.component.width.calculateOrFill(myWidth - (paddingLeft + paddingRight));
-            child.component.updateContainerWidth(child.component.width.calculatedSize());
+            child.component.applyCalculatedWidth(child.component.width.calculatedSize());
         }
         return myWidth;
     }
 
     @Override
     protected int updateContainerHeight(int containerHeight) {
-        int myHeight = height.calculateOrFill(containerHeight);
+        return applyCalculatedHeight(height.calculateOrFill(containerHeight));
+    }
+
+    @Override
+    protected int applyCalculatedHeight(int myHeight) {
+        height.setCalculatedSize(myHeight);
         for (var child : children) {
             child.component.height.calculateOrFill(myHeight - (paddingTop + paddingBottom));
-            child.component.updateContainerHeight(child.component.height.calculatedSize());
+            child.component.applyCalculatedHeight(child.component.height.calculatedSize());
         }
         return myHeight;
     }
